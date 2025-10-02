@@ -10,6 +10,7 @@ import 'package:wisper/app/core/widgets/custom_text_filed.dart';
 import 'package:wisper/app/core/widgets/label.dart';
 import 'package:wisper/app/modules/authentication/views/forgot_password.dart';
 import 'package:wisper/app/modules/authentication/views/user_sign_up_screen.dart';
+import 'package:wisper/app/modules/dashboard/views/dashboard_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -33,7 +34,7 @@ class _SignInScreenState extends State<SignInScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  GestureDetector(                   
+                  GestureDetector(
                     child: Text(
                       'Sign In',
                       style: TextStyle(
@@ -171,7 +172,13 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
               ),
               heightBox10,
-              CustomElevatedButton(height: 56, title: 'Login', onPress: () {}),
+              CustomElevatedButton(
+                height: 56,
+                title: 'Login',
+                onPress: () {
+                  Get.to(const MainButtonNavbarScreen());
+                },
+              ),
             ],
           ),
         ),

@@ -18,6 +18,10 @@ class $AssetsImagesGen {
   AssetGenImage get container2 =>
       const AssetGenImage('assets/images/Container (2).png');
 
+  /// File path: assets/images/Frame 5313.png
+  AssetGenImage get frame5313 =>
+      const AssetGenImage('assets/images/Frame 5313.png');
+
   /// File path: assets/images/Shield (1).png
   AssetGenImage get shield1 =>
       const AssetGenImage('assets/images/Shield (1).png');
@@ -213,6 +217,14 @@ class $AssetsImagesGen {
   /// File path: assets/images/search.png
   AssetGenImage get search => const AssetGenImage('assets/images/search.png');
 
+  /// File path: assets/images/selected_call.png
+  AssetGenImage get selectedCall =>
+      const AssetGenImage('assets/images/selected_call.png');
+
+  /// File path: assets/images/selected_chat.png
+  AssetGenImage get selectedChat =>
+      const AssetGenImage('assets/images/selected_chat.png');
+
   /// File path: assets/images/send.png
   AssetGenImage get send => const AssetGenImage('assets/images/send.png');
 
@@ -234,6 +246,14 @@ class $AssetsImagesGen {
 
   /// File path: assets/images/svg02.png
   AssetGenImage get svg02 => const AssetGenImage('assets/images/svg02.png');
+
+  /// File path: assets/images/unselected_chat.png
+  AssetGenImage get unselectedChat =>
+      const AssetGenImage('assets/images/unselected_chat.png');
+
+  /// File path: assets/images/unselected_home.png
+  AssetGenImage get unselectedHome =>
+      const AssetGenImage('assets/images/unselected_home.png');
 
   /// File path: assets/images/upload.png
   AssetGenImage get upload => const AssetGenImage('assets/images/upload.png');
@@ -269,6 +289,7 @@ class $AssetsImagesGen {
   /// List of all assets
   List<AssetGenImage> get values => [
     container2,
+    frame5313,
     shield1,
     shield,
     adds,
@@ -327,6 +348,8 @@ class $AssetsImagesGen {
     refresh,
     schedule,
     search,
+    selectedCall,
+    selectedChat,
     send,
     share,
     sheild,
@@ -334,6 +357,8 @@ class $AssetsImagesGen {
     star,
     svg01,
     svg02,
+    unselectedChat,
+    unselectedHome,
     upload,
     userAdd,
     userGroup,
