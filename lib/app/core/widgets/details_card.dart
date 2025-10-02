@@ -5,14 +5,14 @@ import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 class DetailsCard extends StatelessWidget {
   final Color bgColor;
   final Color borderColor;
-  final double width;
+  final double? width;
   final double borderRadius;
   final Widget child;
   const DetailsCard({
     super.key,
     this.bgColor = LightThemeColors.detailsCardBackgroundColor2,
     this.borderColor = LightThemeColors.borderColor,
-    this.width = double.infinity,
+    this.width,
     this.borderRadius = 10,
     required this.child,
   });
@@ -20,7 +20,7 @@ class DetailsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
+      width: width,
 
       decoration: BoxDecoration(
         color: bgColor,

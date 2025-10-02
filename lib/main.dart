@@ -9,7 +9,7 @@ import 'package:wisper/app/modules/onboarding/views/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
- 
+
   // try {
   //   await dotenv.load(fileName: ".env");
   // } catch (e) {
@@ -60,24 +60,3 @@ Future<void> main() async {
     );
   });
 }
-
-
-// InputDecorationTheme _inputDecorationTheme() {
-//   return InputDecorationTheme(
-//     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-//     hintStyle: GoogleFonts.poppins(fontWeight: FontWeight.w300, fontSize: 14),
-//     fillColor: Color(0xffF3F3F5),
-//     filled: true,
-//     border: _inputBorder(),
-//     enabledBorder: _inputBorder(),
-//     focusedBorder: _inputBorder(),
-//     errorBorder: _inputBorder(),
-//   );
-// }
-
-// OutlineInputBorder _inputBorder() {
-//   return OutlineInputBorder(
-//     borderSide: BorderSide.none,
-//     borderRadius: BorderRadius.circular(50.r),
-//   );
-// }

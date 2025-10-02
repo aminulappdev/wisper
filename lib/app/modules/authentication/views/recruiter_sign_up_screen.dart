@@ -2,24 +2,23 @@ import 'package:crash_safe_image/crash_safe_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/custom_text_filed.dart';
 import 'package:wisper/app/core/widgets/label.dart';
-import 'package:wisper/app/modules/authentication/views/forgot_password.dart';
-import 'package:wisper/app/modules/authentication/views/user_sign_up_screen.dart';
+import 'package:wisper/app/modules/authentication/views/otp_verification_screen.dart';
+import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
-class SignInScreen extends StatefulWidget {
-  const SignInScreen({super.key});
+class RecruiterSignUpScreen extends StatefulWidget {
+  const RecruiterSignUpScreen({super.key});
 
   @override
-  State<SignInScreen> createState() => _SignInScreenState();
+  State<RecruiterSignUpScreen> createState() => _RecruiterSignUpScreenState();
 }
 
-class _SignInScreenState extends State<SignInScreen> {
+class _RecruiterSignUpScreenState extends State<RecruiterSignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,9 +32,9 @@ class _SignInScreenState extends State<SignInScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  GestureDetector(                   
+                  GestureDetector(
                     child: Text(
-                      'Sign In',
+                      'Sign Up',
                       style: TextStyle(
                         fontSize: 24.sp,
                         fontWeight: FontWeight.w800,
@@ -43,9 +42,9 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () => Get.to(const SignUpScreen()),
+                    onTap: () => Get.to(const SignInScreen()),
                     child: Text(
-                      'Sign up',
+                      'Sign In',
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w400,
@@ -56,6 +55,19 @@ class _SignInScreenState extends State<SignInScreen> {
                 ],
               ),
               heightBox30,
+              Label(label: 'Bussiness Name'),
+              heightBox10,
+              CustomTextField(
+                hintText: 'Bussiness Name',
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter an name';
+                  }
+                  return null;
+                },
+              ),
+              heightBox16,
               Label(label: 'Email'),
               heightBox10,
               CustomTextField(
@@ -68,6 +80,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   return null;
                 },
               ),
+              
               heightBox16,
               Label(label: 'Password'),
               heightBox10,
@@ -83,24 +96,9 @@ class _SignInScreenState extends State<SignInScreen> {
                   return null;
                 },
               ),
-              heightBox10,
-              Align(
-                alignment: Alignment.centerRight,
-                child: GestureDetector(
-                  onTap: () {
-                    Get.to(const ForgotPasswordScreen());
-                  },
-                  child: Text(
-                    'Forgot Password?',
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w400,
-                      color: LightThemeColors.blueColor,
-                    ),
-                  ),
-                ),
-              ),
-              heightBox100,
+              
+              
+              heightBox80,
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -127,7 +125,7 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
 
               heightBox100,
-              heightBox80,
+              heightBox50,
 
               RichText(
                 textAlign: TextAlign.center,
@@ -171,7 +169,9 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
               ),
               heightBox10,
-              CustomElevatedButton(height: 56, title: 'Login', onPress: () {}),
+              CustomElevatedButton(height: 56, title: 'Sign Up', onPress: () {
+                Get.to(const OtpVerificationScreen());
+              }),
             ],
           ),
         ),

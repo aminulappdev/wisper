@@ -1,3 +1,5 @@
+// ignore_for_file: unused_field
+
 import 'package:crash_safe_image/crash_safe_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,6 +9,7 @@ import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/modules/authentication/views/auth_screen.dart';
+import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
 import 'package:wisper/app/modules/onboarding/views/page_view.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
@@ -139,7 +142,9 @@ class _OnboardingViewState extends State<OnboardingView> {
                   CustomElevatedButton(
                     width: 152.w,
                     title: 'Login',
-                    onPress: () {},
+                    onPress: () {
+                      Get.to(() => SignInScreen());
+                    },
                     color: Colors.transparent,
                     textColor: Colors.white,
                     borderColor: Colors.white,

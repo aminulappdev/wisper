@@ -6,7 +6,8 @@ import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/details_card.dart';
 import 'package:wisper/app/core/widgets/line_widget.dart';
-import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
+import 'package:wisper/app/modules/authentication/views/recruiter_sign_up_screen.dart';
+import 'package:wisper/app/modules/authentication/views/user_sign_up_screen.dart';
 import 'package:wisper/app/modules/authentication/widget/auth_header.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
@@ -36,12 +37,14 @@ class _AuthScreenState extends State<AuthScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     option('Personal', 'I want to find jobs', () {
-                      Get.to(() => SignInScreen());
+                      Get.to(() => SignUpScreen());
                     }),
                     heightBox16,
                     StraightLiner(),
                     heightBox16,
-                    option('Business', 'I want to hire talent', () {}),
+                    option('Business', 'I want to hire talent', () {
+                      Get.to(() => RecruiterSignUpScreen());
+                    }),
                   ],
                 ),
               ),
@@ -80,7 +83,9 @@ class _AuthScreenState extends State<AuthScreen> {
             color: LightThemeColors.blueColor,
             iconRadius: 18,
             imagePath: Assets.images.arrowForwoard.keyName,
-            onTap: () {},
+            onTap: () {
+              onTap();
+            },
           ),
         ],
       ),
