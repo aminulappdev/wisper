@@ -1,0 +1,131 @@
+
+import 'package:crash_safe_image/crash_safe_image.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/widgets/image_container_widget.dart';
+import 'package:wisper/gen/assets.gen.dart';
+
+class PostCard extends StatelessWidget {
+  const PostCard({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CircleAvatar(radius: 20.r),
+        widthBox8,
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.7,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Aminul Islam',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                      Text(
+                        'Flutter Developer',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 10,
+                          color: Color(0xff717182),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    'Sponsor',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 12,
+                      color: Color(0xff717182),
+                    ),
+                  ),
+                ],
+              ),
+              heightBox10,
+              Container(
+                width: MediaQuery.of(context).size.width * 0.7,
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(8.r),
+                  border: Border.all(
+                    color: Colors.grey.shade400,
+                    width: 0.4,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ImageContainer(
+                      image: Assets.images.image02.keyName,
+                      height: 168,
+                      width: double.infinity,
+                      borderRadius: 8,
+                    ),
+    
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Text(
+                        'Flutter Developer',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              heightBox8,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                     CrashSafeImage(
+                         Assets.images.visibility.keyName,
+                        height: 12,),
+                      widthBox4,
+                      Text(
+                        '110 views',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 10,
+                          color: Color(0xff717182),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    '20 mins',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 12,
+                      color: Color(0xff717182),
+                    ),
+                  ),
+                ],
+              ),
+    
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}

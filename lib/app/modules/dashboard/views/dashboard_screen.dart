@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/modules/authentication/views/auth_screen.dart';
+import 'package:wisper/app/modules/homepage/views/home_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class MainButtonNavbarScreen extends StatefulWidget {
@@ -17,7 +18,7 @@ class _MainButtonNavbarScreenState extends State<MainButtonNavbarScreen> {
 
   // List of screens for navigation
   List<Widget> screens = [
-    const AuthScreen(),
+    const HomeScreen(),
     const AuthScreen(), // Replace with other screens as needed
     const AuthScreen(),
     const AuthScreen(),
