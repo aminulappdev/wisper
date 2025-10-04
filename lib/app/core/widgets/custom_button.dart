@@ -14,6 +14,8 @@ class CustomElevatedButton extends StatelessWidget {
   final Color? borderColor;
   final double? width;
   final double? height;
+  final double? textSize;
+  final double? borderRadius;
   const CustomElevatedButton({
     super.key,
     required this.title,
@@ -24,6 +26,8 @@ class CustomElevatedButton extends StatelessWidget {
     this.borderColor = Colors.transparent,
     this.width = double.infinity,
     this.height = 48,
+    this.textSize,
+    this.borderRadius,
   });
 
   @override
@@ -35,7 +39,7 @@ class CustomElevatedButton extends StatelessWidget {
         height: height?.h,
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(10.r),
+          borderRadius: BorderRadius.circular(borderRadius ?? 10.r),
           border: Border.all(color: borderColor!, width: 0.8),
         ),
         child: Row(
@@ -48,7 +52,7 @@ class CustomElevatedButton extends StatelessWidget {
             Text(
               title,
               style: GoogleFonts.poppins(
-                fontSize: 16.sp,
+                fontSize: textSize ?? 16.sp,
                 fontWeight: FontWeight.w600,
                 color: textColor,
               ),

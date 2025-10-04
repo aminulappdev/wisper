@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/modules/authentication/views/auth_screen.dart';
+import 'package:wisper/app/modules/chat/views/chat_screen.dart';
 import 'package:wisper/app/modules/homepage/views/home_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
@@ -21,7 +22,7 @@ class _MainButtonNavbarScreenState extends State<MainButtonNavbarScreen> {
     const HomeScreen(),
     const AuthScreen(), // Replace with other screens as needed
     const AuthScreen(),
-    const AuthScreen(),
+    const ChatListScreen(),
     const AuthScreen(),
   ];
 

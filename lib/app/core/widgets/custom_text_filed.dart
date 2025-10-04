@@ -39,6 +39,7 @@ class CustomTextField extends StatefulWidget {
     this.suffixIcon,
     this.prefixIcon,
     this.obscureText = false,
+    this.pprefixIconColor,
   });
 
   final TextEditingController? controller;
@@ -68,6 +69,8 @@ class CustomTextField extends StatefulWidget {
   final IconData? suffixIcon;
   final IconData? prefixIcon;
   final bool obscureText;
+
+  final Color? pprefixIconColor;
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -99,6 +102,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
               onPressed: _toggleVisibility,
             )
           : null,
+      prefixIconColor:
+          widget.pprefixIconColor ?? const Color.fromARGB(255, 255, 255, 255),
       prefixIcon: widget.prefixIcon != null ? Icon(widget.prefixIcon) : null,
       enabled: widget.enabled,
       hintText: widget.hintText,
