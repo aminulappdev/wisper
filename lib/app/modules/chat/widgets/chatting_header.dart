@@ -1,12 +1,18 @@
+import 'package:camera/camera.dart';
 import 'package:crash_safe_image/crash_safe_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/custom_popup.dart';
 import 'package:wisper/app/core/widgets/details_card.dart';
+import 'package:wisper/app/modules/calls/views/audio_call_screen.dart';
+import 'package:wisper/app/modules/calls/views/video_call_screen.dart';
+import 'package:wisper/app/modules/chat/views/group_info_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class ChatHeader extends StatefulWidget {
@@ -17,6 +23,22 @@ class ChatHeader extends StatefulWidget {
 }
 
 class _ChatHeaderState extends State<ChatHeader> {
+  List<CameraDescription>? cameras; // Nullable to handle initialization
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeCamera();
+  }
+
+  // Initialize Camera
+  Future<void> _initializeCamera() async {
+    final availableCamerasList = await availableCameras();
+    setState(() {
+      cameras = availableCamerasList;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final GlobalKey suffixButtonKey = GlobalKey();
@@ -83,7 +105,7 @@ class _ChatHeaderState extends State<ChatHeader> {
       ],
       optionActions: {
         '0': () {
-          debugPrint('My Post clicked');
+          Get.to(() => GroupInfoScreen());
         },
         '1': () {
           _showMutePopup();
@@ -155,14 +177,26 @@ class _ChatHeaderState extends State<ChatHeader> {
                   children: [
                     CircleIconWidget(
                       imagePath: Assets.images.call.keyName,
-                      onTap: () {},
+                      onTap: () {
+                        Get.to(() => AudioCallScreen());
+                      },
                       radius: 15,
                       iconColor: Colors.white,
                     ),
                     widthBox10,
                     CircleIconWidget(
                       imagePath: Assets.images.video.keyName,
-                      onTap: () {},
+                      onTap: () {
+                        if (cameras != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  VideoCallScreen(cameras: cameras!),
+                            ),
+                          );
+                        }
+                      },
                       radius: 15,
                     ),
                     widthBox10,

@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
-import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/modules/chat/widgets/chatting_field.dart';
 import 'package:wisper/app/modules/chat/widgets/chatting_header.dart';
 import 'package:wisper/gen/assets.gen.dart';
@@ -261,8 +258,6 @@ class _ChatScreenState extends State<ChatScreen> {
       },
     );
   }
-
-  
 }
 
 class Option extends StatelessWidget {

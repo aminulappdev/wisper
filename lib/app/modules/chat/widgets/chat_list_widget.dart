@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/custom_text_filed.dart';
+import 'package:wisper/app/modules/chat/views/create_group_class_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class ChatListHeader extends StatelessWidget {
@@ -48,7 +51,9 @@ class ChatListHeader extends StatelessWidget {
                   color: Color(0xffFFFFFF).withValues(alpha: 0.05),
                   imagePath: Assets.images.plus.path,
                   iconColor: Colors.white,
-                  onTap: () {},
+                  onTap: () {
+                    Get.to(()=> CreateGroupClassScreen());
+                  },
                 ),
               ],
             ),

@@ -6,6 +6,7 @@ class DetailsCard extends StatelessWidget {
   final Color bgColor;
   final Color borderColor;
   final double? width;
+  final double? borderWidth;
   final double borderRadius;
   final Widget child;
   const DetailsCard({
@@ -14,7 +15,7 @@ class DetailsCard extends StatelessWidget {
     this.borderColor = LightThemeColors.borderColor,
     this.width,
     this.borderRadius = 10,
-    required this.child,
+    required this.child, this.borderWidth,
   });
 
   @override
@@ -25,7 +26,7 @@ class DetailsCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(borderRadius),
-        border: Border.all(color: borderColor, width: 1.5),
+        border: Border.all(color: borderColor, width: borderWidth ?? 1.5),
       ),
       child: child,
     );
