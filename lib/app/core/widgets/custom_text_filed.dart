@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class CustomTextField extends StatefulWidget {
   const CustomTextField({
@@ -40,6 +38,7 @@ class CustomTextField extends StatefulWidget {
     this.prefixIcon,
     this.obscureText = false,
     this.pprefixIconColor,
+    this.items, // New parameter for dropdown items
   });
 
   final TextEditingController? controller;
@@ -69,8 +68,8 @@ class CustomTextField extends StatefulWidget {
   final IconData? suffixIcon;
   final IconData? prefixIcon;
   final bool obscureText;
-
   final Color? pprefixIconColor;
+  final List<DropdownMenuItem<String>>? items; // List of dropdown items
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -78,11 +77,13 @@ class CustomTextField extends StatefulWidget {
 
 class _CustomTextFieldState extends State<CustomTextField> {
   late bool _obscureText;
+  String? _selectedValue;
 
   @override
   void initState() {
     super.initState();
     _obscureText = widget.obscureText;
+    _selectedValue = widget.initialValue;
   }
 
   void _toggleVisibility() {
@@ -97,7 +98,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           ? IconButton(
               icon: Icon(
                 _obscureText ? widget.suffixIcon : Icons.visibility_off,
-                color: const Color(0xff8C8C8C), // Match hint color
+                color: const Color(0xff8C8C8C),
               ),
               onPressed: _toggleVisibility,
             )
@@ -109,9 +110,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
       hintText: widget.hintText,
       hintStyle:
           widget.hintStyle ??
-          GoogleFonts.poppins(
+          TextStyle(
             fontWeight: FontWeight.w300,
-            fontSize: 16.sp,
+            fontSize: 16,
             color: const Color(0xff8C8C8C),
           ),
       contentPadding: widget.contentPadding,
@@ -130,33 +131,52 @@ class _CustomTextFieldState extends State<CustomTextField> {
         color: error
             ? widget.errorBorderColor
             : (focused ? widget.focusedBorderColor : widget.borderColor),
-        width: 1.0, // Keep original width
+        width: 1.0,
       ),
-      borderRadius: BorderRadius.circular(widget.borderRadius.r),
+      borderRadius: BorderRadius.circular(widget.borderRadius),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 52.h,
-      child: TextFormField(
-        validator: widget.validator,
-        controller: widget.controller,
-        initialValue: widget.initialValue,
-        focusNode: widget.focusNode,
-        decoration: widget.decoration ?? _defaultInputDecoration(),
-        keyboardType: widget.keyboardType,
-        style: widget.style,
-        textDirection: widget.textDirection,
-        maxLines: widget.maxLines,
-        minLines: widget.minLines,
-        expands: widget.expands,
-        maxLength: widget.maxLength,
-        onChanged: widget.onChanged,
-        clipBehavior: widget.clipBehavior,
-        obscureText: _obscureText,
-      ),
+      height: 52,
+      child: widget.items != null
+          ? DropdownButtonFormField<String>(
+              value: _selectedValue,
+              hint: Text(widget.hintText ?? '', style: widget.hintStyle),
+              items: widget.items,
+              onChanged: (value) {
+                setState(() {
+                  _selectedValue = value;
+                });
+                if (widget.onChanged != null) {
+                  widget.onChanged!(value ?? '');
+                }
+              },
+              decoration: widget.decoration ?? _defaultInputDecoration(),
+              style: widget.style,
+              dropdownColor: widget.fillColor,
+              iconEnabledColor: const Color(0xff8C8C8C),
+              borderRadius: BorderRadius.circular(widget.borderRadius),
+            )
+          : TextFormField(
+              validator: widget.validator,
+              controller: widget.controller,
+              initialValue: widget.initialValue,
+              focusNode: widget.focusNode,
+              decoration: widget.decoration ?? _defaultInputDecoration(),
+              keyboardType: widget.keyboardType,
+              style: widget.style,
+              textDirection: widget.textDirection,
+              maxLines: widget.maxLines,
+              minLines: widget.minLines,
+              expands: widget.expands,
+              maxLength: widget.maxLength,
+              onChanged: widget.onChanged,
+              clipBehavior: widget.clipBehavior,
+              obscureText: _obscureText,
+            ),
     );
   }
 }

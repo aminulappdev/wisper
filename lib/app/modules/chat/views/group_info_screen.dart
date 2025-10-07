@@ -1,17 +1,15 @@
-import 'package:crash_safe_image/crash_safe_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
-import 'package:wisper/app/core/widgets/details_card.dart';
-import 'package:wisper/app/core/widgets/image_container_widget.dart';
 import 'package:wisper/app/core/widgets/line_widget.dart';
 import 'package:wisper/app/modules/chat/views/doc_info.dart';
 import 'package:wisper/app/modules/chat/views/link_info.dart';
 import 'package:wisper/app/modules/chat/views/media_info.dart';
 import 'package:wisper/app/modules/chat/widgets/location_info.dart';
 import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart';
+import 'package:wisper/app/modules/profile/widget/info_card.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class GroupInfoScreen extends StatefulWidget {
@@ -54,90 +52,37 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
               ],
             ),
             heightBox10,
-            Container(
-              width: double.infinity,
-              height: 280.h,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20.r),
-                color: const Color(0xff121212),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Stack(
-                      children: [
-                        CircleIconWidget(
-                          color: const Color(0xff051B33),
-                          iconColor: const Color(0xff1F7DE9),
-                          iconRadius: 40,
-                          radius: 38,
-                          imagePath: Assets.images.userGroup.keyName,
-                          onTap: () {},
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: CircleIconWidget(
-                            color: const Color(0xff3C90CB),
-                            iconColor: const Color.fromARGB(255, 255, 255, 255),
-                            iconRadius: 10,
-                            radius: 10,
-                            imagePath: Assets.images.edit.keyName,
-                            onTap: () {},
-                          ),
-                        ),
-                      ],
+            InfoCard(
+              imagePath: Assets.images.userGroup.keyName,
+              editOnTap: () {},
+              title: 'You created this group',
+              memberInfo: 'Group • 3 members',
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 31.h,
+                    width: 116.w,
+                    child: CustomElevatedButton(
+                      textSize: 12,
+                      title: 'Share Profile',
+                      onPress: () {},
+                      borderRadius: 50,
                     ),
-                    heightBox20,
-                    Text(
-                      'You created this group',
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  ),
+                  widthBox10,
+                  SizedBox(
+                    height: 31.h,
+                    width: 116.w,
+                    child: CustomElevatedButton(
+                      color: Colors.black,
+                      textSize: 12,
+                      title: 'Edit Profile',
+                      onPress: () {},
+                      borderRadius: 50,
                     ),
-                    heightBox8,
-                    Text(
-                      'Group • 3 members',
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xff717182),
-                      ),
-                    ),
-                    heightBox10,
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          height: 31.h,
-                          width: 116.w,
-                          child: CustomElevatedButton(
-                            textSize: 12,
-                            title: 'Share Class',
-                            onPress: () {},
-                            borderRadius: 50,
-                          ),
-                        ),
-                        widthBox10,
-                        SizedBox(
-                          height: 31.h,
-                          width: 116.w,
-                          child: CustomElevatedButton(
-                            color: Colors.black,
-                            textSize: 12,
-                            title: 'Add Member',
-                            onPress: () {},
-                            borderRadius: 50,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
             heightBox20,
@@ -196,7 +141,12 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
 
             if (selectedIndex == 0) const MediaInfo(),
             if (selectedIndex == 1) const LinkInfo(),
-            if (selectedIndex == 2) const DocInfo(),
+            if (selectedIndex == 2)
+              DocInfo(
+                title: 'job_description.pdf',
+                isDownloaded: false,
+                onTap: () {},
+              ),
           ],
         ),
       ),

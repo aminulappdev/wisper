@@ -6,7 +6,8 @@ import 'package:wisper/app/core/widgets/image_container_widget.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class PostCard extends StatelessWidget {
-  const PostCard({super.key});
+  final Widget trailing;
+  const PostCard({super.key, required this.trailing});
 
   @override
   Widget build(BuildContext context) {
@@ -46,14 +47,7 @@ class PostCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Text(
-                    'Sponsor',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 12,
-                      color: Color(0xff717182),
-                    ),
-                  ),
+                  trailing
                 ],
               ),
               heightBox10,

@@ -6,7 +6,15 @@ import 'package:wisper/app/core/widgets/details_card.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class DocInfo extends StatelessWidget {
-  const DocInfo({super.key});
+  final String title;
+  final bool isDownloaded;
+  final VoidCallback onTap;
+  const DocInfo({
+    super.key,
+    required this.title,
+    required this.isDownloaded,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,27 +30,50 @@ class DocInfo extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  CrashSafeImage(
-                    Assets.images.pdf.keyName,
-                    height: 24,
-                    width: 24,
-                    color: Colors.white,
-                  ),
-                  widthBox10,
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Row(
                     children: [
-                      Text(
-                        'job_description.pdf',
-                        style: TextStyle(color: Colors.white, fontSize: 12.sp),
+                      CrashSafeImage(
+                        Assets.images.pdf.keyName,
+                        height: 24,
+                        width: 24,
+                        color: Colors.white,
                       ),
-                      Text(
-                        'PDF Document',
-                        style: TextStyle(color: Colors.white, fontSize: 10.sp),
+                      widthBox10,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12.sp,
+                            ),
+                          ),
+                          Text(
+                            'PDF Document',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10.sp,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
+                  isDownloaded
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: GestureDetector(
+                            onTap: onTap,
+                            child: CrashSafeImage(
+                              Assets.images.download.keyName,
+                              height: 18,
+                            ),
+                          ),
+                        )
+                      : Container(),
                 ],
               ),
             ),

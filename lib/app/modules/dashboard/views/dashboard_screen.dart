@@ -6,6 +6,7 @@ import 'package:wisper/app/modules/authentication/views/auth_screen.dart';
 import 'package:wisper/app/modules/calls/views/call_screen.dart';
 import 'package:wisper/app/modules/chat/views/chat_screen.dart';
 import 'package:wisper/app/modules/homepage/views/home_screen.dart';
+import 'package:wisper/app/modules/profile/views/profile_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class MainButtonNavbarScreen extends StatefulWidget {
@@ -21,10 +22,10 @@ class _MainButtonNavbarScreenState extends State<MainButtonNavbarScreen> {
   // List of screens for navigation
   List<Widget> screens = [
     const HomeScreen(),
-    const CallScreen(), // Replace with other screens as needed
+    const CallScreen(),
     const AuthScreen(),
     const ChatListScreen(),
-    const AuthScreen(),
+    const ProfileScreen(),
   ];
 
   @override

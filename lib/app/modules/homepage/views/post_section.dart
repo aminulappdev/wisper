@@ -1,11 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:wisper/app/modules/homepage/widget/post_card.dart';
 
 class PostSection extends StatelessWidget {
-  const PostSection({
-    super.key,
-  });
+  final Widget trailing;
+  const PostSection({super.key, required this.trailing});
 
   @override
   Widget build(BuildContext context) {
@@ -14,11 +12,14 @@ class PostSection extends StatelessWidget {
         padding: EdgeInsets.all(0),
         itemCount: 5,
         itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: PostCard(),
-        );
-      }),
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: PostCard(
+              trailing: trailing,
+            ),
+          );
+        },
+      ),
     );
   }
 }

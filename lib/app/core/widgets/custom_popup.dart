@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomPopupMenu extends StatelessWidget {
   final GlobalKey targetKey;
-  final List<Widget> options; // Changed from List<String> to List<Widget>
+  final List<Widget> options;
   final Map<String, VoidCallback> optionActions;
   final double? menuWidth;
   final double? menuHeight;
@@ -25,8 +25,7 @@ class CustomPopupMenu extends StatelessWidget {
     }
 
     // Get the position of the target widget using the GlobalKey
-    final RenderBox? button =
-        targetKey.currentContext!.findRenderObject() as RenderBox?;
+    final RenderBox? button = targetKey.currentContext!.findRenderObject() as RenderBox?;
     if (button == null) {
       debugPrint('Error: Unable to find RenderBox for the target widget');
       return;
@@ -45,10 +44,8 @@ class CustomPopupMenu extends StatelessWidget {
     showMenu(
       context: context,
       position: RelativeRect.fromLTRB(
-        leftPosition, // Position menu to the left of the target widget
-        buttonPosition.dy +
-            buttonSize.height +
-            8.h, // Below the widget with slight offset
+        leftPosition,
+        buttonPosition.dy + buttonSize.height + 8.h,
         buttonPosition.dx,
         0,
       ),
@@ -56,16 +53,15 @@ class CustomPopupMenu extends StatelessWidget {
         final index = entry.key;
         final option = entry.value;
         return PopupMenuItem<String>(
-          value: index.toString(), // Use index as a string identifier
+          value: index.toString(),
           height: menuHeight != null
               ? (menuHeight ?? 48.h / options.length).clamp(40.h, 60.h)
-              : 48.h, // Constrain height per item
+              : 48.h,
           child: SizedBox(
-            width: menuWidthValue, // Apply custom width
-            child: option, // Use the widget directly
+            width: menuWidthValue,
+            child: option,
           ),
           onTap: () {
-            // Execute the action associated with the index
             final action = optionActions[index.toString()];
             if (action != null) {
               action();
@@ -73,8 +69,10 @@ class CustomPopupMenu extends StatelessWidget {
           },
         );
       }).toList(),
-      
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r), side: const BorderSide(color: Color(0xff292727), width: 1)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.r),
+        side: const BorderSide(color: Color(0xff292727), width: 1),
+      ),
       color: Colors.black,
       elevation: 4,
     );
@@ -82,7 +80,6 @@ class CustomPopupMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // This widget doesn't render anything itself; it provides the showMenuAtPosition method
     return const SizedBox.shrink();
   }
 }

@@ -155,7 +155,18 @@ class _HomeScreenState extends State<HomeScreen> {
             StraightLiner(height: 0.4, color: Color(0xff454545)),
 
             heightBox14,
-            selectedIndex == 0 ? PostSection() : Container(),
+            selectedIndex == 0
+                ? PostSection(
+                    trailing: Text(
+                      'Sponsor',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 12,
+                        color: Color(0xff717182),
+                      ),
+                    ),
+                  )
+                : Container(),
             selectedIndex == 1 ? JobSection() : Container(),
             selectedIndex == 2 ? RoleSection() : Container(),
           ],
