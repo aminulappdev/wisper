@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisper/app/core/custom_size.dart';
-import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/modules/calls/views/add_call_screen.dart';
 import 'package:wisper/app/modules/calls/widget/call_feature.dart';
 import 'package:wisper/gen/assets.gen.dart';

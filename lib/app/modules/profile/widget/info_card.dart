@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
@@ -84,7 +85,7 @@ class InfoCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w400,
-                      color: const Color(0xff717182),
+                      color:  LightThemeColors.themeGreyColor,
                     ),
                   ),
                   SizedBox(height: 10.h),

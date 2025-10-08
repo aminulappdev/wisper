@@ -51,7 +51,7 @@ class _AllSetScreenState extends State<AllSetScreen> {
                     ),
                   ],
                 ),
-              ),
+              ), 
               heightBox80,
               CrashSafeImage(
                 Assets.images.vector01.keyName,

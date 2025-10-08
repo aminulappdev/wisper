@@ -5,6 +5,7 @@ import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/modules/authentication/views/auth_screen.dart';
 import 'package:wisper/app/modules/calls/views/call_screen.dart';
 import 'package:wisper/app/modules/chat/views/chat_screen.dart';
+import 'package:wisper/app/modules/homepage/views/create_post_screen.dart';
 import 'package:wisper/app/modules/homepage/views/home_screen.dart';
 import 'package:wisper/app/modules/profile/views/profile_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
@@ -23,7 +24,7 @@ class _MainButtonNavbarScreenState extends State<MainButtonNavbarScreen> {
   List<Widget> screens = [
     const HomeScreen(),
     const CallScreen(),
-    const AuthScreen(),
+    const CreatePostScreen(),
     const ChatListScreen(),
     const ProfileScreen(),
   ];

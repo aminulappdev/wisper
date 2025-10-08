@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/modules/calls/widget/call_list_Tile.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
@@ -19,7 +20,7 @@ class AllCalls extends StatelessWidget {
               name: 'Aminul Islam',
               time: '11:30 AM',
               callType: 'Outgoing',
-              callTypeColor: Color(0xff717182),
+              callTypeColor: LightThemeColors.themeGreyColor,
             ),
           );
         },

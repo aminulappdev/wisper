@@ -1,6 +1,7 @@
 import 'package:crash_safe_image/crash_safe_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/details_card.dart';
@@ -8,6 +9,7 @@ import 'package:wisper/app/modules/chat/views/message_screen.dart';
 import 'package:wisper/app/modules/chat/widgets/chat_custom_elevated_button.dart';
 import 'package:wisper/app/modules/chat/widgets/chatting_field.dart';
 import 'package:wisper/app/modules/chat/widgets/chatting_header.dart';
+import 'package:wisper/app/modules/chat/widgets/group_chatting_header.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class GroupChatScreen extends StatefulWidget {
@@ -33,7 +35,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              ChatHeader(),
+              GroupChatHeader(),
               heightBox16,
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -61,11 +63,12 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                       style: TextStyle(
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w400,
-                        color: Color(0xff717182),
+
+                        color: LightThemeColors.themeGreyColor
                       ),
                     ),
 
-                    heightBox20,
+                    heightBox20, 
                     Text(
                       'Corp members serving in Abuja',
                       style: TextStyle(
@@ -99,7 +102,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                             CrashSafeImage(
                               Assets.images.adds.keyName,
                               height: 20,
-                              color: Color(0xff717182),
+                              color: LightThemeColors.themeGreyColor,
                             ),
                             widthBox10,
                             Expanded(
@@ -112,7 +115,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                                       style: TextStyle(
                                         fontSize: 12.sp,
                                         fontWeight: FontWeight.w400,
-                                        color: Color(0xff717182),
+                                        color: LightThemeColors.themeGreyColor,
                                       ),
                                     ),
                                     TextSpan(

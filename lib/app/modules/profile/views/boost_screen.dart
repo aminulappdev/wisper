@@ -42,7 +42,7 @@ class _BoostScreenState extends State<BoostScreen> {
                     textSize: 12,
                     borderRadius: 50,
                     onPress: () {},
-                  ),
+                  ), 
                 ),
               ],
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
 
 class ContactWidget extends StatelessWidget {
@@ -41,7 +42,7 @@ class ContactWidget extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 10.sp,
                     fontWeight: FontWeight.w400,
-                    color: Color(0xff717182),
+                    color: LightThemeColors.themeGreyColor,
                   ),
                 ),
               ],

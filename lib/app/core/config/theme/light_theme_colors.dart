@@ -7,6 +7,8 @@ class LightThemeColors {
   static const Color blueColor = Color(0xFF168DE1);
   static const Color darkGreyColor = Color(0xFF4D4D4D);
   static const Color whiteColor = Colors.white;
+  static const Color themeGreyColor = Color(0xff717182);
+
 
   // SECONDARY
   static Color accentColor = const Color(0xFFEDF1F3);

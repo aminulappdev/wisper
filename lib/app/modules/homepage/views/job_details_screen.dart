@@ -38,7 +38,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                     width: 60.w,
                     child: CustomElevatedButton(
                       title: 'Cancel',
-
+                      onPress: () => Navigator.pop(context),
                       height: 28,
                       textSize: 10,
                       color: Color(0xff323232),

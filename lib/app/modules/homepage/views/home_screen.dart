@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/line_widget.dart';
@@ -150,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-              ],
+              ], 
             ),
             StraightLiner(height: 0.4, color: Color(0xff454545)),
 
@@ -162,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 12,
-                        color: Color(0xff717182),
+                        color: LightThemeColors.themeGreyColor,
                       ),
                     ),
                   )

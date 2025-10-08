@@ -38,7 +38,6 @@ class DocInfo extends StatelessWidget {
                         Assets.images.pdf.keyName,
                         height: 24,
                         width: 24,
-                        color: Colors.white,
                       ),
                       widthBox10,
                       Column(

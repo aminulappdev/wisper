@@ -11,20 +11,19 @@ import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/custom_popup.dart';
 import 'package:wisper/app/core/widgets/details_card.dart';
-import 'package:wisper/app/modules/calls/views/audio_call_screen.dart';
-import 'package:wisper/app/modules/calls/views/video_call_screen.dart';
+import 'package:wisper/app/modules/calls/views/group_audio_screen.dart';
+import 'package:wisper/app/modules/calls/views/group_video_call_screen.dart';
 import 'package:wisper/app/modules/chat/views/group_info_screen.dart';
-import 'package:wisper/app/modules/profile/views/others_profile_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
-class ChatHeader extends StatefulWidget {
-  const ChatHeader({super.key});
+class GroupChatHeader extends StatefulWidget {
+  const GroupChatHeader({super.key});
 
   @override
-  State<ChatHeader> createState() => _ChatHeaderState();
+  State<GroupChatHeader> createState() => _GroupChatHeaderState();
 }
 
-class _ChatHeaderState extends State<ChatHeader> {
+class _GroupChatHeaderState extends State<GroupChatHeader> {
   List<CameraDescription>? cameras; // Nullable to handle initialization
 
   @override
@@ -49,7 +48,7 @@ class _ChatHeaderState extends State<ChatHeader> {
       options: [
         // Pass widgets instead of strings
         Text(
-          'View Profile',
+          'Group Info',
           style: TextStyle(
             fontSize: 12.sp,
             fontWeight: FontWeight.w400,
@@ -107,7 +106,7 @@ class _ChatHeaderState extends State<ChatHeader> {
       ],
       optionActions: {
         '0': () {
-          Get.to(() => OthersProfileScreen());
+          Get.to(() => GroupInfoScreen());
         },
         '1': () {
           _showMutePopup();
@@ -180,7 +179,7 @@ class _ChatHeaderState extends State<ChatHeader> {
                     CircleIconWidget(
                       imagePath: Assets.images.call.keyName,
                       onTap: () {
-                        Get.to(() => AudioCallScreen());
+                        Get.to(() => GroupAudioCallScreen());
                       },
                       radius: 15,
                       iconColor: Colors.white,
@@ -193,8 +192,7 @@ class _ChatHeaderState extends State<ChatHeader> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  VideoCallScreen(cameras: cameras!),
+                              builder: (context) => GroupVideoCallScreen(),
                             ),
                           );
                         }

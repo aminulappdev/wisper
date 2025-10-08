@@ -2,6 +2,7 @@
 import 'package:crash_safe_image/crash_safe_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
@@ -69,11 +70,11 @@ class CallListTile extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w400,
-                  color: Color(0xff717182),
+                  color: LightThemeColors.themeGreyColor,
                 ),
               ),
               widthBox12,
-              Icon(Icons.info_outline, size: 16, color: Color(0xff717182)),
+              Icon(Icons.info_outline, size: 16, color: LightThemeColors.themeGreyColor),
             ],
           ),
         ],

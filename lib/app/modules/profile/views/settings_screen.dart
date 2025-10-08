@@ -2,13 +2,16 @@ import 'package:crash_safe_image/crash_safe_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
+import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/widgets/circle_icon.dart';
+import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/details_card.dart';
 import 'package:wisper/app/core/widgets/line_widget.dart';
 import 'package:wisper/app/modules/chat/widgets/toggle_option.dart';
 import 'package:wisper/app/modules/profile/views/change_password_screen.dart';
-import 'package:wisper/app/modules/profile/views/edit_profile_screen.dart';
+import 'package:wisper/app/modules/profile/views/profile_screen.dart';
+import 'package:wisper/app/modules/profile/views/wallet_screen.dart';
 import 'package:wisper/app/modules/profile/widget/my_info_card.dart';
 import 'package:wisper/app/modules/profile/widget/seetings_button.dart';
 import 'package:wisper/app/modules/profile/widget/seetings_feature_row.dart';
@@ -46,6 +49,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: [
                     heightBox10,
                     MyInfoCard(
+                      ontap: () {
+                        Get.to(() => const ProfileScreen());
+                      },
                       imagePath: Assets.images.image.keyName,
                       name: 'Aminul Islam',
                       job: 'Flutter Developer',
@@ -123,7 +129,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     heightBox20,
                     StraightLiner(height: 0.5),
                     heightBox10,
-                    SettingsFeatureRow(title: 'Wallet', onTap: () {}),
+                    SettingsFeatureRow(
+                      title: 'Wallet',
+                      onTap: () {
+                        Get.to(() => const WalletScreen());
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -242,7 +253,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               style: TextStyle(
                                 fontSize: 12.sp,
                                 fontWeight: FontWeight.w600,
-                                color: Color(0xff717182),
+                                color: LightThemeColors.themeGreyColor,
                               ),
                             ),
                             widthBox8,
@@ -250,7 +261,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               Assets.images.arrowForwoard.keyName,
                               height: 16.h,
                               width: 16.w,
-                              color: Color(0xff717182),
+                              color: LightThemeColors.themeGreyColor,
                             ),
                           ],
                         ),
@@ -284,7 +295,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               style: TextStyle(
                                 fontSize: 12.sp,
                                 fontWeight: FontWeight.w600,
-                                color: Color(0xff717182),
+                                color: LightThemeColors.themeGreyColor,
                               ),
                             ),
                             widthBox8,
@@ -292,7 +303,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               Assets.images.arrowForwoard.keyName,
                               height: 16.h,
                               width: 16.w,
-                              color: Color(0xff717182),
+                              color: LightThemeColors.themeGreyColor,
                             ),
                           ],
                         ),
@@ -313,6 +324,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: Column(
                     children: [
                       SeetingsButton(
+                        onTap: () {
+                          _shoDeleteUser();
+                        },
                         title: 'Delete Account',
                         bgColor: Color(0xffE62047).withValues(alpha: 0.16),
                         borderColor: Colors.transparent,
@@ -320,6 +334,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       heightBox10,
                       SeetingsButton(
+                        onTap: () {
+                          _showLogout();
+                        },
                         title: 'Logout',
                         borderColor: Color(0xffFFFFFF).withValues(alpha: 0.10),
                         bgColor: Colors.transparent,
@@ -333,6 +350,142 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  void _shoDeleteUser() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          color: Colors.black,
+          height: 250,
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleIconWidget(
+                  imagePath: Assets.images.delete.keyName,
+                  onTap: () {},
+                  iconRadius: 22,
+                  radius: 24,
+                  color: Color(0xff312609),
+                  iconColor: Color(0xffDC8B44),
+                ),
+                heightBox20,
+                Text(
+                  'Delete Account?',
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+                heightBox8,
+                Text(
+                  'Are you sure you want to delete your account?',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xff9FA3AA),
+                  ),
+                ),
+                heightBox12,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: CustomElevatedButton(
+                        color: Color.fromARGB(255, 15, 15, 15),
+                        borderColor: Color(0xff262629),
+                        title: 'Discard',
+                        onPress: () {},
+                      ),
+                    ),
+                    widthBox12,
+                    Expanded(
+                      child: CustomElevatedButton(
+                        color: Color(0xffE62047),
+                        title: 'Delete',
+                        onPress: () {},
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showLogout() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          color: Colors.black,
+          height: 250,
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleIconWidget(
+                  imagePath: Assets.images.logout.keyName,
+                  onTap: () {},
+                  iconRadius: 22,
+                  radius: 24,
+                  color: Color(0xff312609),
+                  iconColor: Color(0xffDC8B44),
+                ),
+                heightBox20,
+                Text(
+                  'Logout?',
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+                heightBox8,
+                Text(
+                  'Are you sure you want to logout?',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xff9FA3AA),
+                  ),
+                ),
+                heightBox12,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: CustomElevatedButton(
+                        color: Color.fromARGB(255, 15, 15, 15),
+                        borderColor: Color(0xff262629),
+                        title: 'Discard',
+                        onPress: () {},
+                      ),
+                    ),
+                    widthBox12,
+                    Expanded(
+                      child: CustomElevatedButton(
+                        color: Color(0xffE62047),
+                        title: 'Logout',
+                        onPress: () {},
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

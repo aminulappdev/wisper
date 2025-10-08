@@ -1,8 +1,12 @@
 import 'package:crash_safe_image/crash_safe_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/widgets/image_container_widget.dart';
+import 'package:wisper/app/modules/profile/views/others_profile_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class PostCard extends StatelessWidget {
@@ -14,9 +18,14 @@ class PostCard extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CircleAvatar(
-          radius: 20.r,
-          backgroundImage: AssetImage(Assets.images.image.keyName),
+        GestureDetector(
+          onTap: () {
+            Get.to(() => const OthersProfileScreen());
+          },
+          child: CircleAvatar(
+            radius: 20.r,
+            backgroundImage: AssetImage(Assets.images.image.keyName),
+          ),
         ),
         widthBox8,
         SizedBox(
@@ -42,7 +51,7 @@ class PostCard extends StatelessWidget {
                         style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontSize: 10,
-                          color: Color(0xff717182),
+                          color: LightThemeColors.themeGreyColor,
                         ),
                       ),
                     ],
@@ -98,7 +107,7 @@ class PostCard extends StatelessWidget {
                         style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontSize: 10,
-                          color: Color(0xff717182),
+                          color: LightThemeColors.themeGreyColor,
                         ),
                       ),
                     ],
@@ -108,7 +117,7 @@ class PostCard extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 12,
-                      color: Color(0xff717182),
+                      color: LightThemeColors.themeGreyColor,
                     ),
                   ),
                 ],

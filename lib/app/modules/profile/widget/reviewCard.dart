@@ -2,6 +2,7 @@
 import 'package:crash_safe_image/crash_safe_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
@@ -73,7 +74,7 @@ class ReviewCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 10.sp,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xff717182),
+                            color: LightThemeColors.themeGreyColor,
                           ),
                         ),
                         heightBox4,
@@ -93,7 +94,7 @@ class ReviewCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 10.sp,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xff717182),
+                            color: LightThemeColors.themeGreyColor,
                           ),
                         ),
                       ],

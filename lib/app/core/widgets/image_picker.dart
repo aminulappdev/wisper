@@ -1,13 +1,12 @@
-import 'dart:io';
+// ignore_for_file: use_build_context_synchronously
 
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:wisper/app/core/custom_size.dart';
-
 class ImagePickerHelper {
-  // Function to pick multiple images from the gallery
   Future<void> pickImagesFromGallery(
     BuildContext context,
     Function(File) onImagePicked,
@@ -19,12 +18,13 @@ class ImagePickerHelper {
           onImagePicked(File(pickedImage.path));
         }
       }
+      if (Navigator.canPop(context)) Navigator.pop(context); // Close dialog after selection
     } catch (e) {
       debugPrint("Error picking images: $e");
+      if (Navigator.canPop(context)) Navigator.pop(context); // Close dialog on error
     }
   }
 
-  // Function to pick an image from the camera
   Future<void> pickImageFromCamera(
     BuildContext context,
     Function(File) onImagePicked,
@@ -36,12 +36,13 @@ class ImagePickerHelper {
       if (pickedImage != null) {
         onImagePicked(File(pickedImage.path));
       }
+      if (Navigator.canPop(context)) Navigator.pop(context); // Close dialog after selection
     } catch (e) {
       debugPrint("Error picking image: $e");
+      if (Navigator.canPop(context)) Navigator.pop(context); // Close dialog on error
     }
   }
 
-  // Function to show the image picker dialog
   Future<void> showAlertDialog(
     BuildContext context,
     Function(File) onImagePicked,
@@ -50,6 +51,7 @@ class ImagePickerHelper {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
@@ -73,6 +75,7 @@ class ImagePickerHelper {
                           style: TextStyle(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.w500,
+                            color: Colors.black,
                           ),
                         ),
                       ],
@@ -92,6 +95,7 @@ class ImagePickerHelper {
                           style: TextStyle(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.w500,
+                            color: Colors.black,
                           ),
                         ),
                       ],
@@ -114,6 +118,7 @@ class ImagePickerHelper {
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w500,
+                          color: Colors.black,
                         ),
                       ),
                     ),

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisper/app/core/custom_size.dart';
@@ -9,12 +8,14 @@ class CallFeature extends StatelessWidget {
   final String? title;
   final VoidCallback? onTap;
   final Color? color;
+  final double? radius;
   const CallFeature({
     super.key,
     this.imagePath,
     this.title,
     this.onTap,
     this.color,
+    this.radius,
   });
 
   @override
@@ -22,21 +23,23 @@ class CallFeature extends StatelessWidget {
     return Column(
       children: [
         CircleIconWidget(
-          radius: 28,
+          radius: radius ?? 28,
           iconRadius: 20,
           color: color ?? Colors.white.withValues(alpha: 0.20),
           imagePath: imagePath!,
           onTap: onTap!,
         ),
         heightBox8,
-        Text(
-          title!,
-          style: TextStyle(
-            fontSize: 12.sp,
-            fontWeight: FontWeight.w400,
-            color: Colors.white,
-          ),
-        ),
+        title != null
+            ? Text(
+                title!,
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white,
+                ),
+              )
+            : Container(),
       ],
     );
   }

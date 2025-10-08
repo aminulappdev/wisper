@@ -40,7 +40,7 @@ class JobCard extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 10,
-                      color: Color(0xff717182),
+                      color: LightThemeColors.themeGreyColor,
                     ),
                   ),
                   Text(
@@ -65,7 +65,7 @@ class JobCard extends StatelessWidget {
                         style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontSize: 10,
-                          color: Color(0xff717182),
+                          color: LightThemeColors.themeGreyColor,
                         ),
                       ),
                     ],
@@ -98,7 +98,7 @@ class JobCard extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 12,
-                      color: Color(0xff717182),
+                      color: LightThemeColors.themeGreyColor,
                     ),
                   ),
                 ],

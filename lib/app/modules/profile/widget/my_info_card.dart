@@ -1,10 +1,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 
 class MyInfoCard extends StatelessWidget {
+  final VoidCallback ontap;
   final String imagePath;
   final String name;
   final String job;
@@ -12,7 +14,7 @@ class MyInfoCard extends StatelessWidget {
     super.key,
     required this.imagePath,
     required this.name,
-    required this.job,
+    required this.job, required this.ontap,
   });
 
   @override
@@ -20,33 +22,36 @@ class MyInfoCard extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            CircleAvatar(radius: 18.r, backgroundImage: AssetImage(imagePath)),
-            widthBox8,
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.white,
+        GestureDetector(
+          onTap: ontap,
+          child: Row(
+            children: [
+              CircleAvatar(radius: 18.r, backgroundImage: AssetImage(imagePath)),
+              widthBox8,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-
-                Text(
-                  job,
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xff717182),
+          
+                  Text(
+                    job,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w400,
+                      color: LightThemeColors.themeGreyColor,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
         SizedBox(
           height: 20.h,
