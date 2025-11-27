@@ -1,0 +1,98 @@
+class ProfileModel {
+    ProfileModel({
+        required this.success,
+        required this.message,
+        required this.data,
+    });
+
+    final bool? success;
+    final String? message;
+    final ProfileData? data;
+
+    factory ProfileModel.fromJson(Map<String, dynamic> json){ 
+        return ProfileModel(
+            success: json["success"],
+            message: json["message"],
+            data: json["data"] == null ? null : ProfileData.fromJson(json["data"]),
+        );
+    }
+
+}
+
+class ProfileData {
+    ProfileData({
+        required this.auth,
+        required this.recommendations,
+    });
+
+    final Auth? auth;
+    final List<dynamic> recommendations;
+
+    factory ProfileData.fromJson(Map<String, dynamic> json){ 
+        return ProfileData(
+            auth: json["auth"] == null ? null : Auth.fromJson(json["auth"]),
+            recommendations: json["recommendations"] == null ? [] : List<dynamic>.from(json["recommendations"]!.map((x) => x)),
+        );
+    }
+
+}
+
+class Auth {
+    Auth({
+        required this.id,
+        required this.createdAt,
+        required this.person,
+    });
+
+    final String? id;
+    final DateTime? createdAt;
+    final Person? person;
+
+    factory Auth.fromJson(Map<String, dynamic> json){ 
+        return Auth(
+            id: json["id"],
+            createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
+            person: json["person"] == null ? null : Person.fromJson(json["person"]),
+        );
+    }
+
+}
+
+class Person {
+    Person({
+        required this.id,
+        required this.name,
+        required this.email,
+        required this.image,
+        required this.phone,
+        required this.title,
+        required this.industry,
+        required this.defaultResume,
+        required this.address,
+    });
+
+    final String? id;
+    final String? name;
+    final String? email;
+    final dynamic image;
+    final String? phone;
+    final String? title;
+    final String? industry;
+    final dynamic defaultResume;
+    final dynamic address;
+
+    factory Person.fromJson(Map<String, dynamic> json){ 
+        return Person(
+            id: json["id"],
+            name: json["name"],
+            email: json["email"],
+            image: json["image"],
+            phone: json["phone"],
+            title: json["title"],
+            industry: json["industry"],
+            defaultResume: json["defaultResume"],
+            address: json["address"],
+        );
+    }
+
+}

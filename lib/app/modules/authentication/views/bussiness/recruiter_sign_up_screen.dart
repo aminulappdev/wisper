@@ -4,49 +4,26 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
-import 'package:wisper/app/core/utils/show_over_loading.dart';
-import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/utils/validator_service.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/custom_text_filed.dart';
 import 'package:wisper/app/core/widgets/label.dart';
-import 'package:wisper/app/modules/authentication/controller/sign_in_controller.dart';
-import 'package:wisper/app/modules/authentication/views/forgot_password.dart';
-import 'package:wisper/app/modules/authentication/views/person/user_sign_up_screen.dart';
-import 'package:wisper/app/modules/dashboard/views/dashboard_screen.dart';
+import 'package:wisper/app/modules/authentication/views/job_interest_screen.dart';
+import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
-class SignInScreen extends StatefulWidget {
-  const SignInScreen({super.key});
+class RecruiterSignUpScreen extends StatefulWidget {
+  const RecruiterSignUpScreen({super.key});
 
   @override
-  State<SignInScreen> createState() => _SignInScreenState();
+  State<RecruiterSignUpScreen> createState() => _RecruiterSignUpScreenState();
 }
 
-class _SignInScreenState extends State<SignInScreen> {
-  final SignInController signInController = Get.put(SignInController());
+class _RecruiterSignUpScreenState extends State<RecruiterSignUpScreen> {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  void signIn() {
-    showLoadingOverLay(
-      asyncFunction: () async => await performSignIn(context),
-      msg: 'Please wait...',
-    );
-  }
-
-  Future<void> performSignIn(BuildContext context) async {
-    final bool isSuccess = await signInController.signIn(
-      email: emailController.text,
-      password: passwordController.text,
-    );
-
-    if (isSuccess) {
-      Get.offAll(() => MainButtonNavbarScreen());
-    } else {
-      showSnackBarMessage(context, signInController.errorMessage, true);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +42,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   children: [
                     GestureDetector(
                       child: Text(
-                        'Sign In',
+                        'Sign Up',
                         style: TextStyle(
                           fontSize: 24.sp,
                           fontWeight: FontWeight.w800,
@@ -73,9 +50,9 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () => Get.to(const SignUpScreen()),
+                      onTap: () => Get.to(const SignInScreen()),
                       child: Text(
-                        'Sign up',
+                        'Sign In',
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w400,
@@ -86,6 +63,15 @@ class _SignInScreenState extends State<SignInScreen> {
                   ],
                 ),
                 heightBox30,
+                Label(label: 'Bussiness Name'),
+                heightBox10,
+                CustomTextField(
+                  controller: nameController,
+                  hintText: 'Bussiness Name',
+                  keyboardType: TextInputType.text,
+                  validator: ValidatorService.validateSimpleField,
+                ),
+                heightBox16,
                 Label(label: 'Email'),
                 heightBox10,
                 CustomTextField(
@@ -96,6 +82,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     emailController.text,
                   ),
                 ),
+
                 heightBox16,
                 Label(label: 'Password'),
                 heightBox10,
@@ -109,24 +96,8 @@ class _SignInScreenState extends State<SignInScreen> {
                     passwordController.text,
                   ),
                 ),
-                heightBox10,
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: GestureDetector(
-                    onTap: () {
-                      Get.to(const ForgotPasswordScreen());
-                    },
-                    child: Text(
-                      'Forgot Password?',
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w400,
-                        color: LightThemeColors.blueColor,
-                      ),
-                    ),
-                  ),
-                ),
-                heightBox100,
+
+                heightBox80,
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -156,7 +127,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
 
                 heightBox100,
-                heightBox80,
+                heightBox50,
 
                 RichText(
                   textAlign: TextAlign.center,
@@ -202,11 +173,16 @@ class _SignInScreenState extends State<SignInScreen> {
                 heightBox10,
                 CustomElevatedButton(
                   height: 56,
-                  title: 'Login',
+                  title: 'Sign Up',
                   onPress: () {
                     if (formKey.currentState!.validate()) {
-                      print('Validated');
-                      signIn();
+                      Get.to(
+                        JobInterestScreen(
+                          bussinessName: nameController.text,
+                          email: emailController.text,
+                          password: passwordController.text,
+                        ),
+                      );
                     }
                   },
                 ),

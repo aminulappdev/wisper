@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/utils/show_over_loading.dart';
+import 'package:wisper/app/core/utils/snack_bar.dart';
+import 'package:wisper/app/core/utils/validator_service.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/custom_text_filed.dart';
 import 'package:wisper/app/core/widgets/label.dart';
+import 'package:wisper/app/modules/authentication/controller/forgot_password_controller.dart';
 import 'package:wisper/app/modules/authentication/views/otp_verification_screen.dart';
 import 'package:wisper/app/modules/authentication/widget/auth_header.dart';
 
@@ -16,9 +20,34 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  @override
-  void initState() {
-    super.initState();
+  final emailController = TextEditingController();
+  final ForgotPasswordController forgotPasswordController = Get.put(
+    ForgotPasswordController(),
+  );
+  final formKey = GlobalKey<FormState>();
+
+  void forgotPassword() {
+    showLoadingOverLay(
+      asyncFunction: () async => await performForgotPassword(context),
+      msg: 'Please wait...',
+    );
+  }
+
+  Future<void> performForgotPassword(BuildContext context) async {
+    final bool isSuccess = await forgotPasswordController.forgotPassword(
+      email: emailController.text,
+    );
+
+    if (isSuccess) {
+      Get.to(
+        () => OtpVerificationScreen(
+          email: emailController.text,
+          isResetpassword: true,
+        ),
+      );
+    } else {
+      showSnackBarMessage(context, forgotPasswordController.errorMessage, true);
+    }
   }
 
   @override
@@ -29,44 +58,47 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         child: SizedBox(
           height: double.infinity,
           width: double.infinity,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              heightBox60,
-              AuthHeader(
-                title: 'Forget Password',
-                subtitle:
-                    'Please enter your email address to reset your password',
-              ),
-              heightBox30,
-              Label(label: 'Email'),
-              heightBox10,
-              CustomTextField(
-                hintText: 'example@gmail.com',
-                keyboardType: TextInputType.name,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter first name';
-                  }
-                  return null;
-                },
-              ),
-              heightBox50,
-
-              Expanded(child: heightBox10),
-              Center(
-                child: CustomElevatedButton(
-                  height: 56,
-                  title: 'Submit',
-                  onPress: () {
-                    Get.to(() => OtpVerificationScreen(isResetpassword: true));
-                  },
-                  color: Colors.blue,
+          child: Form(
+            key: formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                heightBox60,
+                AuthHeader(
+                  title: 'Forget Password',
+                  subtitle:
+                      'Please enter your email address to reset your password',
                 ),
-              ),
-              heightBox20,
-            ],
+                heightBox30,
+                Label(label: 'Email'),
+                heightBox10,
+                CustomTextField(
+                  controller: emailController,
+                  hintText: 'example@gmail.com',
+                  keyboardType: TextInputType.name,
+                  validator: (value) => ValidatorService.validateEmailAddress(
+                    emailController.text,
+                  ),
+                ),
+                heightBox50,
+
+                Expanded(child: heightBox10),
+                Center(
+                  child: CustomElevatedButton(
+                    height: 56,
+                    title: 'Submit',
+                    onPress: () {
+                      if (formKey.currentState!.validate()) {
+                        forgotPassword();
+                      }
+                    },
+                    color: Colors.blue,
+                  ),
+                ),
+                heightBox20,
+              ],
+            ),
           ),
         ),
       ),

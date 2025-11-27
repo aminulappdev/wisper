@@ -5,7 +5,7 @@ import 'package:wisper/app/urls.dart';
 
 class ForgotPasswordController extends GetxController {
   final RxBool _inProgress = false.obs;
-  bool get inProgress => _inProgress.value;
+  bool get inProgress => _inProgress.value; 
 
   final RxString _errorMessage = ''.obs;
   String get errorMessage => _errorMessage.value;

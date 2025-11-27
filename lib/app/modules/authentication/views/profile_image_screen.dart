@@ -8,7 +8,7 @@ import 'package:wisper/app/modules/authentication/views/job_interest_screen.dart
 import 'package:wisper/gen/assets.gen.dart';
 
 class ProfileImageScreen extends StatefulWidget {
-  const ProfileImageScreen({super.key});
+  const ProfileImageScreen({super.key}); 
 
   @override
   State<ProfileImageScreen> createState() => _ProfileImageScreenState();

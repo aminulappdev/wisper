@@ -1,12 +1,14 @@
 import 'package:crash_safe_image/crash_safe_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/get_instance.dart';
 import 'package:wisper/app/core/custom_size.dart';
-import 'package:wisper/app/modules/authentication/views/auth_screen.dart';
 import 'package:wisper/app/modules/calls/views/call_screen.dart';
 import 'package:wisper/app/modules/chat/views/chat_screen.dart';
 import 'package:wisper/app/modules/homepage/views/create_post_screen.dart';
 import 'package:wisper/app/modules/homepage/views/home_screen.dart';
+import 'package:wisper/app/modules/profile/controller/profile_controller.dart';
 import 'package:wisper/app/modules/profile/views/profile_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
@@ -18,6 +20,7 @@ class MainButtonNavbarScreen extends StatefulWidget {
 }
 
 class _MainButtonNavbarScreenState extends State<MainButtonNavbarScreen> {
+  final ProfileController profileController = Get.find<ProfileController>();
   int selectedKey = 0;
 
   // List of screens for navigation
@@ -32,10 +35,12 @@ class _MainButtonNavbarScreenState extends State<MainButtonNavbarScreen> {
   @override
   void initState() {
     super.initState();
+    profileController.getMyProfile();
   }
 
   @override
   Widget build(BuildContext context) {
+    var imagePath = profileController.profileData?.auth?.person?.image ?? '';
     return Scaffold(
       body: screens[selectedKey],
       bottomNavigationBar: Padding(
@@ -73,10 +78,15 @@ class _MainButtonNavbarScreenState extends State<MainButtonNavbarScreen> {
                 unselectedIcon: Assets.images.selectedChat.keyName,
                 label: "Chat",
               ),
+
               _buildNavItem(
                 index: 4,
-                selectedIcon: Assets.images.container2.keyName,
-                unselectedIcon: Assets.images.container2.keyName,
+                selectedIcon: imagePath != ''
+                    ? imagePath
+                    : Assets.images.container2.keyName,
+                unselectedIcon: imagePath != ''
+                    ? imagePath
+                    : Assets.images.container2.keyName,
                 label: "Profile",
               ),
             ],

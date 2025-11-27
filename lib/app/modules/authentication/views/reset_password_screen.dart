@@ -9,7 +9,8 @@ import 'package:wisper/app/modules/authentication/views/update_password_success_
 import 'package:wisper/app/modules/authentication/widget/auth_header.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
-  const ResetPasswordScreen({super.key});
+  final String email;
+  const ResetPasswordScreen({super.key, required this.email});
 
   @override
   State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();

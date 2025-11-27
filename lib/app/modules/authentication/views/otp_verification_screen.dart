@@ -4,21 +4,38 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/utils/show_over_loading.dart';
+import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/details_card.dart';
+import 'package:wisper/app/modules/authentication/controller/otp_verify_controller.dart';
+import 'package:wisper/app/modules/authentication/controller/resend_otp_controller.dart';
 import 'package:wisper/app/modules/authentication/views/reset_password_screen.dart';
-import 'package:wisper/app/modules/authentication/views/verify_success_screen.dart';
+import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
 import 'package:wisper/app/modules/authentication/widget/auth_header.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
+  final String email;
   final bool isResetpassword;
-  const OtpVerificationScreen({super.key, this.isResetpassword = false});
+  const OtpVerificationScreen({
+    super.key,
+    this.isResetpassword = false,
+    required this.email,
+  });
 
   @override
   State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
 }
 
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
+  final otpController = TextEditingController();
+  final OtpVerifyController otpVerifyController = Get.put(
+    OtpVerifyController(),
+  );
+
+  final ResendOtpController resendOtpController = Get.put(
+    ResendOtpController(),
+  );
   int _secondsRemaining = 60;
   bool _isTimerActive = true;
   Timer? _timer;
@@ -48,11 +65,47 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   void _resendOtp() {
     if (!_isTimerActive) {
       setState(() {
+        resendOtp(context);
         _secondsRemaining = 60;
         _isTimerActive = true;
       });
       _startTimer();
       // Add logic to resend OTP here
+    }
+  }
+
+  void _otpVerify() {
+    showLoadingOverLay(
+      asyncFunction: () async => await performOtpVerify(context),
+      msg: 'Please wait...',
+    );
+  }
+
+  Future<void> performOtpVerify(BuildContext context) async {
+    final bool isSuccess = await otpVerifyController.otpVerify(
+      email: widget.email,
+      otp: _otpCode,
+    );
+
+    if (isSuccess) {
+      showSnackBarMessage(context, 'Successfully done');
+      widget.isResetpassword
+          ? Get.to(() => ResetPasswordScreen(email: widget.email))
+          : Get.to(() => SignInScreen());
+    } else {
+      showSnackBarMessage(context, otpVerifyController.errorMessage, true);
+    }
+  }
+
+  Future<void> resendOtp(BuildContext context) async {
+    final bool isSuccess = await resendOtpController.resend(
+      email: widget.email,
+    );
+
+    if (isSuccess) {
+      showSnackBarMessage(context, 'Resend OTP Done');
+    } else {
+      showSnackBarMessage(context, otpVerifyController.errorMessage, true);
     }
   }
 
@@ -81,9 +134,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               ),
               heightBox30,
               PinCodeTextField(
+                controller: otpController,
                 length: 6,
                 obscureText: false,
-                
+
                 keyboardType: TextInputType.number,
                 animationType: AnimationType.fade,
                 animationDuration: const Duration(milliseconds: 300),
@@ -149,13 +203,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   width: 200,
                   height: 56,
                   title: 'Verify Email',
-                  onPress: _otpCode.length == 6
-                      ? () {
-                          widget.isResetpassword
-                              ? Get.to(() => ResetPasswordScreen())
-                              : Get.to(() => VerifySuccessScreen());
-                        }
-                      : null,
+                  onPress: _otpCode.length == 6 ? _otpVerify : null,
                   color: _otpCode.length == 6
                       ? Colors.blue
                       : const Color(0xff6A6A6A),

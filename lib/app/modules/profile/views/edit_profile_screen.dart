@@ -1,12 +1,18 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/utils/show_over_loading.dart';
+import 'package:wisper/app/core/utils/snack_bar.dart';
+import 'package:wisper/app/core/utils/validator_service.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/custom_text_filed.dart';
 import 'package:wisper/app/core/widgets/label.dart';
-import 'package:wisper/app/modules/authentication/views/otp_verification_screen.dart';
 import 'package:wisper/app/modules/authentication/widget/auth_header.dart';
+import 'package:wisper/app/modules/profile/controller/edit_profile_controller.dart';
+import 'package:wisper/app/modules/profile/controller/profile_controller.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -16,104 +22,202 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
+  final ProfileController profileController = Get.find<ProfileController>();
+  final EditProfileController editProfileController = EditProfileController();
+  final _formKey = GlobalKey<FormState>();
+
+  final _nameCtrl = TextEditingController();
+  final _emailCtrl = TextEditingController();
+  final _phoneCtrl = TextEditingController();
+  final _addressCtrl = TextEditingController();
+
+  // এই কন্ট্রোলারটা আমরা Job Title এর জন্য ব্যবহার করবো
+  final _titleCtrl = TextEditingController();
+
+  final List<String> _jobTitles = [
+    'Flutter Developer',
+    'Graphic Designer',
+    'UI/UX Designer',
+    'Backend Developer',
+    'Frontend Developer',
+    'Full Stack Developer',
+    'Product Manager',
+    'Project Manager',
+    'Data Scientist',
+    'DevOps Engineer',
+    'QA Engineer',
+    'Mobile Developer',
+    'Other',
+  ];
+
+  String? _selectedTitle;
+
   @override
   void initState() {
     super.initState();
+
+    final person = profileController.profileData!.auth?.person;
+
+    _nameCtrl.text = person?.name ?? '';
+    _emailCtrl.text = person?.email ?? '';
+    _phoneCtrl.text = person?.phone ?? '';
+    _addressCtrl.text = person?.address ?? '';
+
+    _selectedTitle = person?.title;
+    if (_selectedTitle == null || !_jobTitles.contains(_selectedTitle)) {
+      _selectedTitle = _jobTitles.first;
+    }
+
+    _titleCtrl.text = _selectedTitle!;
+  }
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _phoneCtrl.dispose();
+    _titleCtrl.dispose();
+    _addressCtrl.dispose();
+    super.dispose();
+  }
+
+  void _submitProfile() {
+    if (_formKey.currentState!.validate()) {
+      showLoadingOverLay(
+        asyncFunction: () async => await _performEditProfile(),
+        msg: 'Updating profile...',
+      );
+    }
+  }
+
+  Future<void> _performEditProfile() async {
+    final bool isSuccess = await editProfileController.editProfile(
+      name: _nameCtrl.text.trim(),
+      phone: _phoneCtrl.text.trim(),
+      title: _selectedTitle!,
+      address: _addressCtrl.text.trim(),
+    );
+
+    if (isSuccess) {
+      final ProfileController profileController = Get.find<ProfileController>();
+      profileController.getMyProfile();
+      Get.back();
+      showSnackBarMessage(context, 'Profile updated successfully', false);
+    } else {
+      showSnackBarMessage(context, editProfileController.errorMessage, true);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.0.w, vertical: 0.0.w),
+        padding: EdgeInsets.symmetric(horizontal: 24.w),
+        child: Form(
+          key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
             children: [
               heightBox60,
               AuthHeader(title: 'Edit Profile Details'),
               heightBox30,
 
-              Label(label: 'Full Name'),
+              const Label(label: 'Full Name'),
               heightBox10,
               CustomTextField(
+                controller: _nameCtrl,
                 hintText: 'Enter full name',
                 keyboardType: TextInputType.name,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter  name';
-                  }
-                  return null;
-                },
+                validator: ValidatorService.validateSimpleField,
               ),
-              heightBox10,
-              Label(label: 'Email'),
+
+              heightBox20,
+              const Label(label: 'Email'),
               heightBox10,
               CustomTextField(
+                controller: _emailCtrl,
                 hintText: 'example@gmail.com',
-                keyboardType: TextInputType.name,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter first name';
-                  }
-                  return null;
-                },
+                keyboardType: TextInputType.emailAddress,
+                enabled: false,
               ),
-              heightBox10,
-              Label(label: 'Phone Number'),
+
+              heightBox20,
+              const Label(label: 'Phone Number'),
               heightBox10,
               CustomTextField(
+                controller: _phoneCtrl,
                 hintText: 'Enter phone number',
-                keyboardType: TextInputType.name,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter number';
-                  }
-                  return null;
-                },
+                keyboardType: TextInputType.phone,
+                validator: ValidatorService.validateSimpleField,
               ),
-              heightBox10,
-              Label(label: 'Job Title'),
+
+              heightBox20,
+              const Label(label: 'Address'),
               heightBox10,
               CustomTextField(
+                controller: _addressCtrl,
+                hintText: 'Enter address',
+                keyboardType: TextInputType.text,
+                validator: ValidatorService.validateSimpleField,
+              ),
+
+              heightBox20,
+              const Label(label: 'Job Title'),
+              heightBox10,
+              CustomTextField(
+                controller: _titleCtrl,
+                readOnly: true,
                 hintText: 'Select job title',
-                items: [
-                  DropdownMenuItem(
-                    value: 'Flutter Developer',
-                    child: Text('Flutter Developer'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Graphic Designer',
-                    child: Text('Graphic Designer'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'UI/UX Designer',
-                    child: Text('UI/UX Designer'),
-                  ),
-                ],
-                keyboardType: TextInputType.name,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter first name';
+                suffixIcon: Icons.keyboard_arrow_down,
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(20),
+                      ),
+                    ),
+                    builder: (ctx) => ListView.builder(
+                      padding: EdgeInsets.all(16.w),
+                      itemCount: _jobTitles.length,
+                      itemBuilder: (context, index) {
+                        final title = _jobTitles[index];
+                        return ListTile(
+                          title: Text(title),
+                          trailing: _selectedTitle == title
+                              ? const Icon(Icons.check, color: Colors.blue)
+                              : null,
+                          onTap: () {
+                            setState(() {
+                              _selectedTitle = title;
+                              _titleCtrl.text =
+                                  title; // এখানে কন্ট্রোলার আপডেট করা হচ্ছে
+                            });
+                            Navigator.pop(ctx);
+                          },
+                        );
+                      },
+                    ),
+                  );
+                },
+                validator: (_) {
+                  if (_selectedTitle == null || _selectedTitle!.isEmpty) {
+                    return 'Please select a job title';
                   }
                   return null;
                 },
               ),
-              heightBox100,
+
               heightBox50,
 
               Center(
                 child: CustomElevatedButton(
-                  height: 56,
+                  height: 56.h,
                   title: 'Submit',
-                  onPress: () {
-                    Get.to(() => OtpVerificationScreen(isResetpassword: true));
-                  },
+                  onPress: _submitProfile,
                   color: Colors.blue,
                 ),
               ),
-              heightBox20,
+              heightBox50,
             ],
           ),
         ),

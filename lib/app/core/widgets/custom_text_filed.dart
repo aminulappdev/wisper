@@ -1,3 +1,5 @@
+// custom_text_filed.dart
+
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatefulWidget {
@@ -16,6 +18,8 @@ class CustomTextField extends StatefulWidget {
     this.expands = false,
     this.maxLength,
     this.onChanged,
+    this.onTap,                    // নতুন: ট্যাপ করার জন্য
+    this.readOnly = false,         // নতুন: রিড-ওনলি মোড
     this.clipBehavior = Clip.hardEdge,
     this.fillColor = const Color(0xff181818),
     this.borderRadius = 12.0,
@@ -34,11 +38,11 @@ class CustomTextField extends StatefulWidget {
     this.borderColor = const Color(0xff3A3A3A),
     this.focusedBorderColor = const Color(0xff3A3A3A),
     this.errorBorderColor = Colors.red,
-    this.suffixIcon,
+    this.suffixIcon,               // IconData? (যেমন Icons.keyboard_arrow_down)
     this.prefixIcon,
     this.obscureText = false,
     this.pprefixIconColor,
-    this.items, // New parameter for dropdown items
+    this.items,                    // Dropdown এর জন্য (যদি চাও পরে ব্যবহার করতে পারো)
   });
 
   final TextEditingController? controller;
@@ -54,6 +58,8 @@ class CustomTextField extends StatefulWidget {
   final bool expands;
   final int? maxLength;
   final ValueChanged<String>? onChanged;
+  final VoidCallback? onTap;            // নতুন
+  final bool readOnly;                  // নতুন
   final Clip clipBehavior;
   final Color fillColor;
   final double borderRadius;
@@ -69,7 +75,7 @@ class CustomTextField extends StatefulWidget {
   final IconData? prefixIcon;
   final bool obscureText;
   final Color? pprefixIconColor;
-  final List<DropdownMenuItem<String>>? items; // List of dropdown items
+  final List<DropdownMenuItem<String>>? items;
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -95,25 +101,28 @@ class _CustomTextFieldState extends State<CustomTextField> {
   InputDecoration _defaultInputDecoration() {
     return InputDecoration(
       suffixIcon: widget.suffixIcon != null
-          ? IconButton(
-              icon: Icon(
-                _obscureText ? widget.suffixIcon : Icons.visibility_off,
-                color: const Color(0xff8C8C8C),
-              ),
-              onPressed: _toggleVisibility,
-            )
+          ? (widget.obscureText
+              ? IconButton(
+                  icon: Icon(
+                    _obscureText ? widget.suffixIcon : Icons.visibility_off,
+                    color: const Color(0xff8C8C8C),
+                  ),
+                  onPressed: _toggleVisibility,
+                )
+              : Icon(
+                  widget.suffixIcon,
+                  color: const Color(0xff8C8C8C),
+                ))
           : null,
-      prefixIconColor:
-          widget.pprefixIconColor ?? const Color.fromARGB(255, 255, 255, 255),
+      prefixIconColor: widget.pprefixIconColor ?? const Color.fromARGB(255, 255, 255, 255),
       prefixIcon: widget.prefixIcon != null ? Icon(widget.prefixIcon) : null,
       enabled: widget.enabled,
       hintText: widget.hintText,
-      hintStyle:
-          widget.hintStyle ??
-          TextStyle(
+      hintStyle: widget.hintStyle ??
+          const TextStyle(
             fontWeight: FontWeight.w300,
             fontSize: 16,
-            color: const Color(0xff8C8C8C),
+            color: Color(0xff8C8C8C),
           ),
       contentPadding: widget.contentPadding,
       fillColor: widget.fillColor,
@@ -122,6 +131,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       enabledBorder: _inputBorder(),
       focusedBorder: _inputBorder(focused: true),
       errorBorder: _inputBorder(error: true),
+      disabledBorder: _inputBorder(),
     );
   }
 
@@ -146,14 +156,14 @@ class _CustomTextFieldState extends State<CustomTextField> {
               value: _selectedValue,
               hint: Text(widget.hintText ?? '', style: widget.hintStyle),
               items: widget.items,
-              onChanged: (value) {
-                setState(() {
-                  _selectedValue = value;
-                });
-                if (widget.onChanged != null) {
-                  widget.onChanged!(value ?? '');
-                }
-              },
+              onChanged: widget.enabled
+                  ? (value) {
+                      setState(() {
+                        _selectedValue = value;
+                      });
+                      widget.onChanged?.call(value ?? '');
+                    }
+                  : null,
               decoration: widget.decoration ?? _defaultInputDecoration(),
               style: widget.style,
               dropdownColor: widget.fillColor,
@@ -161,6 +171,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
               borderRadius: BorderRadius.circular(widget.borderRadius),
             )
           : TextFormField(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               validator: widget.validator,
               controller: widget.controller,
               initialValue: widget.initialValue,
@@ -176,6 +187,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
               onChanged: widget.onChanged,
               clipBehavior: widget.clipBehavior,
               obscureText: _obscureText,
+              readOnly: widget.readOnly,        // এখানে ফরওয়ার্ড করা হলো
+              onTap: widget.onTap,              // এখানে ফরওয়ার্ড করা হলো
+              enabled: widget.enabled,
             ),
     );
   }

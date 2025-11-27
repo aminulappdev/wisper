@@ -1,26 +1,37 @@
 import 'package:get/get.dart';
+import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/services/network_caller/network_caller.dart';
 import 'package:wisper/app/core/services/network_caller/network_response.dart';
 import 'package:wisper/app/urls.dart';
 
-class OtpVerifyController extends GetxController {
+class EditProfileController extends GetxController {
   final RxBool _inProgress = false.obs;
   bool get inProgress => _inProgress.value;
 
   final RxString _errorMessage = ''.obs;
   String get errorMessage => _errorMessage.value;
 
-  Future<bool> otpVerify({String? email, String? otp}) async {
+  Future<bool> editProfile({
+    String? name,
+    String? phone,
+    String? title,
+    String? address,
+  }) async {
     _inProgress.value = true;
 
     try {
       Map<String, dynamic> body = {
-        "email": email,
-        "otp": otp,
-        "verifyAccount": true,
+        "name": name,
+        "phone": phone,
+        "title": title,
+        "address": address,
       };
       final NetworkResponse response = await Get.find<NetworkCaller>()
-          .postRequest(Urls.otpVerifyUrl, body: body);
+          .patchRequest(
+            Urls.editProfileUrl,
+            body: body,
+            accessToken: StorageUtil.getData(StorageUtil.userAccessToken),
+          );
 
       if (response.isSuccess && response.responseData != null) {
         _errorMessage.value = '';

@@ -3,20 +3,40 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/utils/show_over_loading.dart';
+import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/widgets/custom_text_filed.dart';
-import 'package:wisper/app/modules/authentication/views/all_set_screen.dart';
+import 'package:wisper/app/modules/authentication/controller/sign_up_controller.dart';
+import 'package:wisper/app/modules/authentication/views/otp_verification_screen.dart';
 
 // Global variable to store selected interests
 List<String> selectedInterests = [];
 
 class JobInterestScreen extends StatefulWidget {
-  const JobInterestScreen({super.key});
+  final String? firstName;
+  final String? lastName;
+  final String? bussinessName;
+  final String? email;
+  final String? phone;
+  final String? password;
+  final String? title;
+  const JobInterestScreen({
+    super.key,
+    this.firstName,
+    this.lastName,
+    this.email,
+    this.phone,
+    this.password,
+    this.title,
+    this.bussinessName,
+  });
 
   @override
   State<JobInterestScreen> createState() => _JobInterestScreenState();
 }
 
 class _JobInterestScreenState extends State<JobInterestScreen> {
+  final SignUpController signUpController = Get.put(SignUpController());
   final List<String> jobInterests = [
     'AgriTech',
     'Agriculture and Agribusiness',
@@ -35,6 +55,56 @@ class _JobInterestScreenState extends State<JobInterestScreen> {
     'Fintech',
   ];
 
+  void _finishSignUp() {
+    showLoadingOverLay(
+      asyncFunction: () async => await widget.title == null
+          ? signUpWithRecruiter(context)
+          : signUpWithPerson(context),
+      msg: 'Please wait...',
+    );
+  }
+
+  Future<void> signUpWithPerson(BuildContext context) async {
+    final bool isSuccess = await signUpController.signUp(
+      firstName: widget.firstName,
+      lastName: widget.lastName,
+      email: widget.email,
+      phone: widget.phone,
+      password: widget.password,
+      confirmPassword: widget.password,
+      title: widget.title,
+      industry: selectedInterests.join(','),
+    );
+
+    if (isSuccess) {
+      showSnackBarMessage(context, 'Successfully done');
+      Get.to(() => OtpVerificationScreen(email: widget.email ?? ''));
+    } else {
+      showSnackBarMessage(context, signUpController.errorMessage, true);
+    }
+  }
+
+  Future<void> signUpWithRecruiter(BuildContext context) async {
+    final bool isSuccess = await signUpController.signUp(
+      firstName: widget.firstName,
+      lastName: widget.lastName,
+      bussinessName: widget.bussinessName,
+      email: widget.email,
+      phone: widget.phone,
+      password: widget.password,
+      confirmPassword: widget.password,
+      title: widget.title,
+      industry: selectedInterests.join(','),
+    );
+
+    if (isSuccess) {
+      showSnackBarMessage(context, 'Successfully done');
+      Get.to(() => OtpVerificationScreen(email: widget.email ?? ''));
+    } else {
+      showSnackBarMessage(context, signUpController.errorMessage, true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,7 +121,7 @@ class _JobInterestScreenState extends State<JobInterestScreen> {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () => Get.to(const AllSetScreen()),
+                  onPressed: _finishSignUp,
                   child: Text(
                     'finished',
                     textAlign: TextAlign.center,
