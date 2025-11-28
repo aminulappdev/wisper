@@ -4,11 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/details_card.dart';
 import 'package:wisper/app/core/widgets/line_widget.dart';
+import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
 import 'package:wisper/app/modules/chat/widgets/toggle_option.dart';
+import 'package:wisper/app/modules/profile/controller/profile_controller.dart';
 import 'package:wisper/app/modules/profile/views/change_password_screen.dart';
 import 'package:wisper/app/modules/profile/views/profile_screen.dart';
 import 'package:wisper/app/modules/profile/views/wallet_screen.dart';
@@ -26,6 +29,7 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  final ProfileController profileController = Get.find<ProfileController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,13 +52,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     heightBox10,
-                    MyInfoCard(
-                      ontap: () {
-                        Get.to(() => const ProfileScreen());
-                      },
-                      imagePath: Assets.images.image.keyName,
-                      name: 'Aminul Islam',
-                      job: 'Flutter Developer',
+                    Obx(
+                      () => MyInfoCard(
+                        ontap: () {
+                          Get.to(() => const ProfileScreen());
+                        },
+                        imagePath:
+                            profileController
+                                .profileData
+                                ?.auth
+                                ?.person
+                                ?.image ??
+                            '',
+
+                        name:
+                            profileController.profileData?.auth?.person?.name ??
+                            '',
+                        job:
+                            profileController
+                                .profileData
+                                ?.auth
+                                ?.person
+                                ?.title ??
+                            '',
+                      ),
                     ),
                     heightBox20,
                     StraightLiner(height: 0.5),
@@ -476,7 +497,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       child: CustomElevatedButton(
                         color: Color(0xffE62047),
                         title: 'Logout',
-                        onPress: () {},
+                        onPress: () {
+                          StorageUtil.clear();
+                          Get.offAll(() => SignInScreen());
+                        },
                       ),
                     ),
                   ],

@@ -26,8 +26,10 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final SignInController signInController = Get.put(SignInController());
   final formKey = GlobalKey<FormState>();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+  final emailController = TextEditingController(
+    text: 'fositak321@moondyal.com',
+  );
+  final passwordController = TextEditingController(text: 'Aminul@1234');
   void signIn() {
     showLoadingOverLay(
       asyncFunction: () async => await performSignIn(context),

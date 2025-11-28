@@ -83,6 +83,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
   Future<void> performOtpVerify(BuildContext context) async {
     final bool isSuccess = await otpVerifyController.otpVerify(
+      isShowVerify: widget.isResetpassword ? false : true,
       email: widget.email,
       otp: _otpCode,
     );

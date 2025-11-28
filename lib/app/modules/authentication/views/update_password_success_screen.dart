@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
+import 'package:wisper/app/modules/dashboard/views/dashboard_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class PasswordUpdateSuccessScreen extends StatefulWidget {
@@ -59,7 +60,7 @@ class _PasswordUpdateSuccessScreenState
                 height: 56,
                 title: 'Explore Your Feed',
                 onPress: () {
-                  Get.to(const SignInScreen());
+                  Get.to(const MainButtonNavbarScreen());
                 },
               ),
               heightBox20,

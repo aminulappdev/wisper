@@ -4,13 +4,12 @@ import 'dart:io';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/services/network_caller/network_caller.dart';
-import 'package:wisper/app/core/services/network_caller/network_response.dart';
 import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
 import 'package:wisper/app/urls.dart';
 
 class ProfilePhotoController extends GetxController {
   final RxBool _inProgress = false.obs;
-  bool get inProgress => _inProgress.value;
+  bool get inProgress => _inProgress.value; 
 
   Future<bool> uploadProfilePhoto(File image) async {
     _inProgress.value = true;
@@ -25,22 +24,19 @@ class ProfilePhotoController extends GetxController {
       );
 
       if (response.isSuccess) {
-       
         update();
         return true;
       } else {
-        final msg = response.errorMessage ?? 'Upload failed';
-        if (msg.toLowerCase().contains('expired') || msg.toLowerCase().contains('unauthenticated')) {
+        final msg = response.errorMessage;
+        if (msg.toLowerCase().contains('expired') ||
+            msg.toLowerCase().contains('unauthenticated')) {
           Get.offAll(() => const SignInScreen());
-        } else {
-         
-        }
+        } else {}
         _inProgress.value = false;
         update();
         return false;
       }
     } catch (e) {
-     
       _inProgress.value = false;
       update();
       return false;

@@ -49,13 +49,10 @@ class InfoCard extends StatelessWidget {
                 children: [
                   Stack(
                     children: [
-                      CircleIconWidget(
-                        color: const Color(0xff051B33),
-                        iconColor: const Color(0xff1F7DE9),
-                        iconRadius: 40,
-                        radius: 38,
-                        imagePath: imagePath,
-                        onTap: () {},
+                      CircleAvatar(
+                        radius: 40.r,
+                        backgroundColor: Colors.grey.shade800,
+                        backgroundImage: NetworkImage(imagePath),
                       ),
                       Positioned(
                         bottom: 0,
@@ -85,7 +82,7 @@ class InfoCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w400,
-                      color:  LightThemeColors.themeGreyColor,
+                      color: LightThemeColors.themeGreyColor,
                     ),
                   ),
                   SizedBox(height: 10.h),

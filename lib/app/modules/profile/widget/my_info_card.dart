@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
@@ -10,11 +9,12 @@ class MyInfoCard extends StatelessWidget {
   final String imagePath;
   final String name;
   final String job;
-  const MyInfoCard({
+  const MyInfoCard({ 
     super.key,
     required this.imagePath,
     required this.name,
-    required this.job, required this.ontap,
+    required this.job,
+    required this.ontap,
   });
 
   @override
@@ -26,7 +26,11 @@ class MyInfoCard extends StatelessWidget {
           onTap: ontap,
           child: Row(
             children: [
-              CircleAvatar(radius: 18.r, backgroundImage: AssetImage(imagePath)),
+              CircleAvatar(
+                radius: 18.r,
+                backgroundColor: Colors.grey.shade800,
+                backgroundImage: NetworkImage(imagePath),
+              ),
               widthBox8,
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,7 +43,7 @@ class MyInfoCard extends StatelessWidget {
                       color: Colors.white,
                     ),
                   ),
-          
+
                   Text(
                     job,
                     style: TextStyle(

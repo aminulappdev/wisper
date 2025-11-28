@@ -9,7 +9,7 @@ class ImagePickerHelper {
   // Function to pick an image from the camera
   Future<void> pickImageFromCamera(
     BuildContext context,
-    Function(File) onImagePicked,
+    Function(File) onImagePicked, 
   ) async {
     try {
       final pickedImage = await ImagePicker().pickImage(
@@ -76,6 +76,7 @@ class ImagePickerHelper {
                           style: TextStyle(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.w500,
+                            color: Colors.black,
                           ),
                         ),
                       ],
@@ -95,6 +96,7 @@ class ImagePickerHelper {
                           style: TextStyle(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.w500,
+                            color: Colors.black,
                           ),
                         ),
                       ],
@@ -117,6 +119,7 @@ class ImagePickerHelper {
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w500,
+                          color: Colors.black,
                         ),
                       ),
                     ),

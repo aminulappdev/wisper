@@ -8,26 +8,23 @@ class Urls {
 
   // =========================================== Common ============================================== //
 
-
   // =========================================== Profile ============================================== //
   static const String profileUrl = '$_baseUrl/persons/profile';
   static const String editProfileUrl = '$_baseUrl/persons/profile';
   static const String editProfilePhotoUrl = '$_baseUrl/persons/profile-image';
- 
 
   // =========================================== Authentication ====================================== //
   static const String signUpUrlPerson = '$_baseUrl/auths/person/signup';
   static const String signUpUrlBussiness = '$_baseUrl/auths/business/signup';
   static const String refreshTokenUrl = '$_baseUrl/auth/refresh-token';
   static const String googleAuthUrl = '$_baseUrl/auth/google-login';
-  static const String otpVerifyUrl = '$_baseUrl/otps/verify'; 
-  static const String resendOtpUrl = '$_baseUrl/otps/send'; 
-  static const String signInUrl = '$_baseUrl/auths/login'; 
-  static const String forgotPasswordUrl = '$_baseUrl/auths/send-otp';
-  static const String changePasswordUrl = '$_baseUrl/auth/change-password';
+  static const String otpVerifyUrl = '$_baseUrl/otps/verify';
+  static const String resendOtpUrl = '$_baseUrl/otps/send';
+  static const String signInUrl = '$_baseUrl/auths/login';
+  static const String forgotPasswordUrl = '$_baseUrl/otps/send';
+  static const String changePasswordUrl = '$_baseUrl/auths/change-password';
   static const String deleteAccountUrl = '$_baseUrl/auth/change-password';
-  static const String resterPasswordUrl =
-      '$_baseUrl/auth/reset-forgotten-password';
+  static const String resterPasswordUrl = '$_baseUrl/auths/reset-password'; 
 
   // =========================================== Profile Block ======================================= //
   static const String updateProfileUrl = '$_baseUrl/teachers/profile';

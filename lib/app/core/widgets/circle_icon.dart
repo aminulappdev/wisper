@@ -6,7 +6,7 @@ import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 
 class CircleIconWidget extends StatelessWidget {
   final String imagePath;
-  final double radius;
+  final double radius; 
   final double iconRadius;
   final Color color;
   final VoidCallback onTap;

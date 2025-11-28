@@ -80,6 +80,7 @@ class _MainButtonNavbarScreenState extends State<MainButtonNavbarScreen> {
               ),
 
               _buildNavItem(
+                isProfile: true,
                 index: 4,
                 selectedIcon: imagePath != ''
                     ? imagePath
@@ -97,6 +98,7 @@ class _MainButtonNavbarScreenState extends State<MainButtonNavbarScreen> {
   }
 
   Widget _buildNavItem({
+    bool isProfile = false,
     required int index,
     required String selectedIcon,
     required String unselectedIcon,
@@ -115,11 +117,27 @@ class _MainButtonNavbarScreenState extends State<MainButtonNavbarScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           heightBox8,
-          CrashSafeImage(
-            isSelected ? selectedIcon : unselectedIcon,
-            height: height ?? 24.h,
-            width: width ?? 24.h,
-          ),
+          isProfile
+              ? CircleAvatar(
+                  backgroundColor: Colors.grey,
+                  radius: 12.r,
+                  backgroundImage:
+                      profileController.profileData?.auth?.person?.image != ''
+                      ? NetworkImage(
+                          profileController.profileData?.auth?.person?.image ??
+                              '',
+                        )
+                      : null,
+                  child:
+                      profileController.profileData?.auth?.person?.image == ''
+                      ? Icon(Icons.person)
+                      : Container(),
+                )
+              : CrashSafeImage(
+                  isSelected ? selectedIcon : unselectedIcon,
+                  height: height ?? 24.h,
+                  width: width ?? 24.h,
+                ),
 
           Text(
             label,
