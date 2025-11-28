@@ -18,7 +18,7 @@ Future<void> main() async {
   //   debugPrint("⚠️ Could not load .env file: $e");
   // }
 
-  await StorageUtil.init(); // ✅ এখন থেকে সব data GetStorage এ save হবে
+  await StorageUtil.init();
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

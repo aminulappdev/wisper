@@ -2,7 +2,6 @@ import 'package:crash_safe_image/crash_safe_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/widgets/image_container_widget.dart';
@@ -14,7 +13,7 @@ class PostCard extends StatelessWidget {
   const PostCard({super.key, required this.trailing});
 
   @override
-  Widget build(BuildContext context) {
+   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

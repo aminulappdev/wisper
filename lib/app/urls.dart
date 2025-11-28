@@ -32,6 +32,7 @@ class Urls {
       '$_baseUrl/teachers/profile/change-image';
 
   // =========================================== Home Block ========================================== //
+  static const String feedPostUrl = '$_baseUrl/posts/feed';
 
   static String deleteNotificationById(String id) {
     return '$_baseUrl/notifications/$id';

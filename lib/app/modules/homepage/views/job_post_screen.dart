@@ -35,7 +35,7 @@ class _JobPostScreenState extends State<JobPostScreen> {
                         'Cancel',
                         style: TextStyle(
                           fontSize: 12,
-                          fontWeight: FontWeight.w400,
+                          fontWeight: FontWeight.w400, 
                         ),
                       ),
                     ),
