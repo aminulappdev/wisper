@@ -1,14 +1,12 @@
-// custom_text_filed.dart
-
+// lib/app/core/widgets/custom_text_filed.dart
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatefulWidget {
   const CustomTextField({
     super.key,
-    this.controller,
+    this.controller, 
     this.initialValue,
     this.focusNode,
-    this.forceErrorText,
     this.decoration,
     this.keyboardType,
     this.style = const TextStyle(color: Color(0xff8C8C8C)),
@@ -18,8 +16,8 @@ class CustomTextField extends StatefulWidget {
     this.expands = false,
     this.maxLength,
     this.onChanged,
-    this.onTap,                    // নতুন: ট্যাপ করার জন্য
-    this.readOnly = false,         // নতুন: রিড-ওনলি মোড
+    this.onTap,
+    this.readOnly = false,
     this.clipBehavior = Clip.hardEdge,
     this.fillColor = const Color(0xff181818),
     this.borderRadius = 12.0,
@@ -31,24 +29,21 @@ class CustomTextField extends StatefulWidget {
     ),
     this.hintText,
     this.enabled = true,
-    this.contentPadding = const EdgeInsets.symmetric(
-      horizontal: 10,
-      vertical: 8,
-    ),
+    this.contentPadding = const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
     this.borderColor = const Color(0xff3A3A3A),
     this.focusedBorderColor = const Color(0xff3A3A3A),
     this.errorBorderColor = Colors.red,
-    this.suffixIcon,               // IconData? (যেমন Icons.keyboard_arrow_down)
+    this.suffixIcon,
     this.prefixIcon,
     this.obscureText = false,
     this.pprefixIconColor,
-    this.items,                    // Dropdown এর জন্য (যদি চাও পরে ব্যবহার করতে পারো)
+    this.items,
+    this.value,
   });
 
   final TextEditingController? controller;
   final String? initialValue;
   final FocusNode? focusNode;
-  final String? forceErrorText;
   final InputDecoration? decoration;
   final TextInputType? keyboardType;
   final TextStyle? style;
@@ -58,8 +53,8 @@ class CustomTextField extends StatefulWidget {
   final bool expands;
   final int? maxLength;
   final ValueChanged<String>? onChanged;
-  final VoidCallback? onTap;            // নতুন
-  final bool readOnly;                  // নতুন
+  final VoidCallback? onTap;
+  final bool readOnly;
   final Clip clipBehavior;
   final Color fillColor;
   final double borderRadius;
@@ -75,122 +70,101 @@ class CustomTextField extends StatefulWidget {
   final IconData? prefixIcon;
   final bool obscureText;
   final Color? pprefixIconColor;
+
+  // Dropdown
   final List<DropdownMenuItem<String>>? items;
+  final String? value;
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
 }
 
 class _CustomTextFieldState extends State<CustomTextField> {
+  late String? _selectedValue;
   late bool _obscureText;
-  String? _selectedValue;
 
   @override
   void initState() {
     super.initState();
+    _selectedValue = widget.value ?? widget.initialValue;
     _obscureText = widget.obscureText;
-    _selectedValue = widget.initialValue;
   }
 
-  void _toggleVisibility() {
-    setState(() {
-      _obscureText = !_obscureText;
-    });
+  @override
+  void didUpdateWidget(covariant CustomTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.value != oldWidget.value) {
+      _selectedValue = widget.value;
+    }
   }
 
-  InputDecoration _defaultInputDecoration() {
+  void _toggleVisibility() => setState(() => _obscureText = !_obscureText);
+
+  InputDecoration _defaultDecoration() {
     return InputDecoration(
       suffixIcon: widget.suffixIcon != null
           ? (widget.obscureText
               ? IconButton(
-                  icon: Icon(
-                    _obscureText ? widget.suffixIcon : Icons.visibility_off,
-                    color: const Color(0xff8C8C8C),
-                  ),
+                  icon: Icon(_obscureText ? widget.suffixIcon : Icons.visibility_off),
                   onPressed: _toggleVisibility,
                 )
-              : Icon(
-                  widget.suffixIcon,
-                  color: const Color(0xff8C8C8C),
-                ))
-          : null,
-      prefixIconColor: widget.pprefixIconColor ?? const Color.fromARGB(255, 255, 255, 255),
+              : Icon(widget.suffixIcon, color: const Color(0xff8C8C8C)))
+          : (widget.items != null
+              ? const Icon(Icons.keyboard_arrow_down, color: Color(0xff8C8C8C))
+              : null),
       prefixIcon: widget.prefixIcon != null ? Icon(widget.prefixIcon) : null,
-      enabled: widget.enabled,
+      prefixIconColor: widget.pprefixIconColor ?? Colors.white,
       hintText: widget.hintText,
-      hintStyle: widget.hintStyle ??
-          const TextStyle(
-            fontWeight: FontWeight.w300,
-            fontSize: 16,
-            color: Color(0xff8C8C8C),
-          ),
-      contentPadding: widget.contentPadding,
-      fillColor: widget.fillColor,
+      hintStyle: widget.hintStyle,
       filled: true,
-      border: _inputBorder(),
-      enabledBorder: _inputBorder(),
-      focusedBorder: _inputBorder(focused: true),
-      errorBorder: _inputBorder(error: true),
-      disabledBorder: _inputBorder(),
-    );
-  }
-
-  OutlineInputBorder _inputBorder({bool focused = false, bool error = false}) {
-    return OutlineInputBorder(
-      borderSide: BorderSide(
-        color: error
-            ? widget.errorBorderColor
-            : (focused ? widget.focusedBorderColor : widget.borderColor),
-        width: 1.0,
-      ),
-      borderRadius: BorderRadius.circular(widget.borderRadius),
+      fillColor: widget.fillColor,
+      contentPadding: widget.contentPadding,
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(widget.borderRadius), borderSide: BorderSide(color: widget.borderColor)),
+      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(widget.borderRadius), borderSide: BorderSide(color: widget.borderColor)),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(widget.borderRadius), borderSide: BorderSide(color: widget.focusedBorderColor, width: 2)),
+      errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(widget.borderRadius), borderSide: const BorderSide(color: Colors.red)),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 52,
-      child: widget.items != null
-          ? DropdownButtonFormField<String>(
-              value: _selectedValue,
-              hint: Text(widget.hintText ?? '', style: widget.hintStyle),
-              items: widget.items,
-              onChanged: widget.enabled
-                  ? (value) {
-                      setState(() {
-                        _selectedValue = value;
-                      });
-                      widget.onChanged?.call(value ?? '');
-                    }
-                  : null,
-              decoration: widget.decoration ?? _defaultInputDecoration(),
-              style: widget.style,
-              dropdownColor: widget.fillColor,
-              iconEnabledColor: const Color(0xff8C8C8C),
-              borderRadius: BorderRadius.circular(widget.borderRadius),
-            )
-          : TextFormField(
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              validator: widget.validator,
-              controller: widget.controller,
-              initialValue: widget.initialValue,
-              focusNode: widget.focusNode,
-              decoration: widget.decoration ?? _defaultInputDecoration(),
-              keyboardType: widget.keyboardType,
-              style: widget.style,
-              textDirection: widget.textDirection,
-              maxLines: widget.maxLines,
-              minLines: widget.minLines,
-              expands: widget.expands,
-              maxLength: widget.maxLength,
-              onChanged: widget.onChanged,
-              clipBehavior: widget.clipBehavior,
-              obscureText: _obscureText,
-              readOnly: widget.readOnly,        // এখানে ফরওয়ার্ড করা হলো
-              onTap: widget.onTap,              // এখানে ফরওয়ার্ড করা হলো
-              enabled: widget.enabled,
-            ),
+    // Dropdown Mode
+    if (widget.items != null && widget.items!.isNotEmpty) {
+      return DropdownButtonFormField<String>(
+        value: _selectedValue,
+        hint: Text(widget.hintText ?? '', style: widget.hintStyle),
+        items: widget.items,
+        validator: widget.validator,
+        onChanged: widget.enabled
+            ? (val) {
+                setState(() => _selectedValue = val);
+                widget.onChanged?.call(val ?? '');
+              }
+            : null,
+        decoration: widget.decoration ?? _defaultDecoration(),
+        dropdownColor: widget.fillColor,
+        style: widget.style ?? const TextStyle(color: Colors.white),
+      );
+    }
+
+    // Normal TextField
+    return TextFormField(
+      controller: widget.controller,
+      initialValue: widget.initialValue,
+      focusNode: widget.focusNode,
+      keyboardType: widget.keyboardType,
+      style: widget.style ?? const TextStyle(color: Colors.white),
+      maxLines: widget.maxLines,
+      minLines: widget.minLines,
+      expands: widget.expands,
+      obscureText: _obscureText,
+      readOnly: widget.readOnly,
+      onTap: widget.onTap,
+      enabled: widget.enabled,
+      validator: widget.validator,
+      onChanged: widget.onChanged,
+      decoration: widget.decoration ?? _defaultDecoration(),
+      clipBehavior: widget.clipBehavior,
     );
   }
 }

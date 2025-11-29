@@ -2,7 +2,6 @@ import 'package:get/get.dart';
 import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/services/network_caller/network_caller.dart';
 import 'package:wisper/app/core/services/network_caller/network_response.dart';
-import 'package:wisper/app/modules/profile/controller/profile_controller.dart';
 import 'package:wisper/app/urls.dart';
 
 class SignInController extends GetxController {

@@ -65,6 +65,7 @@ class FeedPostItemModel {
         required this.images,
         required this.views,
         required this.createdAt,
+        required this.commentAccess,
         required this.author,
     });
 
@@ -73,6 +74,7 @@ class FeedPostItemModel {
     final List<String> images;
     final int? views;
     final DateTime? createdAt;
+    final String? commentAccess;
     final Author? author;
 
     factory FeedPostItemModel.fromJson(Map<String, dynamic> json){ 
@@ -82,6 +84,7 @@ class FeedPostItemModel {
             images: json["images"] == null ? [] : List<String>.from(json["images"]!.map((x) => x)),
             views: json["views"],
             createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
+            commentAccess: json["commentAccess"],
             author: json["author"] == null ? null : Author.fromJson(json["author"]),
         );
     }
@@ -113,17 +116,20 @@ class Person {
     Person({
         required this.id,
         required this.name,
+        required this.title,
         required this.image,
     });
 
     final String? id;
     final String? name;
-    final dynamic image;
+    final String? title;
+    final String? image;
 
     factory Person.fromJson(Map<String, dynamic> json){ 
         return Person(
             id: json["id"],
             name: json["name"],
+            title: json["title"],
             image: json["image"],
         );
     }

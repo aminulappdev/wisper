@@ -11,32 +11,61 @@ import 'package:wisper/app/modules/homepage/views/job_details_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class JobCard extends StatelessWidget {
-  const JobCard({super.key});
+  final String? postId;
+  final String? ownerName;
+  final String? ownerImage;
+  final String? ownerDesignation;
+  final String? jobTitle;
+  final String? salary;
+  final String? location;
+  final String? jobType;
+  final String? shiftType;
+  final String? jobDescription;
+  final String? date;
+  const JobCard({
+    super.key,
+    this.postId,
+    this.ownerName,
+    this.ownerImage,
+    this.ownerDesignation,
+    this.jobTitle,
+    this.salary,
+    this.location,
+    this.jobType,
+    this.shiftType,
+    this.jobDescription,
+    this.date,
+  });
 
   @override
   Widget build(BuildContext context) {
+    var shift = shiftType == 'MONTHLY' ? 'mo' : 'onOff';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GestureDetector(
-           onTap: () => Get.to(() => const JobDetailsScreen()),
+          onTap: () => Get.to(
+            () => JobDetailsScreen(jobId: postId!),
+            transition: Transition.rightToLeft,
+          ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CircleAvatar(
+                backgroundColor: Colors.grey.shade800,
                 radius: 21.r,
-                backgroundImage: AssetImage(Assets.images.icon01.keyName),
+                backgroundImage: NetworkImage(ownerImage ?? ''),
               ),
               widthBox8,
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Aminul Islam',
+                    ownerName ?? '',
                     style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
                   ),
                   Text(
-                    'Flutter Developer',
+                    ownerDesignation ?? '',
                     style: TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 10,
@@ -44,7 +73,7 @@ class JobCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Senior UI/UX Designer',
+                    jobTitle ?? '',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
@@ -52,16 +81,19 @@ class JobCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'N240,000/mo',
+                    '\$${salary ?? ''}/$shift',
                     style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
                   ),
-          
+
                   Row(
                     children: [
-                      CrashSafeImage(Assets.images.location.keyName, height: 12),
+                      CrashSafeImage(
+                        Assets.images.location.keyName,
+                        height: 12,
+                      ),
                       widthBox10,
                       Text(
-                        'Lagos, Nigeria',
+                        location ?? '',
                         style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontSize: 10,
@@ -73,18 +105,35 @@ class JobCard extends StatelessWidget {
                   heightBox10,
                   Row(
                     children: [
-                      LabelData(title: 'Part-time'),
+                      LabelData(
+                        title: 'Part-time',
+                        bgColor: jobType == 'PART_TIME'
+                            ? LightThemeColors.blueColor
+                            : null,
+                      ),
                       widthBox10,
-                      LabelData(title: 'Remote'),
+                      LabelData(
+                        title: 'Full-time',
+                        bgColor: jobType == 'FULL_TIME'
+                            ? LightThemeColors.blueColor
+                            : null,
+                      ),
                       widthBox10,
-                      LabelData(title: 'Contract'),
+                      LabelData(
+                        title: 'Contract',
+                        bgColor: jobType == 'CONTRACT'
+                            ? LightThemeColors.blueColor
+                            : null,
+                      ),
                     ],
                   ),
                   heightBox10,
                   SizedBox(
                     width: 250.w,
                     child: Text(
-                      'We are seeking a Senior UI/UX Designer to lead',
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                      jobDescription ?? '',
                       style: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 12,
@@ -94,7 +143,7 @@ class JobCard extends StatelessWidget {
                   ),
                   heightBox16,
                   Text(
-                    '1 min ago',
+                    date ?? '',
                     style: TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 12,

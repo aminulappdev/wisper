@@ -9,7 +9,7 @@ class ProfileModel {
     final String? message;
     final ProfileData? data;
 
-    factory ProfileModel.fromJson(Map<String, dynamic> json){ 
+    factory ProfileModel.fromJson(Map<String, dynamic> json){  
         return ProfileModel(
             success: json["success"],
             message: json["message"],
@@ -40,17 +40,20 @@ class ProfileData {
 class Auth {
     Auth({
         required this.id,
+        required this.role,
         required this.createdAt,
         required this.person,
     });
 
     final String? id;
+    final String? role;
     final DateTime? createdAt;
     final Person? person;
 
     factory Auth.fromJson(Map<String, dynamic> json){ 
         return Auth(
             id: json["id"],
+            role: json["role"],
             createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
             person: json["person"] == null ? null : Person.fromJson(json["person"]),
         );
@@ -74,12 +77,12 @@ class Person {
     final String? id;
     final String? name;
     final String? email;
-    final dynamic image;
+    final String? image;
     final String? phone;
     final String? title;
     final String? industry;
     final dynamic defaultResume;
-    final dynamic address;
+    final String? address;
 
     factory Person.fromJson(Map<String, dynamic> json){ 
         return Person(

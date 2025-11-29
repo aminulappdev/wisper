@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/modules/homepage/views/gallery_post_screen.dart';
 import 'package:wisper/app/modules/homepage/views/job_post_screen.dart';
 import 'package:wisper/app/modules/homepage/views/resume_post_screen.dart';
 import 'package:wisper/app/modules/homepage/widget/post_option_card.dart';
+import 'package:wisper/app/modules/profile/controller/profile_controller.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class CreatePostScreen extends StatefulWidget {
@@ -17,6 +17,7 @@ class CreatePostScreen extends StatefulWidget {
 }
 
 class _CreatePostScreenState extends State<CreatePostScreen> {
+  final ProfileController profileController = Get.find<ProfileController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,8 +50,23 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               title: "Gallery",
               subtitle: "Share photos, videos, thoughts, or updates",
             ),
+            profileController.profileData!.auth?.role == "PERSON"
+                ? heightBox12
+                : const SizedBox(),
+            profileController.profileData!.auth?.role == "PERSON"
+                ? PostOptionCard(
+                    onTap: () {
+                      Get.to(JobPostScreen());
+                    },
+                    imagePath: Assets.images.file.keyName,
+                    color: Color(0xffDBFFE8),
+                    title: "Job",
+                    subtitle:
+                        "Share your work experience, skills, or achievements",
+                  )
+                : const SizedBox(),
             heightBox12,
-             PostOptionCard(
+            PostOptionCard(
               onTap: () {
                 Get.to(ResumePostScreen());
               },
@@ -65,4 +81,3 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     );
   }
 }
-

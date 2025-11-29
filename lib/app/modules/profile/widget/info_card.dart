@@ -16,7 +16,7 @@ class InfoCard extends StatelessWidget {
 
   const InfoCard({
     super.key,
-    required this.imagePath,
+    required this.imagePath, 
     required this.editOnTap,
     required this.title,
     required this.memberInfo,

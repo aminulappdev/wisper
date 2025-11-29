@@ -10,7 +10,6 @@ import 'package:wisper/app/modules/chat/views/doc_info.dart';
 import 'package:wisper/app/modules/chat/widgets/location_info.dart';
 import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart';
 import 'package:wisper/app/modules/homepage/views/post_section.dart';
-import 'package:wisper/app/modules/profile/views/boost_screen.dart';
 import 'package:wisper/app/modules/profile/views/edit_profile_screen.dart';
 import 'package:wisper/app/modules/profile/views/recommendation_screen.dart';
 import 'package:wisper/app/modules/profile/views/settings_screen.dart';
@@ -147,21 +146,7 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
             ),
             const StraightLiner(height: 0.4, color: Color(0xff454545)),
             SizedBox(height: 10.h),
-            if (selectedIndex == 0)
-              PostSection(
-                trailing: SizedBox(
-                  height: 32.h,
-                  width: 80.w,
-                  child: CustomElevatedButton(
-                    title: 'Boost Post',
-                    textSize: 11,
-                    borderRadius: 50,
-                    onPress: () {
-                      Get.to(() => const BoostScreen());
-                    },
-                  ),
-                ),
-              ),
+            if (selectedIndex == 0) PostSection(),
             if (selectedIndex == 1)
               DocInfo(
                 title: 'job_description.pdf',

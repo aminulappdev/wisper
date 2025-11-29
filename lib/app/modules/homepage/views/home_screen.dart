@@ -158,14 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
             heightBox14,
             selectedIndex == 0
                 ? PostSection(
-                    trailing: Text(
-                      'Sponsor',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 12,
-                        color: LightThemeColors.themeGreyColor,
-                      ),
-                    ),
+                    
                   )
                 : Container(),
             selectedIndex == 1 ? JobSection() : Container(),

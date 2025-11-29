@@ -3,12 +3,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/widgets/photo_viewer.dart';
 
-
 class ImageContainer extends StatelessWidget {
   final String image;
   final double height;
   final double width;
-  final double borderRadius; 
+  final double borderRadius;
   const ImageContainer({
     super.key,
     required this.image,
@@ -21,7 +20,7 @@ class ImageContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-         Get.to(() => FullScreenImageViewer(imageUrl: image));
+        Get.to(() => FullScreenImageViewer(imageUrl: image));
       },
       child: Container(
         height: height.h,
@@ -29,7 +28,7 @@ class ImageContainer extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.grey.shade200,
           borderRadius: BorderRadius.circular(borderRadius.r),
-          image: DecorationImage(image: AssetImage(image), fit: BoxFit.cover),
+          image: DecorationImage(image: NetworkImage(image), fit: BoxFit.cover),
         ),
       ),
     );

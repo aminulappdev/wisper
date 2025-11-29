@@ -10,10 +10,27 @@ import 'package:wisper/gen/assets.gen.dart';
 
 class PostCard extends StatelessWidget {
   final Widget trailing;
-  const PostCard({super.key, required this.trailing});
+  final String? ownerName;
+  final String? ownerImage;
+  final String? ownerProfession;
+  final String? postImage;
+  final String? postDescription;
+  final String? postTime;
+  final String? views;
+  const PostCard({
+    super.key,
+    required this.trailing,
+    this.ownerName,
+    this.ownerImage,
+    this.ownerProfession,
+    this.postImage,
+    this.postDescription,
+    this.postTime,
+    this.views,
+  });
 
   @override
-   Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -22,8 +39,9 @@ class PostCard extends StatelessWidget {
             Get.to(() => const OthersProfileScreen());
           },
           child: CircleAvatar(
+            backgroundColor: Colors.grey.shade800,
             radius: 20.r,
-            backgroundImage: AssetImage(Assets.images.image.keyName),
+            backgroundImage: NetworkImage(ownerImage ?? ''),
           ),
         ),
         widthBox8,
@@ -39,14 +57,14 @@ class PostCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Aminul Islam',
+                        ownerName ?? '',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
                         ),
                       ),
                       Text(
-                        'Flutter Developer',
+                        ownerProfession ?? '',
                         style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontSize: 10,
@@ -55,7 +73,7 @@ class PostCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  trailing
+                  trailing,
                 ],
               ),
               heightBox10,
@@ -70,7 +88,7 @@ class PostCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ImageContainer(
-                      image: Assets.images.image02.keyName,
+                      image: postImage ?? '',
                       height: 168,
                       width: double.infinity,
                       borderRadius: 8,
@@ -79,7 +97,7 @@ class PostCard extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: Text(
-                        'We are seeking a Senior Designer to lead the design of intuitive and user-centric mobile applications.',
+                        postDescription ?? '',
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           fontSize: 12,
@@ -102,7 +120,7 @@ class PostCard extends StatelessWidget {
                       ),
                       widthBox4,
                       Text(
-                        '110 views',
+                        '$views views',
                         style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontSize: 10,
@@ -112,7 +130,7 @@ class PostCard extends StatelessWidget {
                     ],
                   ),
                   Text(
-                    '20 mins',
+                    postTime ?? '',
                     style: TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 12,

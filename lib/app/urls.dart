@@ -24,7 +24,7 @@ class Urls {
   static const String forgotPasswordUrl = '$_baseUrl/otps/send';
   static const String changePasswordUrl = '$_baseUrl/auths/change-password';
   static const String deleteAccountUrl = '$_baseUrl/auth/change-password';
-  static const String resterPasswordUrl = '$_baseUrl/auths/reset-password'; 
+  static const String resterPasswordUrl = '$_baseUrl/auths/reset-password';
 
   // =========================================== Profile Block ======================================= //
   static const String updateProfileUrl = '$_baseUrl/teachers/profile';
@@ -33,6 +33,16 @@ class Urls {
 
   // =========================================== Home Block ========================================== //
   static const String feedPostUrl = '$_baseUrl/posts/feed';
+  static const String myFeedPostUrl = '$_baseUrl/posts/my';
+  static const String postUrl = '$_baseUrl/posts';
+  static const String feedJobUrl = '$_baseUrl/jobs';
+
+  static String editPostId(String id) {
+    return '$_baseUrl/posts/$id';
+  }
+  static String singleJobById(String id) {
+    return '$_baseUrl/jobs/$id';
+  }
 
   static String deleteNotificationById(String id) {
     return '$_baseUrl/notifications/$id';

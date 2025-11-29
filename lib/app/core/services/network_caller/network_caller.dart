@@ -35,7 +35,7 @@ class NetworkCaller {
     Map<String, dynamic>? queryParams, 
     Map<String, String>? headers,
     Map<String, dynamic>? body,
-    File? image,
+    File? image, 
     List<File>? images,
     File? cover,
     String? keyNameImage,
