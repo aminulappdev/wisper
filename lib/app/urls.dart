@@ -40,7 +40,7 @@ class Urls {
   static String editPostId(String id) {
     return '$_baseUrl/posts/$id';
   }
-  static String singleJobById(String id) {
+  static String singleJobById(String id) { 
     return '$_baseUrl/jobs/$id';
   }
 

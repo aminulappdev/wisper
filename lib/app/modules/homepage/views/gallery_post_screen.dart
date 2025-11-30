@@ -10,6 +10,7 @@ import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/utils/validator_service.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
+import 'package:wisper/app/core/widgets/custom_dialoge.dart';
 import 'package:wisper/app/core/widgets/custom_text_filed.dart';
 import 'package:wisper/app/core/widgets/image_picker.dart';
 import 'package:wisper/app/core/widgets/line_widget.dart';
@@ -368,4 +369,6 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
       ),
     );
   }
+
+ 
 }

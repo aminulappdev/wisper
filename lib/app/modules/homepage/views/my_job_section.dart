@@ -4,14 +4,14 @@ import 'package:wisper/app/core/utils/date_formatter.dart';
 import 'package:wisper/app/modules/homepage/controller/feed_job_controller.dart';
 import 'package:wisper/app/modules/homepage/widget/job_card.dart';
 
-class JobSection extends StatefulWidget {
-  const JobSection({super.key});
+class MyJobSection extends StatefulWidget {
+  const MyJobSection({super.key});
 
-  @override 
-  State<JobSection> createState() => _JobSectionState();
+  @override
+  State<MyJobSection> createState() => _MyJobSectionState();
 }
 
-class _JobSectionState extends State<JobSection> {
+class _MyJobSectionState extends State<MyJobSection> {
   final AllFeedJobController controller = Get.find<AllFeedJobController>();
 
   @override

@@ -439,7 +439,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         );
       },
-    );
+    ); 
   }
 
   void _showLogout() {

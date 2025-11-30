@@ -1,4 +1,3 @@
-
 import 'package:crash_safe_image/crash_safe_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,7 +5,9 @@ import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class LocationInfo extends StatelessWidget {
-  const LocationInfo({super.key});
+  final String? location;
+  final String? date;
+  const LocationInfo({super.key, this.location, this.date});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +23,7 @@ class LocationInfo extends StatelessWidget {
             ),
             widthBox4,
             Text(
-              'Building 1, Nigeria',
+              location ?? '',
               style: TextStyle(
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w400,
@@ -41,7 +42,7 @@ class LocationInfo extends StatelessWidget {
             ),
             widthBox4,
             Text(
-              'Created August 2025',
+              'Created $date',
               style: TextStyle(
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w400,

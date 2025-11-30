@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:wisper/app/core/utils/date_formatter.dart';
 import 'package:wisper/app/core/utils/image_picker.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
@@ -84,7 +85,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final GlobalKey suffixButtonKey = GlobalKey();
-
+    var date = profileController.profileData!.auth?.createdAt!;
+    final DateFormatter dateFormatter = DateFormatter(date!);
     final customPopupMenu = CustomPopupMenu(
       targetKey: suffixButtonKey,
       options: [
@@ -155,7 +157,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             SizedBox(height: 10.h),
             Recommendation(onTap: _showCreateGroup, count: 3),
             SizedBox(height: 10.h),
-            const LocationInfo(),
+            LocationInfo(
+              location: profileController.profileData?.auth?.person?.address,
+              date: dateFormatter.getFullDateFormat(),
+            ),
             SizedBox(height: 20.h),
             const StraightLiner(height: 0.4, color: Color(0xff454545)),
             SizedBox(height: 10.h),
@@ -189,10 +194,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             SizedBox(height: 10.h),
 
             // Content
-            if (selectedIndex == 0)
-              MyPostSection(
-                
-              ),
+            if (selectedIndex == 0) MyPostSection(),
 
             if (selectedIndex == 1)
               DocInfo(

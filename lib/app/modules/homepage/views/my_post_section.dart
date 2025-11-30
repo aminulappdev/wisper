@@ -1,15 +1,22 @@
 // my_post_section.dart
+// ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
+import 'package:wisper/app/core/utils/show_over_loading.dart';
+import 'package:wisper/app/core/utils/snack_bar.dart';
+import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/custom_popup.dart';
+import 'package:wisper/app/modules/homepage/controller/delete_gallery_post_controlller.dart';
 import 'package:wisper/app/modules/homepage/controller/my_post_controller.dart';
 import 'package:wisper/app/modules/homepage/views/edit_gallery_post.dart';
 import 'package:wisper/app/modules/homepage/widget/post_card.dart';
 import 'package:wisper/app/modules/profile/views/boost_screen.dart';
+import 'package:wisper/gen/assets.gen.dart';
 
 class MyPostSection extends StatefulWidget {
   const MyPostSection({super.key});
@@ -20,6 +27,7 @@ class MyPostSection extends StatefulWidget {
 
 class _MyPostSectionState extends State<MyPostSection> {
   final MyFeedPostController controller = Get.find<MyFeedPostController>();
+  final DeletePostController deletePostController = DeletePostController();
 
   @override
   // Corrected: was missing in your previous code
@@ -28,17 +36,38 @@ class _MyPostSectionState extends State<MyPostSection> {
     controller.getAllPost();
   }
 
+  void deletePost(String postId) {
+    showLoadingOverLay(
+      asyncFunction: () async => await performDeletePost(context, postId),
+      msg: 'Please wait...',
+    );
+  }
+
+  Future<void> performDeletePost(BuildContext context, String postId) async {
+    final bool isSuccess = await deletePostController.deletePost(
+      postId: postId,
+    );
+
+    if (isSuccess) {
+      final MyFeedPostController myFeedPostController =
+          Get.find<MyFeedPostController>();
+      myFeedPostController.getAllPost();
+      Navigator.pop(context);
+      showSnackBarMessage(context, "Post deleted successfully!", false);
+    } else {
+      showSnackBarMessage(context, deletePostController.errorMessage, true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      // Loading state
       if (controller.inProgress) {
         return const Center(
           child: CircularProgressIndicator(color: Colors.white),
         );
       }
 
-      // Empty state
       if (controller.allPostData.isEmpty) {
         return const Center(
           child: Text(
@@ -48,7 +77,6 @@ class _MyPostSectionState extends State<MyPostSection> {
         );
       }
 
-      // Main list
       return Expanded(
         child: ListView.builder(
           padding: EdgeInsets.zero,
@@ -78,15 +106,13 @@ class _MyPostSectionState extends State<MyPostSection> {
                     color: Colors.redAccent,
                   ),
                 ),
-                // আরো অপশন চাইলে এখানে যোগ করো
               ],
               optionActions: {
                 '0': () => Get.to(
                   () => EditGalleryPostScreen(feedPostItemModel: post),
                 ),
                 '1': () {
-                  // Delete post logic here
-                  Get.snackbar('Delete', 'Delete post tapped');
+                  _showLogout(post.id!);
                 },
               },
               menuWidth: 180.w,
@@ -96,11 +122,9 @@ class _MyPostSectionState extends State<MyPostSection> {
             return Padding(
               padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 4.w),
               child: PostCard(
-                // More options button with unique key
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Boost Post Button
                     SizedBox(
                       height: 36.h,
                       width: 90.w,
@@ -113,9 +137,8 @@ class _MyPostSectionState extends State<MyPostSection> {
                     ),
                     SizedBox(width: 12.w),
 
-                    // Three dot menu
                     GestureDetector(
-                      key: suffixButtonKey, // প্রতিটি পোস্টে আলাদা কী
+                      key: suffixButtonKey,
                       onTap: () {
                         customPopupMenu.showMenuAtPosition(context);
                       },
@@ -142,5 +165,77 @@ class _MyPostSectionState extends State<MyPostSection> {
         ),
       );
     });
+  }
+
+  void _showLogout(String postId) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          color: Colors.black,
+          height: 250,
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleIconWidget(
+                  imagePath: Assets.images.delete.keyName,
+                  onTap: () {},
+                  iconRadius: 22,
+                  radius: 24,
+                  color: Color(0xff312609),
+                  iconColor: Color(0xffDC8B44),
+                ),
+                heightBox20,
+                Text(
+                  'Delete?',
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+                heightBox8,
+                Text(
+                  'Are you sure you want to delete?',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xff9FA3AA),
+                  ),
+                ),
+                heightBox12,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: CustomElevatedButton(
+                        color: Color.fromARGB(255, 15, 15, 15),
+                        borderColor: Color(0xff262629),
+                        title: 'Discard',
+                        onPress: () {
+                          Get.back();
+                        },
+                      ),
+                    ),
+                    widthBox12,
+                    Expanded(
+                      child: CustomElevatedButton(
+                        color: Color(0xffE62047),
+                        title: 'Delete',
+                        onPress: () {
+                          deletePost(postId);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }
