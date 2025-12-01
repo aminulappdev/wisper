@@ -23,13 +23,6 @@ class MyFeedJobController extends GetxController {
   int? lastPage;
 
   // Category filter
-  final RxString _selectedCategoryId = ''.obs;
-  String get selectedCategoryId => _selectedCategoryId.value;
-  set selectedCategoryId(String value) {
-    _selectedCategoryId.value = value;
-    resetPagination();
-    update();
-  }
 
   Future<bool> getJobs({String? categoryId}) async {
     if (_inProgress.value) {
@@ -53,10 +46,6 @@ class MyFeedJobController extends GetxController {
       print('Fetching assets for page: $page');
 
       Map<String, dynamic> queryParams = {'limit': _limit, 'page': page};
-      final effectiveCategoryId = categoryId ?? _selectedCategoryId.value;
-      if (effectiveCategoryId.isNotEmpty) {
-        queryParams['category'] = effectiveCategoryId;
-      }
 
       print('Fetching assets with params: $queryParams');
 
@@ -105,7 +94,5 @@ class MyFeedJobController extends GetxController {
     page = 0; // Reset to 0 so first call uses page 1
     lastPage = null;
     _allJobList.clear();
-    print('Pagination reset, fetching with categoryId: $_selectedCategoryId');
-    getJobs(categoryId: _selectedCategoryId.value);
   }
 }

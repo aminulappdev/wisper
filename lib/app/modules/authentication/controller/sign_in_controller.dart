@@ -13,7 +13,7 @@ class SignInController extends GetxController {
 
   Future<bool> signIn({String? email, String? password}) async {
     _inProgress.value = true;
-
+ 
     try {
       Map<String, dynamic> body = {"email": email, "password": password};
       final NetworkResponse response = await Get.find<NetworkCaller>()

@@ -64,7 +64,7 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
     if (isSuccess) {
       final AllFeedPostController allFeedPostController =
           Get.find<AllFeedPostController>();
-      allFeedPostController.getAllPost();
+      await allFeedPostController.getAllPost();
       Navigator.pop(context);
       showSnackBarMessage(context, "Post created successfully!", false);
     } else {
@@ -369,6 +369,4 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
       ),
     );
   }
-
- 
 }

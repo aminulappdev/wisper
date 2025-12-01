@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
-import 'package:wisper/app/modules/homepage/controller/feed_job_controller.dart';
+import 'package:wisper/app/modules/homepage/controller/my_job_controller.dart';
 import 'package:wisper/app/modules/homepage/widget/job_card.dart';
 
 class MyJobSection extends StatefulWidget {
@@ -12,7 +12,7 @@ class MyJobSection extends StatefulWidget {
 }
 
 class _MyJobSectionState extends State<MyJobSection> {
-  final AllFeedJobController controller = Get.find<AllFeedJobController>();
+  final MyFeedJobController controller = Get.find<MyFeedJobController>();
 
   @override
   void initState() {

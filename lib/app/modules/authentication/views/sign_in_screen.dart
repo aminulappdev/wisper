@@ -36,7 +36,7 @@ class _SignInScreenState extends State<SignInScreen> {
       msg: 'Please wait...',
     );
   }
- 
+
   Future<void> performSignIn(BuildContext context) async {
     final bool isSuccess = await signInController.signIn(
       email: emailController.text,

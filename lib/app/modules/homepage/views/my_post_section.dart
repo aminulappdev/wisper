@@ -51,7 +51,7 @@ class _MyPostSectionState extends State<MyPostSection> {
     if (isSuccess) {
       final MyFeedPostController myFeedPostController =
           Get.find<MyFeedPostController>();
-      myFeedPostController.getAllPost();
+      await myFeedPostController.getAllPost();
       Navigator.pop(context);
       showSnackBarMessage(context, "Post deleted successfully!", false);
     } else {
