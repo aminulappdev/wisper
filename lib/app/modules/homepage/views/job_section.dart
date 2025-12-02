@@ -7,7 +7,7 @@ import 'package:wisper/app/modules/homepage/widget/job_card.dart';
 class JobSection extends StatefulWidget {
   const JobSection({super.key});
 
-  @override 
+  @override
   State<JobSection> createState() => _JobSectionState();
 }
 
@@ -24,7 +24,17 @@ class _JobSectionState extends State<JobSection> {
   Widget build(BuildContext context) {
     return Obx(() {
       if (controller.inProgress) {
-        return const Center(child: CircularProgressIndicator());
+        return SizedBox(
+          height: 500,
+          child: const Center(child: CircularProgressIndicator()),
+        );
+      } else if (controller.allJobData.isEmpty) {
+        return SizedBox(
+          height: 500,
+          child: const Center(
+            child: Text('No job found', style: TextStyle(fontSize: 12)),
+          ),
+        );
       } else {
         print('Length: ${controller.allJobData.length}');
 

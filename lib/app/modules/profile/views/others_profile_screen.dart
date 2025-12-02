@@ -10,7 +10,7 @@ import 'package:wisper/app/modules/chat/views/doc_info.dart';
 import 'package:wisper/app/modules/chat/widgets/location_info.dart';
 import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart';
 import 'package:wisper/app/modules/homepage/views/post_section.dart';
-import 'package:wisper/app/modules/profile/views/edit_profile_screen.dart';
+import 'package:wisper/app/modules/profile/views/person/edit_person_profile_screen.dart';
 import 'package:wisper/app/modules/profile/views/recommendation_screen.dart';
 import 'package:wisper/app/modules/profile/views/settings_screen.dart';
 import 'package:wisper/app/modules/profile/widget/info_card.dart';
@@ -92,7 +92,7 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
                       textSize: 12,
                       title: 'Edit Profile',
                       onPress: () {
-                        Get.to(() => const EditProfileScreen());
+                        Get.to(() => const EditPersonProfileScreen());
                       },
                       borderRadius: 50,
                     ),

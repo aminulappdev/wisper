@@ -7,10 +7,13 @@ import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/widgets/label_data.dart';
 import 'package:wisper/app/core/widgets/line_widget.dart';
 import 'package:wisper/app/modules/homepage/views/job_details_screen.dart';
-
 import 'package:wisper/gen/assets.gen.dart';
 
 class JobCard extends StatelessWidget {
+  final bool? showAction;
+  final VoidCallback? ontap;
+  final GlobalKey? suffixIconKey; // This is the key for CustomPopupMenu
+
   final String? postId;
   final String? ownerName;
   final String? ownerImage;
@@ -22,6 +25,7 @@ class JobCard extends StatelessWidget {
   final String? shiftType;
   final String? jobDescription;
   final String? date;
+
   const JobCard({
     super.key,
     this.postId,
@@ -35,11 +39,15 @@ class JobCard extends StatelessWidget {
     this.shiftType,
     this.jobDescription,
     this.date,
+    this.showAction = false,
+    this.ontap,
+    this.suffixIconKey, // Add this parameter
   });
 
   @override
   Widget build(BuildContext context) {
-    var shift = shiftType == 'MONTHLY' ? 'mo' : 'onOff';
+    final String shift = shiftType == 'MONTHLY' ? 'mo' : 'hr';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -54,109 +62,143 @@ class JobCard extends StatelessWidget {
               CircleAvatar(
                 backgroundColor: Colors.grey.shade800,
                 radius: 21.r,
-                backgroundImage: NetworkImage(ownerImage ?? ''),
+                backgroundImage: ownerImage != null && ownerImage!.isNotEmpty
+                    ? NetworkImage(ownerImage!)
+                    : null,
+                child: ownerImage == null || ownerImage!.isEmpty
+                    ? Icon(Icons.business, color: Colors.white, size: 24.r)
+                    : null,
               ),
               widthBox8,
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    ownerName ?? '',
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-                  ),
-                  Text(
-                    ownerDesignation ?? '',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 10,
-                      color: LightThemeColors.themeGreyColor,
-                    ),
-                  ),
-                  Text(
-                    jobTitle ?? '',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13,
-                      color: LightThemeColors.blueColor,
-                    ),
-                  ),
-                  Text(
-                    '\$${salary ?? ''}/$shift',
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-                  ),
-
-                  Row(
-                    children: [
-                      CrashSafeImage(
-                        Assets.images.location.keyName,
-                        height: 12,
-                      ),
-                      widthBox10,
-                      Text(
-                        location ?? '',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 10,
-                          color: LightThemeColors.themeGreyColor,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            ownerName ?? 'Unknown Company',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  heightBox10,
-                  Row(
-                    children: [
-                      LabelData(
-                        title: 'Part-time',
-                        bgColor: jobType == 'PART_TIME'
-                            ? LightThemeColors.blueColor
-                            : null,
-                      ),
-                      widthBox10,
-                      LabelData(
-                        title: 'Full-time',
-                        bgColor: jobType == 'FULL_TIME'
-                            ? LightThemeColors.blueColor
-                            : null,
-                      ),
-                      widthBox10,
-                      LabelData(
-                        title: 'Contract',
-                        bgColor: jobType == 'CONTRACT'
-                            ? LightThemeColors.blueColor
-                            : null,
-                      ),
-                    ],
-                  ),
-                  heightBox10,
-                  SizedBox(
-                    width: 250.w,
-                    child: Text(
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                      jobDescription ?? '',
+                        if (showAction == true)
+                          GestureDetector(
+                            onTap: ontap,
+                            child: Icon(
+                              Icons.more_vert,
+                              key: suffixIconKey, // Critical: attach the key here!
+                              color: LightThemeColors.themeGreyColor,
+                              size: 24.r,
+                            ),
+                          ),
+                      ],
+                    ),
+                    heightBox4,
+                    Text(
+                      ownerDesignation ?? '',
                       style: TextStyle(
                         fontWeight: FontWeight.w400,
-                        fontSize: 12,
-                        color: Color(0xffD0D5DD),
+                        fontSize: 10.sp,
+                        color: LightThemeColors.themeGreyColor,
                       ),
                     ),
-                  ),
-                  heightBox16,
-                  Text(
-                    date ?? '',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 12,
-                      color: LightThemeColors.themeGreyColor,
+                    heightBox4,
+                    Text(
+                      jobTitle ?? 'No Title',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13.sp,
+                        color: LightThemeColors.blueColor,
+                      ),
                     ),
-                  ),
-                ],
+                    heightBox4,
+                    Text(
+                      '\$${salary ?? 'Negotiable'}/$shift',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14.sp,
+                      ),
+                    ),
+                    heightBox8,
+                    Row(
+                      children: [
+                        CrashSafeImage(
+                          Assets.images.location.keyName,
+                          height: 12.h,
+                        ),
+                        widthBox10,
+                        Text(
+                          location ?? 'Remote',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 10.sp,
+                            color: LightThemeColors.themeGreyColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    heightBox12,
+                    Row(
+                      children: [
+                        LabelData(
+                          title: 'Part-time',
+                          bgColor: jobType == 'PART_TIME'
+                              ? LightThemeColors.blueColor
+                              : null,
+                        ),
+                        widthBox10,
+                        LabelData(
+                          title: 'Full-time',
+                          bgColor: jobType == 'FULL_TIME'
+                              ? LightThemeColors.blueColor
+                              : null,
+                        ),
+                        widthBox10,
+                        LabelData(
+                          title: 'Contract',
+                          bgColor: jobType == 'CONTRACT'
+                              ? LightThemeColors.blueColor
+                              : null,
+                        ),
+                      ],
+                    ),
+                    heightBox12,
+                    SizedBox(
+                      width: 250.w,
+                      child: Text(
+                        jobDescription ?? '',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 12.sp,
+                          color: const Color(0xffD0D5DD),
+                        ),
+                      ),
+                    ),
+                    heightBox16,
+                    Text(
+                      date ?? '',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 12.sp,
+                        color: LightThemeColors.themeGreyColor,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
         ),
         heightBox24,
-        StraightLiner(height: 0.4, color: Color(0xff454545)),
+        StraightLiner(height: 0.4, color: const Color(0xff454545)),
       ],
     );
   }

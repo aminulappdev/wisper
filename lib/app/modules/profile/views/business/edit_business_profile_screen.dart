@@ -11,19 +11,22 @@ import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/custom_text_filed.dart';
 import 'package:wisper/app/core/widgets/label.dart';
 import 'package:wisper/app/modules/authentication/widget/auth_header.dart';
-import 'package:wisper/app/modules/profile/controller/edit_profile_controller.dart';
-import 'package:wisper/app/modules/profile/controller/profile_controller.dart';
+import 'package:wisper/app/modules/profile/controller/buisness/buisness_controller.dart';
+import 'package:wisper/app/modules/profile/controller/buisness/edit_buisness_profile_controller.dart';
+import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
 
-class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({super.key});
+class EditBusinessProfileScreen extends StatefulWidget {
+  const EditBusinessProfileScreen({super.key});
 
   @override
-  State<EditProfileScreen> createState() => _EditProfileScreenState();
+  State<EditBusinessProfileScreen> createState() =>
+      _EditBusinessProfileScreenState();
 }
 
-class _EditProfileScreenState extends State<EditProfileScreen> {
-  final ProfileController profileController = Get.find<ProfileController>();
-  final EditProfileController editProfileController = EditProfileController();
+class _EditBusinessProfileScreenState extends State<EditBusinessProfileScreen> {
+  final BusinessController profileController = Get.find<BusinessController>();
+  final EditBusinessProfileController editProfileController =
+      EditBusinessProfileController();
   final _formKey = GlobalKey<FormState>();
 
   final _nameCtrl = TextEditingController();
@@ -31,51 +34,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _phoneCtrl = TextEditingController();
   final _addressCtrl = TextEditingController();
 
-  // এই কন্ট্রোলারটা আমরা Job Title এর জন্য ব্যবহার করবো
-  final _titleCtrl = TextEditingController();
-
-  final List<String> _jobTitles = [
-    'Flutter Developer',
-    'Graphic Designer',
-    'UI/UX Designer',
-    'Backend Developer',
-    'Frontend Developer',
-    'Full Stack Developer',
-    'Product Manager',
-    'Project Manager',
-    'Data Scientist',
-    'DevOps Engineer',
-    'QA Engineer',
-    'Mobile Developer',
-    'Other',
-  ];
-
   String? _selectedTitle;
 
   @override
   void initState() {
     super.initState();
 
-    final person = profileController.profileData!.auth?.person;
-
-    _nameCtrl.text = person?.name ?? '';
-    _emailCtrl.text = person?.email ?? '';
-    _phoneCtrl.text = person?.phone ?? '';
-    _addressCtrl.text = person?.address ?? '';
-
-    _selectedTitle = person?.title;
-    if (_selectedTitle == null || !_jobTitles.contains(_selectedTitle)) {
-      _selectedTitle = _jobTitles.first;
-    }
-
-    _titleCtrl.text = _selectedTitle!;
+    final user = profileController.buisnessData!.auth?.business;
+    _nameCtrl.text = user?.name ?? '';
+    _emailCtrl.text = user?.email ?? '';
+    _phoneCtrl.text = user?.phone ?? '';
+    _addressCtrl.text = user?.address ?? '';
   }
 
   @override
   void dispose() {
     _nameCtrl.dispose();
     _phoneCtrl.dispose();
-    _titleCtrl.dispose();
     _addressCtrl.dispose();
     super.dispose();
   }
@@ -93,14 +68,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final bool isSuccess = await editProfileController.editProfile(
       name: _nameCtrl.text.trim(),
       phone: _phoneCtrl.text.trim(),
-      title: _selectedTitle!,
       address: _addressCtrl.text.trim(),
     );
 
     if (isSuccess) {
-      final ProfileController profileController = Get.find<ProfileController>();
+      final BusinessController profileController =
+          Get.find<BusinessController>();
       profileController.getMyProfile();
-      Get.back();
+      Navigator.pop(context);
       showSnackBarMessage(context, 'Profile updated successfully', false);
     } else {
       showSnackBarMessage(context, editProfileController.errorMessage, true);
@@ -160,55 +135,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 validator: ValidatorService.validateSimpleField,
               ),
 
-              heightBox20,
-              const Label(label: 'Job Title'),
-              heightBox10,
-              CustomTextField(
-                controller: _titleCtrl,
-                readOnly: true,
-                hintText: 'Select job title',
-                suffixIcon: Icons.keyboard_arrow_down,
-                onTap: () {
-                  showModalBottomSheet(
-                    context: context,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(20),
-                      ),
-                    ),
-                    builder: (ctx) => ListView.builder(
-                      padding: EdgeInsets.all(16.w),
-                      itemCount: _jobTitles.length,
-                      itemBuilder: (context, index) {
-                        final title = _jobTitles[index];
-                        return ListTile(
-                          title: Text(title),
-                          trailing: _selectedTitle == title
-                              ? const Icon(Icons.check, color: Colors.blue)
-                              : null,
-                          onTap: () {
-                            setState(() {
-                              _selectedTitle = title;
-                              _titleCtrl.text =
-                                  title; // এখানে কন্ট্রোলার আপডেট করা হচ্ছে
-                            });
-                            Navigator.pop(ctx);
-                          },
-                        );
-                      },
-                    ),
-                  );
-                },
-                validator: (_) {
-                  if (_selectedTitle == null || _selectedTitle!.isEmpty) {
-                    return 'Please select a job title';
-                  }
-                  return null;
-                },
-              ),
-
               heightBox50,
-
               Center(
                 child: CustomElevatedButton(
                   height: 56.h,

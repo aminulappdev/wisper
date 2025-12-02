@@ -9,14 +9,14 @@ import 'package:wisper/app/urls.dart';
 class AllFeedPostController extends GetxController {
   final NetworkCaller networkCaller = Get.find<NetworkCaller>();
 
-  final RxBool _inProgress = false.obs;
+  final RxBool _inProgress = false.obs; 
   bool get inProgress => _inProgress.value;
 
   final RxString _errorMessage = ''.obs;
   String get errorMessage => _errorMessage.value;
 
   final RxList<FeedPostItemModel> _allPostList = <FeedPostItemModel>[].obs;
-  List<FeedPostItemModel> get allPostData => _allPostList;
+  RxList<FeedPostItemModel> get allPostData => _allPostList;
 
   final int _limit = 20;
   int page = 0;
@@ -25,7 +25,7 @@ class AllFeedPostController extends GetxController {
   // Category filter
   final RxString _selectedCategoryId = ''.obs;
   String get selectedCategoryId => _selectedCategoryId.value;
-  set selectedCategoryId(String value) {
+  set selectedCategoryId(String value) { 
     _selectedCategoryId.value = value;
     resetPagination(); // Reset and fetch data when category changes
     update(); // Ensure UI updates

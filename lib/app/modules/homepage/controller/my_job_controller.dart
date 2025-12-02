@@ -4,6 +4,7 @@ import 'package:wisper/app/core/services/network_caller/network_caller.dart';
 import 'package:wisper/app/core/services/network_caller/network_response.dart';
 import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
 import 'package:wisper/app/modules/homepage/model/feed_job_model.dart';
+
 import 'package:wisper/app/urls.dart';
 
 class MyFeedJobController extends GetxController {
@@ -16,7 +17,7 @@ class MyFeedJobController extends GetxController {
   String get errorMessage => _errorMessage.value;
 
   final RxList<FeedJobItemModel> _allJobList = <FeedJobItemModel>[].obs;
-  List<FeedJobItemModel> get allJobData => _allJobList;
+  RxList<FeedJobItemModel> get allJobData => _allJobList;
 
   final int _limit = 20;
   int page = 0;
@@ -24,7 +25,7 @@ class MyFeedJobController extends GetxController {
 
   // Category filter
 
-  Future<bool> getJobs({String? categoryId}) async {
+  Future<bool> getJobs({String? categoryId, String? authorId}) async {
     if (_inProgress.value) {
       print('Fetch already in progress, skipping');
       return false;
@@ -45,7 +46,11 @@ class MyFeedJobController extends GetxController {
       page++;
       print('Fetching assets for page: $page');
 
-      Map<String, dynamic> queryParams = {'limit': _limit, 'page': page};
+      Map<String, dynamic> queryParams = {
+        'limit': _limit,
+        'page': page,
+        'authorId': StorageUtil.getData(StorageUtil.userAuthId),
+      };
 
       print('Fetching assets with params: $queryParams');
 
@@ -59,6 +64,7 @@ class MyFeedJobController extends GetxController {
 
       if (response.isSuccess && response.responseData != null) {
         _errorMessage.value = '';
+        print('My job Response: ${response.responseData}');
         FeedJobModel jobModel = FeedJobModel.fromJson(response.responseData);
         _allJobList.addAll(jobModel.data?.jobs ?? []);
 

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:wisper/app/core/config/translations/localization_service.dart';
 
-
 class StorageUtil {
   // prevent making instance
   StorageUtil._();
@@ -14,6 +13,8 @@ class StorageUtil {
   /// KEYS
   static const String userAccessToken = 'user-access-token';
   static const String userId = 'user-id';
+  static const String userAuthId = 'user-auth-id';
+  static const String userRole = 'user-role';
   static const String otpToken = 'otp-token';
   static const String _fcmTokenKey = 'fcm_token';
   static const String _currentLocalKey = 'current_local';
@@ -21,7 +22,7 @@ class StorageUtil {
   static const String _onboardingCompleteKey = 'onboarding_complete';
 
   /// init storage
-  static Future<void> init() async { 
+  static Future<void> init() async {
     await GetStorage.init();
   }
 
@@ -31,8 +32,7 @@ class StorageUtil {
 
   static dynamic getData(String key) => _box.read(key);
 
-  static Future<void> deleteData(String key) async =>
-      await _box.remove(key);
+  static Future<void> deleteData(String key) async => await _box.remove(key);
 
   /// Onboarding complete
   static Future<void> setOnboardingComplete(bool complete) async =>
@@ -66,4 +66,3 @@ class StorageUtil {
   /// Clear all
   static Future<void> clear() async => await _box.erase();
 }
-

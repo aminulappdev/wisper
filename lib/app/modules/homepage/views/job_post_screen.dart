@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
@@ -7,6 +9,7 @@ import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/custom_text_filed.dart';
 import 'package:wisper/app/core/widgets/label.dart';
 import 'package:wisper/app/modules/homepage/controller/create_job_controller.dart';
+import 'package:wisper/app/modules/homepage/controller/my_job_controller.dart';
 
 class JobPostScreen extends StatefulWidget {
   const JobPostScreen({super.key});
@@ -81,6 +84,14 @@ class _JobPostScreenState extends State<JobPostScreen> {
     );
 
     if (isSuccess) {
+      final MyFeedJobController myFeedJobController =
+          Get.find<MyFeedJobController>();
+
+      myFeedJobController.page = 0;
+      myFeedJobController.lastPage = null;
+      myFeedJobController.allJobData.clear();
+
+      await myFeedJobController.getJobs();
       Navigator.pop(context);
       showSnackBarMessage(context, "Job posted successfully!", false);
     } else {

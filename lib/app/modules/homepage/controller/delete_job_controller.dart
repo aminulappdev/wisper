@@ -1,41 +1,31 @@
+import 'dart:io';
+
 import 'package:get/get.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/services/network_caller/network_caller.dart';
 import 'package:wisper/app/core/services/network_caller/network_response.dart';
 import 'package:wisper/app/urls.dart';
 
-class SignInController extends GetxController {
+class DeleteJobController extends GetxController {
   final RxBool _inProgress = false.obs;
   bool get inProgress => _inProgress.value;
 
   final RxString _errorMessage = ''.obs;
   String get errorMessage => _errorMessage.value;
 
-  Future<bool> signIn({String? email, String? password}) async {
+  Future<bool> deletePost({String? jobId}) async {
     _inProgress.value = true;
 
     try {
-      Map<String, dynamic> body = {"email": email, "password": password};
       final NetworkResponse response = await Get.find<NetworkCaller>()
-          .postRequest(Urls.signInUrl, body: body);
+          .deleteRequest(
+            '${Urls.feedJobUrl}/$jobId',
+
+            accessToken: StorageUtil.getData(StorageUtil.userAccessToken),
+          );
 
       if (response.isSuccess && response.responseData != null) {
         _errorMessage.value = '';
-
-        print('Response roken');
-        print(response.responseData['data']['accessToken']);
-
-        var token = response.responseData['data']['accessToken'];
-        Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-        print(decodedToken);
-        var role = decodedToken['role'];
-        StorageUtil.saveData(StorageUtil.userRole, role);
-
-        StorageUtil.saveData(
-          StorageUtil.userAccessToken,
-          response.responseData['data']['accessToken'],
-        );
 
         _inProgress.value = false;
         return true;

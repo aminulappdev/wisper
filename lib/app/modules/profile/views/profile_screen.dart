@@ -1,11 +1,10 @@
 // lib/app/modules/profile/views/profile_screen.dart
 
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
 import 'package:wisper/app/core/utils/image_picker.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
@@ -15,10 +14,13 @@ import 'package:wisper/app/core/widgets/line_widget.dart';
 import 'package:wisper/app/modules/chat/views/doc_info.dart';
 import 'package:wisper/app/modules/chat/widgets/location_info.dart';
 import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart';
+import 'package:wisper/app/modules/homepage/views/my_job_section.dart';
 import 'package:wisper/app/modules/homepage/views/my_post_section.dart';
-import 'package:wisper/app/modules/profile/controller/profile_controller.dart';
+import 'package:wisper/app/modules/profile/controller/buisness/buisness_controller.dart';
+import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
 import 'package:wisper/app/modules/profile/controller/upload_photo_controller.dart';
-import 'package:wisper/app/modules/profile/views/edit_profile_screen.dart';
+import 'package:wisper/app/modules/profile/views/business/edit_business_profile_screen.dart';
+import 'package:wisper/app/modules/profile/views/person/edit_person_profile_screen.dart';
 import 'package:wisper/app/modules/profile/views/recommendation_screen.dart';
 import 'package:wisper/app/modules/profile/views/settings_screen.dart';
 import 'package:wisper/app/modules/profile/widget/info_card.dart';
@@ -35,42 +37,60 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   int selectedIndex = 0;
 
-  final ProfileController profileController = Get.find<ProfileController>();
+  // কন্ট্রোলার
+  final ProfileController personController = Get.find<ProfileController>();
+  final BusinessController businessController = Get.put(BusinessController());
   final ProfilePhotoController photoController = Get.put(
     ProfilePhotoController(),
   );
+
+  // কারেন্ট ইউজারের রোল ও ইমেজ পাথ
+  late final String userRole;
   final RxString currentImagePath = ''.obs;
 
   @override
   void initState() {
     super.initState();
-    final apiImage = profileController.profileData?.auth?.person?.image ?? '';
-    if (apiImage.isNotEmpty) {
-      currentImagePath.value = apiImage;
-    } else {
-      currentImagePath.value = Assets.images.person.keyName;
-    }
+    userRole = StorageUtil.getData(StorageUtil.userRole) ?? 'PERSON';
+    _updateProfileImage();
   }
 
+  // প্রোফাইল ইমেজ আপডেট করার হেল্পার
+  void _updateProfileImage() {
+    String? imageUrl;
+    if (userRole == 'PERSON') {
+      imageUrl = personController.profileData?.auth?.person?.image;
+    } else {
+      imageUrl = businessController.buisnessData?.auth?.business?.image;
+    }
+
+    currentImagePath.value = imageUrl?.isNotEmpty == true
+        ? imageUrl!
+        : (userRole == 'PERSON'
+              ? Assets.images.person.keyName
+              : Assets.images.person.keyName); // BUSINESS এর জন্য ডিফল্ট ইমেজ
+  }
+
+  // ইমেজ পিক করার পর আপলোড + রিফ্রেশ
   void _onImagePicked(File imageFile) async {
-    currentImagePath.value = imageFile.path;
+    currentImagePath.value = imageFile.path; // লোকাল ইমেজ দেখানোর জন্য
+
     final bool success = await photoController.uploadProfilePhoto(imageFile);
 
     if (success) {
-      final ProfileController profileController = Get.find<ProfileController>();
-      await profileController.getMyProfile();
-      await Future.delayed(const Duration(milliseconds: 800));
-      final latestImageUrl = profileController.profileData?.auth?.person?.image;
-
-      if (latestImageUrl != null && latestImageUrl.isNotEmpty) {
-        currentImagePath.value = latestImageUrl;
+      // API থেকে লেটেস্ট ডাটা রিফ্রেশ
+      if (userRole == 'PERSON') {
+        await personController.getMyProfile();
+      } else {
+        await businessController.getMyProfile();
       }
+
+      await Future.delayed(const Duration(milliseconds: 800));
+      _updateProfileImage(); // UI আপডেট
+      showSnackBarMessage(context, 'Profile photo updated!', false);
     } else {
-      showSnackBarMessage(context, 'Image upload failed', true);
-      final oldImage = profileController.profileData?.auth?.person?.image;
-      currentImagePath.value = oldImage?.isNotEmpty == true
-          ? oldImage!
-          : Assets.images.person.keyName;
+      showSnackBarMessage(context, 'Failed to upload image', true);
+      _updateProfileImage(); // পুরানো ইমেজে ফিরে যাও
     }
   }
 
@@ -82,48 +102,106 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  // ট্যাব কন্টেন্ট – রোল অনুযায়ী
+  Widget _getTabContent(int index) {
+    if (userRole == 'PERSON') {
+      if (index == 0) return const MyPostSection();
+      if (index == 1) {
+        return DocInfo(title: 'Resume.pdf', isDownloaded: true, onTap: () {});
+      }
+    } else {
+      // BUSINESS
+      if (index == 0) return  MyPostSection();
+      if (index == 1) return  MyJobSection();
+      if (index == 2) {
+        return DocInfo(
+          title: 'Company Brochure.pdf',
+          isDownloaded: true,
+          onTap: () {},
+        );
+      }
+    }
+    return const SizedBox.shrink();
+  }
+
+  void _onTabTapped(int index) => setState(() => selectedIndex = index);
+
   @override
   Widget build(BuildContext context) {
     final GlobalKey suffixButtonKey = GlobalKey();
-    var date = profileController.profileData!.auth?.createdAt!;
-    final DateFormatter dateFormatter = DateFormatter(date!);
-    final customPopupMenu = CustomPopupMenu(
-      targetKey: suffixButtonKey,
-      options: [
-        Text(
-          'Settings',
-          style: TextStyle(
-            fontSize: 12.sp,
-            fontWeight: FontWeight.w400,
-            color: Colors.white,
-          ),
-        ),
-      ],
-      optionActions: {'0': () => Get.to(() => const SettingsScreen())},
-      menuWidth: 200,
-      menuHeight: 30,
-    );
 
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: Column(
-          children: [
-            SizedBox(height: 30.h),
+    return Obx(() {
+      // লেটেস্ট প্রোফাইল ডাটা
+      final personData = userRole == 'PERSON'
+          ? personController.profileData?.auth?.person
+          : null;
+      final businessData = userRole != 'PERSON'
+          ? businessController.buisnessData?.auth?.business
+          : null;
 
-            Obx(
-              () => InfoCard(
+      final String displayName = userRole == 'PERSON'
+          ? (personData?.name ?? 'User')
+          : (businessData?.name ?? 'Company');
+
+      final String displayTitle = userRole == 'PERSON'
+          ? (personData?.title ?? '')
+          : (businessData?.industry ?? '');
+
+      final String? displayAddress = userRole == 'PERSON'
+          ? personData?.address
+          : businessData?.address;
+
+      final DateTime? createdAt = userRole == 'PERSON'
+          ? personController.profileData?.auth?.createdAt
+          : businessController.buisnessData?.auth?.createdAt;
+
+      final DateFormatter dateFormatter = createdAt != null
+          ? DateFormatter(createdAt)
+          : DateFormatter(DateTime.now());
+
+      // ট্যাব লিস্ট – রোল অনুযায়ী
+      final List<Map<String, String>> tabs = userRole == 'PERSON'
+          ? [
+              {'index': '0', 'title': 'Post'},
+              {'index': '1', 'title': 'Resume'},
+            ]
+          : [
+              {'index': '0', 'title': 'Post'},
+              {'index': '1', 'title': 'Job'},
+              {'index': '2', 'title': 'Resume'},
+            ];
+
+      return Scaffold(
+        body: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
+          child: Column(
+            children: [
+              SizedBox(height: 40.h),
+
+              // Profile Info Card
+              InfoCard(
                 trailingKey: suffixButtonKey,
-                trailingOnTap: () {
-                  customPopupMenu.showMenuAtPosition(context);
-                },
+                trailingOnTap: () => CustomPopupMenu(
+                  targetKey: suffixButtonKey,
+                  options: [
+                    Text(
+                      'Settings',
+                      style: TextStyle(fontSize: 12.sp, color: Colors.white),
+                    ),
+                  ],
+                  optionActions: {
+                    '0': () => Get.to(() => const SettingsScreen()),
+                  },
+                  menuWidth: 200,
+                  menuHeight: 40,
+                ).showMenuAtPosition(context),
                 imagePath: currentImagePath.value,
-                editOnTap: () {
-                  ImagePickerHelper().showAlertDialog(context, _onImagePicked);
-                },
-                title: profileController.profileData?.auth?.person?.name ?? '',
-                memberInfo:
-                    profileController.profileData?.auth?.person?.title ?? '',
+                editOnTap: () => ImagePickerHelper().showAlertDialog(
+                  context,
+                  _onImagePicked,
+                ),
+                title: displayName,
+                memberInfo: displayTitle,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -145,66 +223,66 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: Colors.black,
                         textSize: 12,
                         title: 'Edit Profile',
-                        onPress: () => Get.to(() => const EditProfileScreen()),
+                        onPress: () => Get.to(
+                          () =>
+                              StorageUtil.getData(StorageUtil.userRole) ==
+                                  'PERSON'
+                              ? EditPersonProfileScreen()
+                              : EditBusinessProfileScreen(),
+                        ),
                         borderRadius: 50,
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
 
-            SizedBox(height: 10.h),
-            Recommendation(onTap: _showCreateGroup, count: 3),
-            SizedBox(height: 10.h),
-            LocationInfo(
-              location: profileController.profileData?.auth?.person?.address,
-              date: dateFormatter.getFullDateFormat(),
-            ),
-            SizedBox(height: 20.h),
-            const StraightLiner(height: 0.4, color: Color(0xff454545)),
-            SizedBox(height: 10.h),
+              SizedBox(height: 10.h),
+              Recommendation(onTap: _showCreateGroup, count: 3),
+              SizedBox(height: 10.h),
 
-            // Tabs
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  onTap: () => setState(() => selectedIndex = 0),
-                  child: SelectOptionWidget(
-                    currentIndex: 0,
-                    selectedIndex: selectedIndex,
-                    title: 'Post',
-                    lineColor: const Color.fromARGB(255, 255, 255, 255),
-                  ),
-                ),
-                SizedBox(width: 100.w),
-                GestureDetector(
-                  onTap: () => setState(() => selectedIndex = 1),
-                  child: SelectOptionWidget(
-                    currentIndex: 1,
-                    selectedIndex: selectedIndex,
-                    title: 'Resume',
-                    lineColor: const Color.fromARGB(255, 255, 255, 255),
-                  ),
-                ),
-              ],
-            ),
-            const StraightLiner(height: 0.4, color: Color(0xff454545)),
-            SizedBox(height: 10.h),
-
-            // Content
-            if (selectedIndex == 0) MyPostSection(),
-
-            if (selectedIndex == 1)
-              DocInfo(
-                title: 'job_description.pdf',
-                isDownloaded: true,
-                onTap: () {},
+              LocationInfo(
+                location: displayAddress ?? 'Location not set',
+                date: dateFormatter.getFullDateFormat(),
               ),
-          ],
+
+              SizedBox(height: 20.h),
+              const StraightLiner(height: 0.4, color: Color(0xff454545)),
+              SizedBox(height: 10.h),
+
+              // Dynamic Tabs
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: tabs.asMap().entries.map((entry) {
+                  int idx = entry.key;
+                  var tab = entry.value;
+                  int tabIndex = int.parse(tab['index']!);
+                  return Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => _onTabTapped(tabIndex),
+                        child: SelectOptionWidget(
+                          currentIndex: tabIndex,
+                          selectedIndex: selectedIndex,
+                          title: tab['title']!,
+                          lineColor: Colors.white,
+                        ),
+                      ),
+                      if (idx < tabs.length - 1) SizedBox(width: 30.w),
+                    ],
+                  );
+                }).toList(),
+              ),
+
+              const StraightLiner(height: 0.4, color: Color(0xff454545)),
+              SizedBox(height: 10.h),
+
+              // Tab Content
+              Expanded(child: _getTabContent(selectedIndex)),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

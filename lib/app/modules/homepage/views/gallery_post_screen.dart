@@ -10,7 +10,6 @@ import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/utils/validator_service.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
-import 'package:wisper/app/core/widgets/custom_dialoge.dart';
 import 'package:wisper/app/core/widgets/custom_text_filed.dart';
 import 'package:wisper/app/core/widgets/image_picker.dart';
 import 'package:wisper/app/core/widgets/line_widget.dart';
@@ -33,7 +32,7 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
   final ImagePickerHelper _imagePickerHelper = ImagePickerHelper();
 
   // Privacy state
-  String _selectedPrivacy = 'Everyone'; // Default
+  String _selectedPrivacy = 'EVERYONE'; // Default
 
   void _addImage(File image) {
     setState(() {
@@ -58,15 +57,25 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
     final bool isSuccess = await createPostController.createPost(
       description: _captionCtrl.text.trim(),
       images: _selectedImages,
-      privacy: _selectedPrivacy,
+      privacy:
+          _selectedPrivacy, // সরাসরি পাঠাও, কারণ ইতিমধ্যে 'EVERYONE'/'FOLLOWERS' আছে
     );
 
     if (isSuccess) {
-      final AllFeedPostController allFeedPostController =
-          Get.find<AllFeedPostController>();
-      await allFeedPostController.getAllPost();
-      Navigator.pop(context);
-      showSnackBarMessage(context, "Post created successfully!", false);
+      if (isSuccess) {
+        final AllFeedPostController feedController =
+            Get.find<AllFeedPostController>();
+
+        // এই ৩ লাইনই সব সমস্যার সমাধান!
+        feedController.page = 0;
+        feedController.lastPage = null;
+        feedController.allPostData.clear();
+
+        await feedController.getAllPost(); // নতুন পোস্ট উপরে চলে আসবে
+
+        Navigator.pop(context);
+        showSnackBarMessage(context, "Post created successfully!", false);
+      }
     } else {
       showSnackBarMessage(context, createPostController.errorMessage, true);
     }
@@ -209,7 +218,7 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
                         ),
                         widthBox10,
                         Text(
-                          _selectedPrivacy == 'Everyone'
+                          _selectedPrivacy == 'EVERYONE'
                               ? 'Everyone can view'
                               : 'Only me',
                           style: TextStyle(

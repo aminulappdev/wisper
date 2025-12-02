@@ -9,7 +9,7 @@ import 'package:wisper/app/urls.dart';
 
 class ProfilePhotoController extends GetxController {
   final RxBool _inProgress = false.obs;
-  bool get inProgress => _inProgress.value; 
+  bool get inProgress => _inProgress.value;
 
   Future<bool> uploadProfilePhoto(File image) async {
     _inProgress.value = true;
@@ -19,7 +19,9 @@ class ProfilePhotoController extends GetxController {
       final response = await Get.find<NetworkCaller>().patchRequest(
         image: image,
         keyNameImage: 'image',
-        Urls.editProfilePhotoUrl,
+        StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
+            ? Urls.personEditProfilePhotoUrl
+            : Urls.businessEditProfilePhotoUrl,
         accessToken: StorageUtil.getData(StorageUtil.userAccessToken),
       );
 

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
@@ -51,8 +52,11 @@ class _MyPostSectionState extends State<MyPostSection> {
     if (isSuccess) {
       final MyFeedPostController myFeedPostController =
           Get.find<MyFeedPostController>();
+      myFeedPostController.page = 0;
+      myFeedPostController.lastPage = null;
+      myFeedPostController.allPostData.clear();
       await myFeedPostController.getAllPost();
-      Navigator.pop(context);
+      Get.back(); 
       showSnackBarMessage(context, "Post deleted successfully!", false);
     } else {
       showSnackBarMessage(context, deletePostController.errorMessage, true);
@@ -72,7 +76,7 @@ class _MyPostSectionState extends State<MyPostSection> {
         return const Center(
           child: Text(
             'No posts yet',
-            style: TextStyle(color: Colors.white70, fontSize: 16),
+            style: TextStyle(color: Colors.white70, fontSize: 12),
           ),
         );
       }
@@ -112,7 +116,7 @@ class _MyPostSectionState extends State<MyPostSection> {
                   () => EditGalleryPostScreen(feedPostItemModel: post),
                 ),
                 '1': () {
-                  _showLogout(post.id!);
+                  _showDeletePost(post.id!);
                 },
               },
               menuWidth: 180.w,
@@ -152,9 +156,17 @@ class _MyPostSectionState extends State<MyPostSection> {
                 ),
 
                 // Post data
-                ownerName: post.author?.person?.name ?? 'Unknown User',
-                ownerImage: post.author?.person?.image ?? '',
-                ownerProfession: post.author?.person?.title ?? 'Professional',
+                ownerName: StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
+                    ? post.author?.person?.name ?? 'Unknown User'
+                    : post.author?.business?.name ?? 'Unknown Business',
+                ownerImage:
+                    StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
+                    ? post.author?.person?.image ?? ''
+                    : post.author?.business?.image ?? '',
+                ownerProfession:
+                    StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
+                    ? post.author?.person?.title ?? 'Professional'
+                    : post.author?.business?.name ?? 'Business',
                 postImage: post.images.isNotEmpty ? post.images.first : '',
                 postDescription: post.caption ?? '',
                 postTime: formattedTime.getRelativeTimeFormat(),
@@ -167,7 +179,7 @@ class _MyPostSectionState extends State<MyPostSection> {
     });
   }
 
-  void _showLogout(String postId) {
+  void _showDeletePost(String postId) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {

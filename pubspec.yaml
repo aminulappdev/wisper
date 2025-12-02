@@ -57,6 +57,7 @@ dependencies:
   smooth_page_indicator: ^1.2.0+3
   camera: ^0.11.1
   file_picker: ^10.3.3
+  jwt_decoder: ^2.0.1
 
 
 dev_dependencies:

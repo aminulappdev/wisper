@@ -11,7 +11,8 @@ import 'package:wisper/app/core/widgets/details_card.dart';
 import 'package:wisper/app/core/widgets/line_widget.dart';
 import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
 import 'package:wisper/app/modules/chat/widgets/toggle_option.dart';
-import 'package:wisper/app/modules/profile/controller/profile_controller.dart';
+import 'package:wisper/app/modules/profile/controller/buisness/buisness_controller.dart';
+import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
 import 'package:wisper/app/modules/profile/views/change_password_screen.dart';
 import 'package:wisper/app/modules/profile/views/profile_screen.dart';
 import 'package:wisper/app/modules/profile/views/wallet_screen.dart';
@@ -30,8 +31,21 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final ProfileController profileController = Get.find<ProfileController>();
+  final BusinessController businessController = Get.find<BusinessController>();
+
   @override
   Widget build(BuildContext context) {
+    var profileImage = StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
+        ? profileController.profileData?.auth?.person?.image
+        : businessController.buisnessData?.auth?.business?.image;
+
+    var name = StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
+        ? profileController.profileData?.auth?.person?.name
+        : businessController.buisnessData?.auth?.business?.name;
+
+    var job = StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
+        ? profileController.profileData?.auth?.person?.title
+        : businessController.buisnessData?.auth?.business?.industry;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -52,31 +66,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     heightBox10,
-                    Obx(
-                      () => MyInfoCard(
-                        ontap: () {
-                          Get.to(() => const ProfileScreen());
-                        },
-                        imagePath:
-                            profileController
-                                .profileData
-                                ?.auth
-                                ?.person
-                                ?.image ??
-                            '',
-
-                        name:
-                            profileController.profileData?.auth?.person?.name ??
-                            '',
-                        job:
-                            profileController
-                                .profileData
-                                ?.auth
-                                ?.person
-                                ?.title ??
-                            '',
-                      ),
+                    MyInfoCard(
+                      ontap: () {
+                        Get.to(() => const ProfileScreen());
+                      },
+                      imagePath: profileImage ?? '',
+                      name: name ?? '',
+                      job: job ?? '',
                     ),
+
                     heightBox20,
                     StraightLiner(height: 0.5),
                     heightBox10,
@@ -439,7 +437,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         );
       },
-    ); 
+    );
   }
 
   void _showLogout() {
@@ -498,7 +496,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         color: Color(0xffE62047),
                         title: 'Logout',
                         onPress: () {
+                          StorageUtil.deleteData(StorageUtil.userAccessToken);
+                          StorageUtil.deleteData(StorageUtil.userId);
+                          StorageUtil.deleteData(StorageUtil.userRole);
+                          StorageUtil.deleteData(StorageUtil.userAuthId);
                           StorageUtil.clear();
+
                           Get.offAll(() => SignInScreen());
                         },
                       ),

@@ -74,7 +74,11 @@ class _EditGalleryPostScreenState extends State<EditGalleryPostScreen> {
         );
 
         if (success) {
-          final MyFeedPostController myFeedPostController = Get.find<MyFeedPostController>();
+          final MyFeedPostController myFeedPostController =
+              Get.find<MyFeedPostController>();
+          myFeedPostController.page = 0;
+          myFeedPostController.lastPage = null;
+          myFeedPostController.allPostData.clear();
           myFeedPostController.getAllPost();
           Navigator.pop(context);
           showSnackBarMessage(context, "Post updated successfully!", false);

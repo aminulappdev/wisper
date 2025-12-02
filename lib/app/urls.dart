@@ -9,9 +9,12 @@ class Urls {
   // =========================================== Common ============================================== //
 
   // =========================================== Profile ============================================== //
-  static const String profileUrl = '$_baseUrl/persons/profile';
-  static const String editProfileUrl = '$_baseUrl/persons/profile';
-  static const String editProfilePhotoUrl = '$_baseUrl/persons/profile-image';
+  static const String personProfileUrl = '$_baseUrl/persons/profile';
+  static const String businessProfileUrl = '$_baseUrl/businesses/profile';
+  static const String personEditProfileUrl = '$_baseUrl/persons/profile';
+  static const String businessEditProfileUrl = '$_baseUrl/businesses/profile';
+  static const String personEditProfilePhotoUrl = '$_baseUrl/persons/profile-image';
+  static const String businessEditProfilePhotoUrl = '$_baseUrl/businesses/profile-image';
 
   // =========================================== Authentication ====================================== //
   static const String signUpUrlPerson = '$_baseUrl/auths/person/signup';
@@ -40,7 +43,8 @@ class Urls {
   static String editPostId(String id) {
     return '$_baseUrl/posts/$id';
   }
-  static String singleJobById(String id) { 
+
+  static String singleJobById(String id) {
     return '$_baseUrl/jobs/$id';
   }
 

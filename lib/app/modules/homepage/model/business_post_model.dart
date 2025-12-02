@@ -1,5 +1,5 @@
-class FeedPostModel {
-  FeedPostModel({
+class BusinessFeedPostModel {
+  BusinessFeedPostModel({
     required this.success,
     required this.message,
     required this.data,
@@ -9,8 +9,8 @@ class FeedPostModel {
   final String? message;
   final Data? data;
 
-  factory FeedPostModel.fromJson(Map<String, dynamic> json) {
-    return FeedPostModel(
+  factory BusinessFeedPostModel.fromJson(Map<String, dynamic> json) {
+    return BusinessFeedPostModel(
       success: json["success"],
       message: json["message"],
       data: json["data"] == null ? null : Data.fromJson(json["data"]),
@@ -22,15 +22,15 @@ class Data {
   Data({required this.meta, required this.posts});
 
   final Meta? meta;
-  final List<FeedPostItemModel> posts;
+  final List<BusinessFeedPostItemModel> posts;
 
   factory Data.fromJson(Map<String, dynamic> json) {
     return Data(
       meta: json["meta"] == null ? null : Meta.fromJson(json["meta"]),
       posts: json["posts"] == null
           ? []
-          : List<FeedPostItemModel>.from(
-              json["posts"]!.map((x) => FeedPostItemModel.fromJson(x)),
+          : List<BusinessFeedPostItemModel>.from(
+              json["posts"]!.map((x) => BusinessFeedPostItemModel.fromJson(x)),
             ),
     );
   }
@@ -48,8 +48,8 @@ class Meta {
   }
 }
 
-class FeedPostItemModel {
-  FeedPostItemModel({
+class BusinessFeedPostItemModel {
+  BusinessFeedPostItemModel({
     required this.id,
     required this.caption,
     required this.images,
@@ -67,8 +67,8 @@ class FeedPostItemModel {
   final String? commentAccess;
   final Author? author;
 
-  factory FeedPostItemModel.fromJson(Map<String, dynamic> json) {
-    return FeedPostItemModel(
+  factory BusinessFeedPostItemModel.fromJson(Map<String, dynamic> json) {
+    return BusinessFeedPostItemModel(
       id: json["id"],
       caption: json["caption"],
       images: json["images"] == null
@@ -86,22 +86,20 @@ class Author {
   Author({required this.id, required this.person, required this.business});
 
   final String? id;
-  final Person? person;
-  final Business? business;
+  final Business? person;
+  final dynamic business;
 
   factory Author.fromJson(Map<String, dynamic> json) {
     return Author(
       id: json["id"],
-      person: json["person"] == null ? null : Person.fromJson(json["person"]),
-      business: json["business"] == null
-          ? null
-          : Business.fromJson(json["business"]),
+      person: json["person"] == null ? null : Business.fromJson(json["person"]),
+      business: json["business"],
     );
   }
 }
 
-class Person {
-  Person({
+class Business {
+  Business({
     required this.id,
     required this.name,
     required this.title,
@@ -113,34 +111,11 @@ class Person {
   final String? title;
   final String? image;
 
-  factory Person.fromJson(Map<String, dynamic> json) {
-    return Person(
-      id: json["id"],
-      name: json["name"],
-      title: json["title"],
-      image: json["image"],
-    );
-  }
-}
-
-class Business {
-  Business({
-    required this.id,
-    required this.name,
-    required this.industry,
-    required this.image,
-  });
-
-  final String? id;
-  final String? name;
-  final String? industry;
-  final String? image;
-
   factory Business.fromJson(Map<String, dynamic> json) {
     return Business(
       id: json["id"],
       name: json["name"],
-      industry: json["industry"],
+      title: json["title"],
       image: json["image"],
     );
   }
