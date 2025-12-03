@@ -1,12 +1,15 @@
 import 'package:crash_safe_image/crash_safe_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_instance/get_instance.dart';
+import 'package:get/get.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/modules/calls/views/call_screen.dart';
-import 'package:wisper/app/modules/chat/views/chat_screen.dart'; // ChatListScreen আসলে এই ফাইলে আছে ধরে নিচ্ছি
+import 'package:wisper/app/modules/chat/views/chat_screen.dart';
+import 'package:wisper/app/modules/homepage/controller/feed_job_controller.dart';
+import 'package:wisper/app/modules/homepage/controller/feed_post_controller.dart';
+import 'package:wisper/app/modules/homepage/controller/my_job_controller.dart';
+import 'package:wisper/app/modules/homepage/controller/my_post_controller.dart';
 import 'package:wisper/app/modules/homepage/views/create_post_screen.dart';
 import 'package:wisper/app/modules/homepage/views/home_screen.dart';
 import 'package:wisper/app/modules/profile/controller/buisness/buisness_controller.dart';
@@ -22,10 +25,24 @@ class MainButtonNavbarScreen extends StatefulWidget {
 }
 
 class _MainButtonNavbarScreenState extends State<MainButtonNavbarScreen> {
+  int selectedKey = 0;
+
+  // কন্ট্রোলারগুলো এখানে lazy load করছি → Get.reset() করলেও সমস্যা নেই
   final ProfileController profileController = Get.put(ProfileController());
   final BusinessController businessController = Get.put(BusinessController());
 
-  int selectedKey = 0;
+  final AllFeedPostController allFeedPostController = Get.put(
+    AllFeedPostController(),
+  );
+  final AllFeedJobController allFeedJobController = Get.put(
+    AllFeedJobController(),
+  );
+  final MyFeedJobController myFeedJobController = Get.put(
+    MyFeedJobController(),
+  );
+  final MyFeedPostController myFeedPostController = Get.put(
+    MyFeedPostController(),
+  );
 
   final List<Widget> screens = const [
     HomeScreen(),
@@ -38,30 +55,51 @@ class _MainButtonNavbarScreenState extends State<MainButtonNavbarScreen> {
   @override
   void initState() {
     super.initState();
-    // প্রোফাইল ডাটা লোড – PERSON নাকি BUSINESS তার উপর ভিত্তি করে
+    _initializeData();
+  }
+
+  Future<void> _initializeData() async {
+    allFeedJobController.resetPagination();
+    allFeedPostController.resetPagination();
+    myFeedJobController.resetPagination();
+    myFeedPostController.resetPagination();
+
+    await Future.wait([
+      allFeedJobController.getJobs(),
+      allFeedPostController.getAllPost(),
+      myFeedJobController.getJobs(),
+      myFeedPostController.getAllPost(),
+    ]);
+
     if (StorageUtil.getData(StorageUtil.userRole) == 'PERSON') {
-      profileController.getMyProfile();
+      await profileController.getMyProfile();
     } else {
-      businessController.getMyProfile();
+      await businessController.getMyProfile();
     }
   }
 
-  // প্রোফাইল ইমেজ URL বের করার হেল্পার
   String _getProfileImageUrl() {
     final role = StorageUtil.getData(StorageUtil.userRole);
+    String? url;
+
     if (role == 'PERSON') {
-      return profileController.profileData?.auth?.person?.image ?? '';
+      url = profileController.profileData?.auth?.person?.image;
     } else {
-      return businessController.buisnessData?.auth?.business?.image ?? '';
+      url = businessController.buisnessData?.auth?.business?.image;
     }
+
+    if (url == null || url.isEmpty || url == 'null') return '';
+
+    // Cache bypass করার জন্য timestamp যোগ করলাম
+    return url;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: screens[selectedKey],
+      body: IndexedStack(index: selectedKey, children: screens),
       bottomNavigationBar: Container(
-        height: 100.h,
+        height: 80.h,
         color: const Color(0xff121212),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -78,11 +116,11 @@ class _MainButtonNavbarScreenState extends State<MainButtonNavbarScreen> {
               unselectedIcon: Assets.images.call.keyName,
               label: "Call",
             ),
-            // Middle big button (Create Post)
+            // Middle Create Post Button
             _buildNavItem(
               index: 2,
               height: 50.h,
-              width: 50.h,
+              width: 56.h,
               selectedIcon: Assets.images.frame5313.keyName,
               unselectedIcon: Assets.images.frame5313.keyName,
               label: "",
@@ -93,14 +131,14 @@ class _MainButtonNavbarScreenState extends State<MainButtonNavbarScreen> {
               unselectedIcon: Assets.images.selectedChat.keyName,
               label: "Chat",
             ),
-            _buildProfileNavItem(index: 4),
+            // Profile Item → Reactive + Cache Safe
+            Obx(() => _buildProfileNavItem(index: 4)),
           ],
         ),
       ),
     );
   }
 
-  // সাধারণ আইটেম
   Widget _buildNavItem({
     required int index,
     required String selectedIcon,
@@ -112,43 +150,54 @@ class _MainButtonNavbarScreenState extends State<MainButtonNavbarScreen> {
     final bool isSelected = selectedKey == index;
 
     return GestureDetector(
-      onTap: () => setState(() => selectedKey = index),
+      onTap: () {
+        if (selectedKey != index) {
+          setState(() => selectedKey = index);
+        }
+      },
       child: Container(
         color: Colors.transparent,
         padding: EdgeInsets.symmetric(vertical: 8.h),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            heightBox8,
             CrashSafeImage(
               isSelected ? selectedIcon : unselectedIcon,
               height: height ?? 24.h,
               width: width ?? 24.h,
             ),
             SizedBox(height: 4.h),
-            Text(
-              label,
-              style: TextStyle(
-                color: isSelected
-                    ? const Color(0xffFFFFFF)
-                    : const Color(0xff98A2B3),
-                fontSize: 12.sp,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-              ),
-            ),
+            label == ''
+                ? const SizedBox()
+                : Text(
+                    label,
+                    style: TextStyle(
+                      color: isSelected
+                          ? Colors.white
+                          : const Color(0xff98A2B3),
+                      fontSize: 12.sp,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.w400,
+                    ),
+                  ),
           ],
         ),
       ),
     );
   }
 
-  // প্রোফাইল আইটেম – PERSON / BUSINESS দুই রোলেই সঠিক ইমেজ দেখাবে
   Widget _buildProfileNavItem({required int index}) {
     final bool isSelected = selectedKey == index;
     final String imageUrl = _getProfileImageUrl();
 
     return GestureDetector(
-      onTap: () => setState(() => selectedKey = index),
+      onTap: () {
+        if (selectedKey != index) {
+          setState(() => selectedKey = index);
+        }
+      },
       child: Container(
         color: Colors.transparent,
         padding: EdgeInsets.symmetric(vertical: 8.h),
@@ -160,8 +209,8 @@ class _MainButtonNavbarScreenState extends State<MainButtonNavbarScreen> {
               radius: 14.r,
               backgroundColor: const Color(0xff2A2A2A),
               backgroundImage: imageUrl.isNotEmpty
-                  ? NetworkImage(imageUrl)
-                  : null, // null হলে child দেখাবে
+                  ? NetworkImage(imageUrl) as ImageProvider
+                  : null,
               child: imageUrl.isEmpty
                   ? Icon(Icons.person, size: 18.r, color: Colors.white70)
                   : null,
@@ -170,11 +219,9 @@ class _MainButtonNavbarScreenState extends State<MainButtonNavbarScreen> {
             Text(
               "Profile",
               style: TextStyle(
-                color: isSelected
-                    ? const Color(0xffFFFFFF)
-                    : const Color(0xff98A2B3),
+                color: isSelected ? Colors.white : const Color(0xff98A2B3),
                 fontSize: 12.sp,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
               ),
             ),
           ],

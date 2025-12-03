@@ -23,7 +23,7 @@ class ProfileController extends GetxController {
   // @override
   // void onInit() {
   //   super.onInit();
-  //   getMyProfile();
+  //   getMyProfile(); 
   // }
 
   Future<bool> getMyProfile() async {

@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -11,6 +13,7 @@ import 'package:wisper/app/core/widgets/custom_button.dart'
     show CustomElevatedButton;
 import 'package:wisper/app/core/widgets/custom_popup.dart';
 import 'package:wisper/app/modules/homepage/controller/delete_job_controller.dart';
+import 'package:wisper/app/modules/homepage/controller/feed_job_controller.dart';
 import 'package:wisper/app/modules/homepage/controller/my_job_controller.dart';
 import 'package:wisper/app/modules/homepage/views/edit_job_post_screen.dart';
 import 'package:wisper/app/modules/homepage/widget/job_card.dart';
@@ -49,11 +52,14 @@ class _MyJobSectionState extends State<MyJobSection> {
     if (isSuccess) {
       final MyFeedJobController myFeedJobController =
           Get.find<MyFeedJobController>();
+      final AllFeedJobController allFeedJobController =
+          Get.find<AllFeedJobController>();
 
-      myFeedJobController.page = 0;
-      myFeedJobController.lastPage = null;
-      myFeedJobController.allJobData.clear();
+      allFeedJobController.resetPagination();
+      myFeedJobController.resetPagination();
       await myFeedJobController.getJobs();
+      await allFeedJobController.getJobs();
+
       Get.back();
       showSnackBarMessage(context, "Job deleted successfully!", false);
     } else {
@@ -136,7 +142,7 @@ class _MyJobSectionState extends State<MyJobSection> {
                   optionActions: {
                     '0': () => Get.to(() => EditJobPostScreen(job: job)),
                     '1': () {
-                      deletePost(job.id ?? '');
+                      _showDeletePost(job.id ?? '');
                     },
                   },
                   menuWidth: 180.w,

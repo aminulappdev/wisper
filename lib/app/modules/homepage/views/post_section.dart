@@ -19,41 +19,40 @@ class _PostSectionState extends State<PostSection> {
   @override
   void initState() {
     super.initState();
-    controller.getAllPost(); // প্রথমবার লোড
+    // প্রথমবার ডেটা লোড করা
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.getAllPost();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      if (controller.inProgress) {
-        return const SizedBox(
-          height: 500,
-          child: Center(child: CircularProgressIndicator(color: Colors.white)),
-        );
-      }
+    return Expanded(                        // Expanded Obx এর বাইরে → সমস্যা সমাধান!
+      child: Obx(() {
+        // লোডিং স্টেট
+        if (controller.inProgress) {
+          return const Center(
+            child: CircularProgressIndicator(color: Colors.white),
+          );
+        }
 
-      // লিস্ট খালি কিনা চেক
-      if (controller.allPostData.isEmpty) {
-        return const SizedBox(
-          height: 500,
-          child: Center(
+        // খালি লিস্ট
+        if (controller.allPostData.isEmpty) {
+          return const Center(
             child: Text(
               'No posts yet',
               style: TextStyle(color: Colors.white70, fontSize: 16),
             ),
-          ),
-        );
-      }
+          );
+        }
 
-      return Expanded(
-        child: ListView.builder(
+        // মূল পোস্ট লিস্ট
+        return ListView.builder(
           padding: EdgeInsets.zero,
           itemCount: controller.allPostData.length,
           itemBuilder: (context, index) {
             final post = controller.allPostData[index];
-            final formattedTime = DateFormatter(
-              post.createdAt!,
-            ).getRelativeTimeFormat();
+            final formattedTime = DateFormatter(post.createdAt!).getRelativeTimeFormat();
 
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -69,15 +68,12 @@ class _PostSectionState extends State<PostSection> {
                 ownerName: StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
                     ? post.author?.person?.name ?? 'Unknown User'
                     : post.author?.business?.name ?? 'Unknown Business',
-                ownerImage:
-                    StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
+                ownerImage: StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
                     ? post.author?.person?.image ?? ''
                     : post.author?.business?.image ?? '',
-                ownerProfession:
-                    StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
+                ownerProfession: StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
                     ? post.author?.person?.title ?? 'Professional'
                     : post.author?.business?.name ?? 'Business',
-                // null safety + safe access
                 postImage: post.images.isNotEmpty ? post.images.first : null,
                 postDescription: post.caption ?? '',
                 postTime: formattedTime,
@@ -85,8 +81,8 @@ class _PostSectionState extends State<PostSection> {
               ),
             );
           },
-        ),
-      );
-    });
+        );
+      }),
+    );
   }
 }

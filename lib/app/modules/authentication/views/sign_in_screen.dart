@@ -11,6 +11,7 @@ import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/custom_text_filed.dart';
 import 'package:wisper/app/core/widgets/label.dart';
 import 'package:wisper/app/modules/authentication/controller/sign_in_controller.dart';
+import 'package:wisper/app/modules/authentication/views/auth_screen.dart';
 import 'package:wisper/app/modules/authentication/views/forgot_password.dart';
 import 'package:wisper/app/modules/authentication/views/person/user_sign_up_screen.dart';
 import 'package:wisper/app/modules/dashboard/views/dashboard_screen.dart';
@@ -75,7 +76,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () => Get.to(const SignUpScreen()),
+                      onTap: () => Get.to(AuthScreen()),
                       child: Text(
                         'Sign up',
                         style: TextStyle(

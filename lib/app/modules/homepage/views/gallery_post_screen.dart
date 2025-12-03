@@ -15,6 +15,7 @@ import 'package:wisper/app/core/widgets/image_picker.dart';
 import 'package:wisper/app/core/widgets/line_widget.dart';
 import 'package:wisper/app/modules/homepage/controller/create_post_controller.dart';
 import 'package:wisper/app/modules/homepage/controller/feed_post_controller.dart';
+import 'package:wisper/app/modules/homepage/controller/my_post_controller.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class GalleryPostScreen extends StatefulWidget {
@@ -57,22 +58,19 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
     final bool isSuccess = await createPostController.createPost(
       description: _captionCtrl.text.trim(),
       images: _selectedImages,
-      privacy:
-          _selectedPrivacy, // সরাসরি পাঠাও, কারণ ইতিমধ্যে 'EVERYONE'/'FOLLOWERS' আছে
+      privacy: _selectedPrivacy,
     );
 
     if (isSuccess) {
       if (isSuccess) {
         final AllFeedPostController feedController =
             Get.find<AllFeedPostController>();
-
-        // এই ৩ লাইনই সব সমস্যার সমাধান!
-        feedController.page = 0;
-        feedController.lastPage = null;
-        feedController.allPostData.clear();
-
-        await feedController.getAllPost(); // নতুন পোস্ট উপরে চলে আসবে
-
+        final MyFeedPostController myFeedPostController =
+            Get.find<MyFeedPostController>();
+        myFeedPostController.resetPagination();
+        feedController.resetPagination();
+        await myFeedPostController.getAllPost();
+        await feedController.getAllPost();
         Navigator.pop(context);
         showSnackBarMessage(context, "Post created successfully!", false);
       }

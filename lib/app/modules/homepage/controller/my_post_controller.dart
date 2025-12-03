@@ -110,7 +110,6 @@ class MyFeedPostController extends GetxController {
     page = 0; // Reset to 0 so first call uses page 1
     lastPage = null;
     _allPostList.clear();
-    print('Pagination reset, fetching with categoryId: $_selectedCategoryId');
-    getAllPost(categoryId: _selectedCategoryId.value);
+    update();
   }
 }

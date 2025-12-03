@@ -496,6 +496,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         color: Color(0xffE62047),
                         title: 'Logout',
                         onPress: () {
+                          Get.delete<ProfileController>(force: true);
                           StorageUtil.deleteData(StorageUtil.userAccessToken);
                           StorageUtil.deleteData(StorageUtil.userId);
                           StorageUtil.deleteData(StorageUtil.userRole);

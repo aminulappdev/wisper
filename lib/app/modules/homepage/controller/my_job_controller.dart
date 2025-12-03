@@ -100,5 +100,6 @@ class MyFeedJobController extends GetxController {
     page = 0; // Reset to 0 so first call uses page 1
     lastPage = null;
     _allJobList.clear();
+    update();
   }
 }

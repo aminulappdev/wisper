@@ -16,6 +16,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+ 
+
+  @override
+  void initState() {
+   
+    super.initState();
+  }
+
+
+
   int selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
@@ -150,16 +160,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-              ], 
+              ],
             ),
             StraightLiner(height: 0.4, color: Color(0xff454545)),
 
             heightBox14,
-            selectedIndex == 0
-                ? PostSection(
-                    
-                  )
-                : Container(),
+            selectedIndex == 0 ? PostSection() : Container(),
             selectedIndex == 1 ? JobSection() : Container(),
             selectedIndex == 2 ? RoleSection() : Container(),
           ],

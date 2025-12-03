@@ -1,6 +1,7 @@
 // information_section.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/utils/validator_service.dart';
 import 'package:wisper/app/core/widgets/custom_text_filed.dart';
@@ -49,12 +50,10 @@ class _InformationSectionState extends State<InformationSection> {
   @override
   void initState() {
     super.initState();
-    // যদি আগে থেকে কোনো title থাকে সেটা দেখাবে
     _selectedTitle = widget.titleController.text.isNotEmpty
         ? widget.titleController.text
         : null;
 
-    // প্রথমবার যদি কিছু না থাকে তাহলে প্রথমটা সিলেক্ট করে দিচ্ছি (অপশনাল)
     if (_selectedTitle == null || !_jobTitles.contains(_selectedTitle)) {
       _selectedTitle = _jobTitles.first;
     }
@@ -67,51 +66,54 @@ class _InformationSectionState extends State<InformationSection> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
       ),
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40.w,
-              height: 4.h,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
+      builder: (ctx) => Container(
+         color: Colors.black,
+        child: Padding(
+          padding: EdgeInsets.all(16.w),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40.w,
+                height: 4.h,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
-            ),
-            heightBox20,
-            Text(
-              'Select Job Title',
-              style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
-            ),
-            heightBox10,
-            Flexible(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: _jobTitles.length,
-                itemBuilder: (context, index) {
-                  final title = _jobTitles[index];
-                  return ListTile(
-                    title: Text(title),
-                    trailing: _selectedTitle == title
-                        ? Icon(
-                            Icons.check,
-                            color: Theme.of(context).primaryColor,
-                          )
-                        : null,
-                    onTap: () {
-                      setState(() {
-                        _selectedTitle = title;
-                        widget.titleController.text = title; // কন্ট্রোলার আপডেট
-                      });
-                      Navigator.pop(ctx);
-                    },
-                  );
-                },
+              heightBox20,
+              Text(
+                'Select Job Title',
+                style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold, color: LightThemeColors.blueColor),
               ),
-            ),
-          ],
+              heightBox10,
+              Flexible(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _jobTitles.length,
+                  itemBuilder: (context, index) {
+                    final title = _jobTitles[index];
+                    return ListTile(
+                      title: Text(title, style: TextStyle(color: Colors.white),),
+                      trailing: _selectedTitle == title
+                          ? Icon(
+                              Icons.check,
+                              color: Theme.of(context).primaryColor,
+                            )
+                          : null,
+                      onTap: () {
+                        setState(() {
+                          _selectedTitle = title;
+                          widget.titleController.text = title; // কন্ট্রোলার আপডেট
+                        });
+                        Navigator.pop(ctx);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

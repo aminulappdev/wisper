@@ -13,6 +13,7 @@ import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/custom_popup.dart';
 import 'package:wisper/app/modules/homepage/controller/delete_gallery_post_controlller.dart';
+import 'package:wisper/app/modules/homepage/controller/feed_post_controller.dart';
 import 'package:wisper/app/modules/homepage/controller/my_post_controller.dart';
 import 'package:wisper/app/modules/homepage/views/edit_gallery_post.dart';
 import 'package:wisper/app/modules/homepage/widget/post_card.dart';
@@ -52,11 +53,13 @@ class _MyPostSectionState extends State<MyPostSection> {
     if (isSuccess) {
       final MyFeedPostController myFeedPostController =
           Get.find<MyFeedPostController>();
-      myFeedPostController.page = 0;
-      myFeedPostController.lastPage = null;
-      myFeedPostController.allPostData.clear();
+      final AllFeedPostController allFeedPostController =
+          Get.find<AllFeedPostController>();
+
+      allFeedPostController.resetPagination();
+      myFeedPostController.resetPagination();
       await myFeedPostController.getAllPost();
-      Get.back(); 
+      Get.back();
       showSnackBarMessage(context, "Post deleted successfully!", false);
     } else {
       showSnackBarMessage(context, deletePostController.errorMessage, true);

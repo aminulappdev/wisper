@@ -37,14 +37,11 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   int selectedIndex = 0;
 
-  // কন্ট্রোলার
   final ProfileController personController = Get.find<ProfileController>();
   final BusinessController businessController = Get.put(BusinessController());
-  final ProfilePhotoController photoController = Get.put(
-    ProfilePhotoController(),
-  );
+  final ProfilePhotoController photoController =
+      Get.find<ProfilePhotoController>();
 
-  // কারেন্ট ইউজারের রোল ও ইমেজ পাথ
   late final String userRole;
   final RxString currentImagePath = ''.obs;
 
@@ -53,6 +50,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     userRole = StorageUtil.getData(StorageUtil.userRole) ?? 'PERSON';
     _updateProfileImage();
+    _getProfileImage();
+  }
+
+  Future<void> _getProfileImage() async {
+    print('Called get image');
+    await personController.getMyProfile();
+    if (userRole == 'PERSON') {
+      print(
+        'Person image: ${personController.profileData?.auth?.person?.image}',
+      );
+      currentImagePath.value =
+          personController.profileData?.auth?.person?.image ?? '';
+    } else {
+      print(
+        'Business image: ${businessController.buisnessData?.auth?.business?.image}',
+      );
+      currentImagePath.value =
+          businessController.buisnessData?.auth?.business?.image ?? '';
+    }
   }
 
   // প্রোফাইল ইমেজ আপডেট করার হেল্পার
@@ -111,8 +127,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     } else {
       // BUSINESS
-      if (index == 0) return  MyPostSection();
-      if (index == 1) return  MyJobSection();
+      if (index == 0) return MyPostSection();
+      if (index == 1) return MyJobSection();
       if (index == 2) {
         return DocInfo(
           title: 'Company Brochure.pdf',

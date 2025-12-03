@@ -10,6 +10,7 @@ import 'package:wisper/app/core/widgets/custom_text_filed.dart';
 import 'package:wisper/app/core/widgets/label.dart';
 import 'package:wisper/app/modules/homepage/controller/create_job_controller.dart';
 import 'package:wisper/app/modules/homepage/controller/edit_job_controller.dart';
+import 'package:wisper/app/modules/homepage/controller/feed_job_controller.dart';
 import 'package:wisper/app/modules/homepage/controller/my_job_controller.dart';
 import 'package:wisper/app/modules/homepage/model/feed_job_model.dart';
 
@@ -110,11 +111,13 @@ class _EditJobPostScreenState extends State<EditJobPostScreen> {
 
     if (success) {
       final MyFeedJobController controller = Get.find<MyFeedJobController>();
+      final AllFeedJobController allFeedJobController =
+          Get.find<AllFeedJobController>();
 
-      controller.page = 0;
-      controller.lastPage = null;
-      controller.allJobData.clear();
-      controller.getJobs();
+      allFeedJobController.resetPagination();
+      controller.resetPagination();
+      await controller.getJobs();
+      await allFeedJobController.getJobs();
       Navigator.pop(context);
       showSnackBarMessage(context, "Job updated successfully!", false);
     } else {

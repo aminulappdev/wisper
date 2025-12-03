@@ -14,6 +14,7 @@ import 'package:wisper/app/core/widgets/custom_text_filed.dart';
 import 'package:wisper/app/core/widgets/image_picker.dart';
 import 'package:wisper/app/core/widgets/line_widget.dart';
 import 'package:wisper/app/modules/homepage/controller/create_post_controller.dart';
+import 'package:wisper/app/modules/homepage/controller/feed_post_controller.dart';
 import 'package:wisper/app/modules/homepage/controller/my_post_controller.dart';
 import 'package:wisper/app/modules/homepage/model/feed_post_model.dart';
 import 'package:wisper/gen/assets.gen.dart';
@@ -61,7 +62,6 @@ class _EditGalleryPostScreenState extends State<EditGalleryPostScreen> {
       asyncFunction: () async {
         final controller = Get.find<CreatePostController>();
 
-        // যে ইমেজগুলো আগে ছিল কিন্তু এখন নেই → সেগুলো ডিলিট করতে হবে
         final imagesToDelete = widget.feedPostItemModel.images
             .where((img) => !_existingImages.contains(img))
             .toList();
@@ -76,10 +76,13 @@ class _EditGalleryPostScreenState extends State<EditGalleryPostScreen> {
         if (success) {
           final MyFeedPostController myFeedPostController =
               Get.find<MyFeedPostController>();
-          myFeedPostController.page = 0;
-          myFeedPostController.lastPage = null;
-          myFeedPostController.allPostData.clear();
-          myFeedPostController.getAllPost();
+          final AllFeedPostController allFeedPostController =
+              Get.find<AllFeedPostController>();
+
+          allFeedPostController.resetPagination();
+          await allFeedPostController.getAllPost();
+          myFeedPostController.resetPagination();
+          await myFeedPostController.getAllPost();
           Navigator.pop(context);
           showSnackBarMessage(context, "Post updated successfully!", false);
         } else {

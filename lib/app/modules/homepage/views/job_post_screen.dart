@@ -9,6 +9,7 @@ import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/custom_text_filed.dart';
 import 'package:wisper/app/core/widgets/label.dart';
 import 'package:wisper/app/modules/homepage/controller/create_job_controller.dart';
+import 'package:wisper/app/modules/homepage/controller/feed_job_controller.dart';
 import 'package:wisper/app/modules/homepage/controller/my_job_controller.dart';
 
 class JobPostScreen extends StatefulWidget {
@@ -86,12 +87,12 @@ class _JobPostScreenState extends State<JobPostScreen> {
     if (isSuccess) {
       final MyFeedJobController myFeedJobController =
           Get.find<MyFeedJobController>();
-
-      myFeedJobController.page = 0;
-      myFeedJobController.lastPage = null;
-      myFeedJobController.allJobData.clear();
-
+      final AllFeedJobController allFeedJobController =
+          Get.find<AllFeedJobController>();
+      allFeedJobController.resetPagination();
+      myFeedJobController.resetPagination();
       await myFeedJobController.getJobs();
+      await allFeedJobController.getJobs();
       Navigator.pop(context);
       showSnackBarMessage(context, "Job posted successfully!", false);
     } else {
