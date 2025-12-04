@@ -140,7 +140,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CustomElevatedButton(
-                    width: 152.w,
+                    width: MediaQuery.of(context).size.width * 0.35,
                     title: 'Login',
                     onPress: () {
                       Get.to(() => SignInScreen());
@@ -150,7 +150,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                     borderColor: Colors.white,
                   ),
                   CustomElevatedButton(
-                    width: 152.w,
+                    width: MediaQuery.of(context).size.width * 0.35,
                     title: 'Sign Up',
                     onPress: () {
                       Get.to(() => AuthScreen());

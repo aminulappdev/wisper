@@ -3,10 +3,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:logger/logger.dart';
+import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 
 Future<void> showLoadingOverLay({
   required Future<void> Function() asyncFunction,
-  String? msg, 
+  String? msg,
 }) async {
   await Get.showOverlay(
     asyncFunction: () async {
@@ -27,7 +28,7 @@ Widget _getLoadingIndicator({String? msg}) {
   return Container(
     padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: Colors.black12,
       borderRadius: BorderRadius.circular(12.r),
     ),
     child: Column(
@@ -38,13 +39,18 @@ Widget _getLoadingIndicator({String? msg}) {
           width: 24.w,
           child: Center(
             child: LoadingAnimationWidget.horizontalRotatingDots(
-              color: Colors.black,
+              color: LightThemeColors.blueColor,
               size: 24,
             ),
           ),
         ),
         12.verticalSpace,
-        Text(msg ?? 'Please wait', style: Get.textTheme.bodyLarge),
+        Text(
+          msg ?? 'Please wait',
+          style: Get.textTheme.bodyLarge?.copyWith(
+            color: LightThemeColors.blueColor,
+          ),
+        ),
       ],
     ),
   );
