@@ -4,7 +4,7 @@ class Urls {
   // static const String socketUrl = 'http://10.10.10.17:4000/';
 
   static const String _baseUrl = 'http://10.10.10.17:5000/api/v1';
-  static const String socketUrl = 'http://206.162.244.133:4001/';
+  static const String socketUrl = 'http://10.10.10.17:4000';  
 
   // =========================================== Common ============================================== //
 
@@ -13,8 +13,10 @@ class Urls {
   static const String businessProfileUrl = '$_baseUrl/businesses/profile';
   static const String personEditProfileUrl = '$_baseUrl/persons/profile';
   static const String businessEditProfileUrl = '$_baseUrl/businesses/profile';
-  static const String personEditProfilePhotoUrl = '$_baseUrl/persons/profile-image';
-  static const String businessEditProfilePhotoUrl = '$_baseUrl/businesses/profile-image';
+  static const String personEditProfilePhotoUrl =
+      '$_baseUrl/persons/profile-image';
+  static const String businessEditProfilePhotoUrl =
+      '$_baseUrl/businesses/profile-image';
 
   // =========================================== Authentication ====================================== //
   static const String signUpUrlPerson = '$_baseUrl/auths/person/signup';
@@ -33,6 +35,7 @@ class Urls {
   static const String updateProfileUrl = '$_baseUrl/teachers/profile';
   static const String updateProfilImageUrl =
       '$_baseUrl/teachers/profile/change-image';
+  static const String allConnectionUrl = '$_baseUrl/connections';
 
   // =========================================== Home Block ========================================== //
   static const String feedPostUrl = '$_baseUrl/posts/feed';
@@ -53,4 +56,18 @@ class Urls {
   }
 
   // =========================================== Chat Block =========================================== //
+  static const String createGroupUrl = '$_baseUrl/groups';
+  static const String createClassUrl = '$_baseUrl/classes';
+  static const String allChatsUrl = '$_baseUrl/chats/my';
+  static String groupInfoById(String id) {
+    return '$_baseUrl/groups/$id';
+  }
+
+  static String groupMembersById(String id) {
+    return '$_baseUrl/groups/members/$id';
+  }
+
+  static String messagesById(String id) {
+    return '$_baseUrl/messages/$id';
+  }
 }

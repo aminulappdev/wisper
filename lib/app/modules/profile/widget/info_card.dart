@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
+import 'package:wisper/app/core/widgets/custom_popup.dart';
+import 'package:wisper/app/modules/chat/views/group/group_info_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class InfoCard extends StatelessWidget {
@@ -13,21 +16,51 @@ class InfoCard extends StatelessWidget {
   final bool isTrailing;
   final VoidCallback? trailingOnTap;
   final GlobalKey? trailingKey; // Add GlobalKey parameter
+  final VoidCallback? showMember;
 
   const InfoCard({
     super.key,
-    required this.imagePath, 
+    required this.imagePath,
     required this.editOnTap,
     required this.title,
     required this.memberInfo,
     required this.child,
     this.isTrailing = false,
     this.trailingOnTap,
-    this.trailingKey, // Include trailingKey in constructor
+    this.trailingKey,
+    this.showMember, // Include trailingKey in constructor
   });
 
   @override
   Widget build(BuildContext context) {
+    final GlobalKey suffixButtonKey = GlobalKey();
+    final customPopupMenu = CustomPopupMenu(
+      targetKey: suffixButtonKey,
+      options: [
+        // Pass widgets instead of strings
+        Text(
+          'Edit Group',
+          style: TextStyle(
+            fontSize: 12.sp,
+            fontWeight: FontWeight.w400,
+            color: Colors.white,
+          ),
+        ),
+
+        // Example of another widget
+      ],
+      optionActions: {
+        '0': () {
+          Get.to(
+            () => GroupInfoScreen(
+              groupId: 'a3e20128-b461-4dc9-a281-690e4ef3617f',
+            ),
+          );
+        },
+      },
+      menuWidth: 200,
+      menuHeight: 30,
+    );
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -77,12 +110,15 @@ class InfoCard extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 8.h),
-                  Text(
-                    memberInfo,
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w400,
-                      color: LightThemeColors.themeGreyColor,
+                  GestureDetector(
+                    onTap: showMember ?? () {},
+                    child: Text(
+                      memberInfo,
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w400,
+                        color: LightThemeColors.themeGreyColor,
+                      ),
                     ),
                   ),
                   SizedBox(height: 10.h),
@@ -90,11 +126,13 @@ class InfoCard extends StatelessWidget {
                 ],
               ),
               CircleIconWidget(
-                key: trailingKey, // Assign the GlobalKey here
+                key: suffixButtonKey, // Assign the GlobalKey here
                 radius: 14,
                 iconRadius: 18,
                 imagePath: Assets.images.moreHor.keyName,
-                onTap: trailingOnTap ?? () {},
+                onTap: () {
+                  customPopupMenu.showMenuAtPosition(context);
+                },
               ),
             ],
           ),

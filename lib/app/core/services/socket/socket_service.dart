@@ -1,67 +1,116 @@
-// // ignore_for_file: library_prefixes
+// ignore_for_file: library_prefixes, avoid_print
+import 'package:get/get.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:wisper/app/core/get_storage.dart';
+import 'package:wisper/app/urls.dart';
 
+class SocketService extends GetxController {
+  late IO.Socket _socket;
 
-// import 'package:get/get.dart';
-// import 'package:socket_io_client/socket_io_client.dart';
-// import 'package:socket_io_client/socket_io_client.dart' as IO;
-// import 'package:wisper/app/get_storage.dart';
-// import 'package:wisper/app/modules/profile/controller/profile_controller.dart';
-// import 'package:wisper/app/urls.dart';
+  // Observable variables
+  RxBool isLoading = false.obs;
+  RxBool isConnected = false.obs; // Tracks connection status
 
-// class SocketService extends GetxController {
-//   late IO.Socket _socket;
+  final _messageList = <Map<String, dynamic>>[].obs;
+  final _socketFriendList = <Map<String, dynamic>>[].obs;
+  final _notificationsList = <Map<String, dynamic>>[].obs;
 
-//   RxBool isLoading = false.obs;
-//   final ProfileDetailsController profileDetailsController =
-//       Get.put(ProfileDetailsController());
+  // Getters
+  RxList<Map<String, dynamic>> get messageList => _messageList;
+  RxList<Map<String, dynamic>> get socketFriendList => _socketFriendList;
+  RxList<Map<String, dynamic>> get notificationsList => _notificationsList;
+  IO.Socket get socket => _socket;
 
-//   final _messageList = <Map<String, dynamic>>[].obs;
-//   final _socketFriendList = <Map<String, dynamic>>[].obs;
-//   final _notificationsList = <Map<String, dynamic>>[].obs;
+  /// Initialize the socket connection
+  Future<SocketService> init() async {
+    print('🔌 Initializing socket service. Connecting...');
 
-//   RxList<Map<String, dynamic>> get messageList => _messageList;
-//   RxList<Map<String, dynamic>> get socketFriendList => _socketFriendList;
-//   RxList<Map<String, dynamic>> get notificationsList => _notificationsList;
+    final token = StorageUtil.getData(StorageUtil.userAccessToken);
+    final userId = StorageUtil.getData(StorageUtil.userAuthId);
 
-//   IO.Socket get sokect => _socket;
+    print('Token: $token');
+    print('User ID: $userId');
 
-//   Future<SocketService> init() async {
-//     print('Init socket service. Connecting...');
-//     final token = StorageUtil.getData(StorageUtil.userAccessToken);
-//     final userId = StorageUtil.getData(StorageUtil.userId);
-//     print('token: $token');
-//     print('userId: $userId');
-    
+    if (token == null || userId == null) {
+      print('🔴 Token or User ID is missing!');
+      return this;
+    }
 
-//     _socket = IO.io(Urls.socketUrl, <String, dynamic>{
-//       'transports': ['websocket'],
-//       'autoConnect': true,
-//       'extraHeaders': {'Authorization':  'Bearer $token'},
-//     });
+    // Create Socket.IO connection using modern OptionBuilder
+    _socket = IO.io(
+      Urls.socketUrl,
+      IO.OptionBuilder()
+          .setTransports([
+            'websocket',
+          ]) // Force websocket transport (recommended for Flutter)
+          .setExtraHeaders({
+            'Authorization': 'Bearer $token',
+          }) // Send token in headers
+          .enableAutoConnect() // Enable automatic connection
+          .setTimeout(10000) // 10 seconds connection timeout
+          .build(),
+    );
 
-//     _socket.on('connect', (_) {
-//       print('✅ Connected to the server');
-//       _socket.emit("connection", userId);
-//     });
+    // ✅ Successful connection
+    _socket.onConnect((_) {
+      print('✅ Successfully connected to the server!');
+      isConnected.value = true;
+      _socket.emit("connection", userId); // Send user ID to server
+    });
 
-//     _socket.onConnect((_) async {
-//       print('🟢 Socket connected');
-//       _socket.emit("connection", userId);
-//     });
+    // 🔴 Connection error (most important for debugging)
+    _socket.onConnectError((err) {
+      print('🔴 Connection error: $err');
+      isConnected.value = false;
+    });
 
-//     _socket.on('checking_notification', (data) {
-//       print('Check in data from socket');
-//       print(data);
-//     });
+    // 🔴 General socket error
+    _socket.onError((err) {
+      print('🔴 Socket error: $err');
+      isConnected.value = false;
+    });
 
-//     _socket.onDisconnect((_) {
-//       print('🔴 Socket disconnected');
-//     });
+    // 🔴 Disconnected from server
+    _socket.onDisconnect((_) {
+      print('🔴 Socket disconnected');
+      isConnected.value = false;
+    });
 
-//     return this;
-//   }
+    // 🟢 Reconnection successful
+    _socket.onReconnect((attempt) {
+      print('🟢 Reconnected successfully! Attempt: $attempt');
+      isConnected.value = true;
+      _socket.emit("connection", userId);
+    });
 
-//   void disconnect() {
-//     _socket.disconnect();
-//   }
-// }
+    // 🔔 Custom event: notification check
+    _socket.on('checking_notification', (data) {
+      print('🔔 Notification data received:');
+      print(data);
+      // Add to list if needed
+      // _notificationsList.add(data as Map<String, dynamic>);
+    });
+
+    // Manually trigger connection
+    _socket.connect();
+
+    return this;
+  }
+
+  /// Manually disconnect the socket
+  void disconnect() {
+    if (_socket.connected || isConnected.value) {
+      _socket.disconnect();
+      print('🔌 Socket manually disconnected');
+    }
+    _socket.clearListeners(); // Clear all listeners
+    isConnected.value = false;
+  }
+
+  /// Cleanup when controller is removed
+  @override
+  void onClose() {
+    disconnect();
+    super.onClose();
+  }
+}

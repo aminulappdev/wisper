@@ -5,21 +5,20 @@ import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/details_card.dart';
-import 'package:wisper/app/modules/chat/views/message_screen.dart';
 import 'package:wisper/app/modules/chat/widgets/chat_custom_elevated_button.dart';
 import 'package:wisper/app/modules/chat/widgets/chatting_field.dart';
-import 'package:wisper/app/modules/chat/widgets/chatting_header.dart';
 import 'package:wisper/app/modules/chat/widgets/group_chatting_header.dart';
+import 'package:wisper/app/modules/chat/widgets/option.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
-class GroupChatScreen extends StatefulWidget {
-  const GroupChatScreen({super.key});
+class ClassChatScreen extends StatefulWidget {
+  const ClassChatScreen({super.key});
 
   @override
-  State<GroupChatScreen> createState() => _GroupChatScreenState();
+  State<ClassChatScreen> createState() => _ClassChatScreenState();
 }
 
-class _GroupChatScreenState extends State<GroupChatScreen> {
+class _ClassChatScreenState extends State<ClassChatScreen> {
   @override
   void initState() {
     super.initState();
@@ -42,16 +41,16 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                 child: Column(
                   children: [
                     CircleIconWidget(
-                      color: Color(0xff051B33),
-                      iconColor: Color(0xff1F7DE9),
+                      color: Color(0xff102B19),
+                      iconColor: Color(0xff11AE46),
                       iconRadius: 35,
                       radius: 35,
-                      imagePath: Assets.images.userGroup.keyName,
+                      imagePath: Assets.images.education.keyName,
                       onTap: () {},
                     ),
                     heightBox20,
                     Text(
-                      'You created this group',
+                      'You created this Class',
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w600,
@@ -64,11 +63,11 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w400,
 
-                        color: LightThemeColors.themeGreyColor
+                        color: LightThemeColors.themeGreyColor,
                       ),
                     ),
 
-                    heightBox20, 
+                    heightBox20,
                     Text(
                       'Corp members serving in Abuja',
                       style: TextStyle(
@@ -124,7 +123,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                                         fontSize: 12.sp,
                                         fontWeight: FontWeight.w400,
                                         color: Color(0xff1F7DE9),
-                                      ),
+                                      ), 
                                     ),
                                   ],
                                 ),

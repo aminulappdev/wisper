@@ -12,14 +12,14 @@ import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart';
 import 'package:wisper/app/modules/profile/widget/info_card.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
-class GroupInfoScreen extends StatefulWidget {
-  const GroupInfoScreen({super.key});
+class ClassInfoScreen extends StatefulWidget {
+  const ClassInfoScreen({super.key});
 
   @override
-  State<GroupInfoScreen> createState() => _GroupInfoScreenState();
+  State<ClassInfoScreen> createState() => _ClassInfoScreenState();
 }
 
-class _GroupInfoScreenState extends State<GroupInfoScreen> {
+class _ClassInfoScreenState extends State<ClassInfoScreen> {
   int selectedIndex = 0;
 
   @override
@@ -42,7 +42,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                   onTap: () => Navigator.pop(context),
                 ),
                 Text(
-                  'Group Info',
+                  'Class Info',
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w800,

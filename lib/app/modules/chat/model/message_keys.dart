@@ -1,0 +1,14 @@
+// app/modules/chat/constants/message_keys.dart
+
+class SocketMessageKeys {
+  static const String id = "id";
+  static const String text = "text";
+  static const String imageUrl = "imageUrl";
+  static const String seen = "seen";
+  static const String senderId = "senderId";
+  static const String chat = "chat";
+  static const String createdAt = "createdAt";
+  
+
+  // যদি আরও key লাগে পরে যোগ করবেন
+}

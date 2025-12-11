@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/modules/calls/views/call_screen.dart';
-import 'package:wisper/app/modules/chat/views/chat_screen.dart';
+import 'package:wisper/app/modules/chat/views/chat_list_screen.dart';
 import 'package:wisper/app/modules/homepage/controller/feed_job_controller.dart';
 import 'package:wisper/app/modules/homepage/controller/feed_post_controller.dart';
 import 'package:wisper/app/modules/homepage/controller/my_job_controller.dart';

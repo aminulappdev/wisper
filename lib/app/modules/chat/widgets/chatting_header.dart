@@ -13,7 +13,7 @@ import 'package:wisper/app/core/widgets/custom_popup.dart';
 import 'package:wisper/app/core/widgets/details_card.dart';
 import 'package:wisper/app/modules/calls/views/audio_call_screen.dart';
 import 'package:wisper/app/modules/calls/views/video_call_screen.dart';
-import 'package:wisper/app/modules/chat/views/group_info_screen.dart';
+import 'package:wisper/app/modules/chat/views/group/group_info_screen.dart';
 import 'package:wisper/app/modules/profile/views/others_profile_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 

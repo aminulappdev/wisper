@@ -1,6 +1,4 @@
 // my_post_section.dart
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -32,9 +30,10 @@ class _MyPostSectionState extends State<MyPostSection> {
   final DeletePostController deletePostController = DeletePostController();
 
   @override
-  // Corrected: was missing in your previous code
   void initState() {
     super.initState();
+    // যদি onInit()-এ না করা থাকে, তাহলে এখানে রাখতে পারো
+    // কিন্তু ভালো প্র্যাকটিস: controller-এ onInit()-এ করা
     controller.getAllPost();
   }
 
@@ -46,15 +45,11 @@ class _MyPostSectionState extends State<MyPostSection> {
   }
 
   Future<void> performDeletePost(BuildContext context, String postId) async {
-    final bool isSuccess = await deletePostController.deletePost(
-      postId: postId,
-    );
+    final bool isSuccess = await deletePostController.deletePost(postId: postId);
 
     if (isSuccess) {
-      final MyFeedPostController myFeedPostController =
-          Get.find<MyFeedPostController>();
-      final AllFeedPostController allFeedPostController =
-          Get.find<AllFeedPostController>();
+      final MyFeedPostController myFeedPostController = Get.find<MyFeedPostController>();
+      final AllFeedPostController allFeedPostController = Get.find<AllFeedPostController>();
 
       allFeedPostController.resetPagination();
       myFeedPostController.resetPagination();
@@ -84,100 +79,76 @@ class _MyPostSectionState extends State<MyPostSection> {
         );
       }
 
-      return Expanded(
-        child: ListView.builder(
-          padding: EdgeInsets.zero,
-          itemCount: controller.allPostData.length,
-          itemBuilder: (context, index) {
-            final post = controller.allPostData[index];
-            final DateFormatter formattedTime = DateFormatter(post.createdAt!);
+      // ← এখানে Expanded সরিয়ে Flexible বা direct ListView দিলাম
+      return ListView.builder(
+        padding: EdgeInsets.zero,
+        itemCount: controller.allPostData.length,
+        itemBuilder: (context, index) {
+          final post = controller.allPostData[index];
+          final DateFormatter formattedTime = DateFormatter(post.createdAt!);
 
-            final GlobalKey suffixButtonKey = GlobalKey();
+          final GlobalKey suffixButtonKey = GlobalKey();
 
-            final CustomPopupMenu customPopupMenu = CustomPopupMenu(
-              targetKey: suffixButtonKey,
-              options: [
-                Text(
-                  'Edit Post',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white,
-                  ),
-                ),
-                Text(
-                  'Delete Post',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.redAccent,
-                  ),
-                ),
-              ],
-              optionActions: {
-                '0': () => Get.to(
-                  () => EditGalleryPostScreen(feedPostItemModel: post),
-                ),
-                '1': () {
-                  _showDeletePost(post.id!);
-                },
-              },
-              menuWidth: 180.w,
-              menuHeight: 48.h,
-            );
-
-            return Padding(
-              padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 4.w),
-              child: PostCard(
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      height: 36.h,
-                      width: 90.w,
-                      child: CustomElevatedButton(
-                        title: 'Boost Post',
-                        textSize: 12,
-                        borderRadius: 50,
-                        onPress: () => Get.to(() => const BoostScreen()),
-                      ),
-                    ),
-                    SizedBox(width: 12.w),
-
-                    GestureDetector(
-                      key: suffixButtonKey,
-                      onTap: () {
-                        customPopupMenu.showMenuAtPosition(context);
-                      },
-                      child: const Icon(
-                        Icons.more_vert_rounded,
-                        color: Color(0xff8C8C8C),
-                        size: 24,
-                      ),
-                    ),
-                  ],
-                ),
-
-                // Post data
-                ownerName: StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
-                    ? post.author?.person?.name ?? 'Unknown User'
-                    : post.author?.business?.name ?? 'Unknown Business',
-                ownerImage:
-                    StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
-                    ? post.author?.person?.image ?? ''
-                    : post.author?.business?.image ?? '',
-                ownerProfession:
-                    StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
-                    ? post.author?.person?.title ?? 'Professional'
-                    : post.author?.business?.name ?? 'Business',
-                postImage: post.images.isNotEmpty ? post.images.first : '',
-                postDescription: post.caption ?? '',
-                postTime: formattedTime.getRelativeTimeFormat(),
-                views: post.views?.toString() ?? '0',
+          final CustomPopupMenu customPopupMenu = CustomPopupMenu(
+            targetKey: suffixButtonKey,
+            options: [
+              Text(
+                'Edit Post',
+                style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500, color: Colors.white),
               ),
-            );
-          },
-        ),
+              Text(
+                'Delete Post',
+                style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500, color: Colors.redAccent),
+              ),
+            ],
+            optionActions: {
+              '0': () => Get.to(() => EditGalleryPostScreen(feedPostItemModel: post)),
+              '1': () => _showDeletePost(post.id!),
+            },
+            menuWidth: 180.w,
+            menuHeight: 48.h,
+          );
+
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 4.w),
+            child: PostCard(
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    height: 36.h,
+                    width: 90.w,
+                    child: CustomElevatedButton(
+                      title: 'Boost Post',
+                      textSize: 12,
+                      borderRadius: 50,
+                      onPress: () => Get.to(() => const BoostScreen()),
+                    ),
+                  ),
+                  SizedBox(width: 12.w),
+                  GestureDetector(
+                    key: suffixButtonKey,
+                    onTap: () => customPopupMenu.showMenuAtPosition(context),
+                    child: const Icon(Icons.more_vert_rounded, color: Color(0xff8C8C8C), size: 24),
+                  ),
+                ],
+              ),
+              ownerName: StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
+                  ? post.author?.person?.name ?? 'Unknown User'
+                  : post.author?.business?.name ?? 'Unknown Business',
+              ownerImage: StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
+                  ? post.author?.person?.image ?? ''
+                  : post.author?.business?.image ?? '',
+              ownerProfession: StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
+                  ? post.author?.person?.title ?? 'Professional'
+                  : post.author?.business?.name ?? 'Business',
+              postImage: post.images.isNotEmpty ? post.images.first : '',
+              postDescription: post.caption ?? '',
+              postTime: formattedTime.getRelativeTimeFormat(),
+              views: post.views?.toString() ?? '0',
+            ),
+          );
+        },
       );
     });
   }
@@ -185,69 +156,48 @@ class _MyPostSectionState extends State<MyPostSection> {
   void _showDeletePost(String postId) {
     showModalBottomSheet(
       context: context,
-      builder: (BuildContext context) {
+      backgroundColor: Colors.black,
+      builder: (context) {
         return Container(
-          color: Colors.black,
-          height: 250,
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleIconWidget(
-                  imagePath: Assets.images.delete.keyName,
-                  onTap: () {},
-                  iconRadius: 22,
-                  radius: 24,
-                  color: Color(0xff312609),
-                  iconColor: Color(0xffDC8B44),
-                ),
-                heightBox20,
-                Text(
-                  'Delete?',
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-                heightBox8,
-                Text(
-                  'Are you sure you want to delete?',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xff9FA3AA),
-                  ),
-                ),
-                heightBox12,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: CustomElevatedButton(
-                        color: Color.fromARGB(255, 15, 15, 15),
-                        borderColor: Color(0xff262629),
-                        title: 'Discard',
-                        onPress: () {
-                          Get.back();
-                        },
-                      ),
+          height: 250.h,
+          padding: EdgeInsets.all(20.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleIconWidget(
+                imagePath: Assets.images.delete.keyName,
+                onTap: () {},
+                iconRadius: 22.r,
+                radius: 24.r,
+                color: const Color(0xff312609),
+                iconColor: const Color(0xffDC8B44),
+              ),
+              heightBox20,
+              Text('Delete?', style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600, color: Colors.white)),
+              heightBox8,
+              Text('Are you sure you want to delete?', style: TextStyle(fontSize: 14.sp, color: const Color(0xff9FA3AA))),
+              heightBox12,
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomElevatedButton(
+                      color: const Color.fromARGB(255, 15, 15, 15),
+                      borderColor: const Color(0xff262629),
+                      title: 'Discard',
+                      onPress: () => Get.back(),
                     ),
-                    widthBox12,
-                    Expanded(
-                      child: CustomElevatedButton(
-                        color: Color(0xffE62047),
-                        title: 'Delete',
-                        onPress: () {
-                          deletePost(postId);
-                        },
-                      ),
+                  ),
+                  widthBox12,
+                  Expanded(
+                    child: CustomElevatedButton(
+                      color: const Color(0xffE62047),
+                      title: 'Delete',
+                      onPress: () => deletePost(postId),
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
         );
       },

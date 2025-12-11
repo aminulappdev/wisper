@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
@@ -11,7 +10,7 @@ import 'package:wisper/gen/assets.gen.dart';
 class ChatListHeader extends StatelessWidget {
   const ChatListHeader({super.key});
 
-  @override
+  @override 
   Widget build(BuildContext context) {
     return Container(
       height: 160,

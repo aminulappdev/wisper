@@ -13,14 +13,14 @@ import 'package:wisper/app/core/widgets/custom_popup.dart';
 import 'package:wisper/app/core/widgets/details_card.dart';
 import 'package:wisper/app/modules/calls/views/group_audio_screen.dart';
 import 'package:wisper/app/modules/calls/views/group_video_call_screen.dart';
-import 'package:wisper/app/modules/chat/views/group_info_screen.dart';
+import 'package:wisper/app/modules/chat/views/group/group_info_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class GroupChatHeader extends StatefulWidget {
   const GroupChatHeader({super.key});
 
   @override
-  State<GroupChatHeader> createState() => _GroupChatHeaderState();
+  State<GroupChatHeader> createState() => _GroupChatHeaderState(); 
 }
 
 class _GroupChatHeaderState extends State<GroupChatHeader> {
@@ -106,7 +106,11 @@ class _GroupChatHeaderState extends State<GroupChatHeader> {
       ],
       optionActions: {
         '0': () {
-          Get.to(() => GroupInfoScreen());
+          Get.to(
+            () => GroupInfoScreen(
+              groupId: 'a3e20128-b461-4dc9-a281-690e4ef3617f',
+            ),
+          );
         },
         '1': () {
           _showMutePopup();

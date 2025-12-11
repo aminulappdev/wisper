@@ -26,19 +26,19 @@ class Data {
     });
 
     final Meta? meta;
-    final List<Connection> connections;
+    final List<AllConnectionItemModel> connections;
 
     factory Data.fromJson(Map<String, dynamic> json){ 
         return Data(
             meta: json["meta"] == null ? null : Meta.fromJson(json["meta"]),
-            connections: json["connections"] == null ? [] : List<Connection>.from(json["connections"]!.map((x) => Connection.fromJson(x))),
+            connections: json["connections"] == null ? [] : List<AllConnectionItemModel>.from(json["connections"]!.map((x) => AllConnectionItemModel.fromJson(x))),
         );
     }
 
 }
 
-class Connection {
-    Connection({
+class AllConnectionItemModel {
+    AllConnectionItemModel({
         required this.id,
         required this.partner,
         required this.status,
@@ -48,8 +48,8 @@ class Connection {
     final Partner? partner;
     final String? status;
 
-    factory Connection.fromJson(Map<String, dynamic> json){ 
-        return Connection(
+    factory AllConnectionItemModel.fromJson(Map<String, dynamic> json){ 
+        return AllConnectionItemModel(
             id: json["id"],
             partner: json["partner"] == null ? null : Partner.fromJson(json["partner"]),
             status: json["status"],

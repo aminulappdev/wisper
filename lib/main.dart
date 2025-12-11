@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:get/get.dart';
 import 'package:wisper/app/core/app_binder.dart';
 import 'package:wisper/app/core/config/theme/my_theme.dart';
 import 'package:wisper/app/core/config/translations/localization_service.dart';
 import 'package:wisper/app/core/get_storage.dart';
+import 'package:wisper/app/core/services/socket/socket_service.dart';
 import 'package:wisper/app/modules/dashboard/views/dashboard_screen.dart';
 import 'package:wisper/app/modules/onboarding/views/splash_screen.dart';
 
@@ -18,6 +19,8 @@ Future<void> main() async {
   //   debugPrint("⚠️ Could not load .env file: $e");
   // }
 
+  final SocketService socketService = Get.put(SocketService());
+  await socketService.init();
   await StorageUtil.init();
 
   SystemChrome.setPreferredOrientations([
