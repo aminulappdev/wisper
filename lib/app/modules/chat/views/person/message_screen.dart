@@ -47,6 +47,10 @@ class _ChatScreenState extends State<ChatScreen> {
     userAuthId = StorageUtil.getData(StorageUtil.userAuthId) ?? "";
     receiverId = widget.receiverId ?? '';
 
+    // Delete previous messages
+    socketService.messageList.clear();
+    messageCtrl.isLoading.value = true;
+
     messageCtrl.getMessages(chatId: widget.chatId ?? '').then((_) {
       _scrollToBottom();
     });
@@ -131,7 +135,12 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       body: Column(
         children: [
-          const ChatHeader(),
+          ChatHeader(
+            name: widget.receiverName,
+            image: widget.receiverImage,
+            id: widget.receiverId,
+            status: 'online',
+          ),
           Expanded(
             child: Obx(() {
               final messages = socketService.messageList.reversed.toList();

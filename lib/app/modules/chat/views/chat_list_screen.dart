@@ -108,8 +108,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
                             Get.to(
                               () => GroupChatScreen(
                                 chatId: chat!.id,
-                                receiverName: chat.group?.name ?? '',
+                                groupName: chat.group?.name ?? '',
                                 receiverId: receiverId,
+                                groupId: chat.groupId ?? '',
                               ),
                             );
                           } else if (type == 'CLASS') {

@@ -55,6 +55,12 @@ class MessageController extends GetxController {
               SocketMessageKeys.imageUrl: msg.file,
               SocketMessageKeys.seen: msg.isRead ?? false,
               SocketMessageKeys.senderId: msg.sender?.id ?? "",
+              SocketMessageKeys.senderName: msg.sender?.person != null
+                  ? msg.sender!.person!.name
+                  : msg.sender?.business?.name ?? "",
+              SocketMessageKeys.senderImage: msg.sender?.person != null
+                  ? msg.sender!.person!.image
+                  : msg.sender?.business?.image ?? "",
               SocketMessageKeys.chat: msg.chatId ?? "",
               SocketMessageKeys.createdAt:
                   msg.createdAt?.toIso8601String() ??

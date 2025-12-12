@@ -34,7 +34,7 @@ class _ClassChatScreenState extends State<ClassChatScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              GroupChatHeader(),
+              GroupChatHeader(groupId: '', groupName: '', groupImage: ''),
               heightBox16,
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -123,7 +123,7 @@ class _ClassChatScreenState extends State<ClassChatScreen> {
                                         fontSize: 12.sp,
                                         fontWeight: FontWeight.w400,
                                         color: Color(0xff1F7DE9),
-                                      ), 
+                                      ),
                                     ),
                                   ],
                                 ),

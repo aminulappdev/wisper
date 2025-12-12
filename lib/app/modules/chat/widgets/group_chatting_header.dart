@@ -17,10 +17,19 @@ import 'package:wisper/app/modules/chat/views/group/group_info_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class GroupChatHeader extends StatefulWidget {
-  const GroupChatHeader({super.key});
+  final String groupName;
+  final String groupImage;
+  final String groupId;
+
+  const GroupChatHeader({
+    super.key,
+    required this.groupName,
+    required this.groupImage,
+    required this.groupId,
+  });
 
   @override
-  State<GroupChatHeader> createState() => _GroupChatHeaderState(); 
+  State<GroupChatHeader> createState() => _GroupChatHeaderState();
 }
 
 class _GroupChatHeaderState extends State<GroupChatHeader> {
@@ -106,11 +115,7 @@ class _GroupChatHeaderState extends State<GroupChatHeader> {
       ],
       optionActions: {
         '0': () {
-          Get.to(
-            () => GroupInfoScreen(
-              groupId: 'a3e20128-b461-4dc9-a281-690e4ef3617f',
-            ),
-          );
+          Get.to(() => GroupInfoScreen(groupId: widget.groupId));
         },
         '1': () {
           _showMutePopup();
@@ -159,7 +164,7 @@ class _GroupChatHeaderState extends State<GroupChatHeader> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Aminul Islam',
+                          widget.groupName,
                           style: GoogleFonts.poppins(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,

@@ -13,12 +13,15 @@ import 'package:wisper/app/core/widgets/custom_popup.dart';
 import 'package:wisper/app/core/widgets/details_card.dart';
 import 'package:wisper/app/modules/calls/views/audio_call_screen.dart';
 import 'package:wisper/app/modules/calls/views/video_call_screen.dart';
-import 'package:wisper/app/modules/chat/views/group/group_info_screen.dart';
 import 'package:wisper/app/modules/profile/views/others_profile_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class ChatHeader extends StatefulWidget {
-  const ChatHeader({super.key});
+  final String? name;
+  final String? image;
+  final String? status;
+  final String? id;
+  const ChatHeader({super.key, this.name, this.image, this.status, this.id});
 
   @override
   State<ChatHeader> createState() => _ChatHeaderState();
@@ -156,7 +159,7 @@ class _ChatHeaderState extends State<ChatHeader> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Aminul Islam',
+                          widget.name!,
                           style: GoogleFonts.poppins(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -164,7 +167,7 @@ class _ChatHeaderState extends State<ChatHeader> {
                           ),
                         ),
                         Text(
-                          'online',
+                          widget.status!,
                           style: GoogleFonts.poppins(
                             fontSize: 10,
                             fontWeight: FontWeight.w400,

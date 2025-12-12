@@ -1,36 +1,34 @@
 // ignore_for_file: avoid_print
 
-import 'package:crash_safe_image/crash_safe_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/services/socket/socket_service.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
-import 'package:wisper/app/core/widgets/details_card.dart';
 import 'package:wisper/app/modules/chat/controller/message_controller.dart';
 import 'package:wisper/app/modules/chat/model/message_keys.dart';
-import 'package:wisper/app/modules/chat/widgets/chat_custom_elevated_button.dart';
 import 'package:wisper/app/modules/chat/widgets/chatting_field.dart';
-import 'package:wisper/app/modules/chat/widgets/chatting_header.dart';
 import 'package:wisper/app/modules/chat/widgets/empty_group_card.dart';
+import 'package:wisper/app/modules/chat/widgets/group_chatting_header.dart';
 import 'package:wisper/app/modules/chat/widgets/option.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class GroupChatScreen extends StatefulWidget {
   final String? receiverId;
-  final String? receiverName;
-  final String? receiverImage;
+  final String? groupName;
+  final String? groupImage;
   final String? chatId;
+  final String? groupId;
 
   const GroupChatScreen({
     super.key,
     this.receiverId,
-    this.receiverName,
-    this.receiverImage,
+    this.groupName,
+    this.groupImage,
     this.chatId,
+    this.groupId,
   });
 
   @override
@@ -50,8 +48,12 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
   void initState() {
     super.initState();
     userAuthId = StorageUtil.getData(StorageUtil.userAuthId) ?? "";
-    receiverId = widget.receiverId ?? '';
+    socketService.messageList.clear();
 
+    // Delete previous messages
+    messageCtrl.isLoading.value = true;
+    receiverId = widget.receiverId ?? '';
+    print('Group name ${widget.groupName}');
     messageCtrl.getMessages(chatId: widget.chatId ?? '').then((_) {
       _scrollToBottom();
     });
@@ -96,7 +98,13 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
         SocketMessageKeys.imageUrl: _safeImageUrl(data['file']),
         SocketMessageKeys.senderId:
             data['sender']['id'] ?? data['senderId'] ?? '',
+        SocketMessageKeys.senderName: data['sender']['person'] != null
+            ? data['sender']['person']['name']
+            : data['sender']['business']['name'] ?? '',
         SocketMessageKeys.chat: data['chatId'] ?? '',
+        SocketMessageKeys.senderImage: data['sender']['person'] != null
+            ? data['sender']['person']['image']
+            : data['sender']['business']['image'] ?? '',
         SocketMessageKeys.createdAt: (data['createdAt'] ?? DateTime.now())
             .toString(),
       };
@@ -136,7 +144,11 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     return Scaffold(
       body: Column(
         children: [
-          const ChatHeader(),
+          GroupChatHeader(
+            groupName: widget.groupName ?? '',
+            groupImage: widget.groupImage ?? '',
+            groupId: widget.groupId ?? '',
+          ),
           Expanded(
             child: Obx(() {
               final messages = socketService.messageList.reversed.toList();
@@ -149,7 +161,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                 return Center(
                   child: EmptyGroupInfoCard(
                     isGroup: true,
-                    name: widget.receiverName ?? '',
+                    name: widget.groupName ?? '',
                     member: '5',
                   ),
                 );
@@ -169,8 +181,9 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                     message: msg,
                     isMe: isMe,
                     imageUrl: imageUrl,
-                    receiverImage:
-                        widget.receiverImage ?? Assets.images.image.keyName,
+                    receiverImage: widget.groupImage ?? '',
+                    senderName: msg[SocketMessageKeys.senderName],
+                    senderImage: null,
                   );
                 },
               );
@@ -224,6 +237,8 @@ class MessageBubble extends StatelessWidget {
   final bool isMe;
   final String imageUrl;
   final String receiverImage;
+  final String senderName;
+  final String? senderImage;
 
   const MessageBubble({
     super.key,
@@ -231,10 +246,13 @@ class MessageBubble extends StatelessWidget {
     required this.isMe,
     required this.imageUrl,
     required this.receiverImage,
+    required this.senderName,
+    this.senderImage,
   });
 
   @override
   Widget build(BuildContext context) {
+    print('Name of receiver: $senderName');
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Row(
@@ -244,8 +262,11 @@ class MessageBubble extends StatelessWidget {
         children: [
           if (!isMe)
             CircleAvatar(
-              backgroundImage: AssetImage(receiverImage),
+              backgroundImage: senderImage == null
+                  ? null
+                  : NetworkImage(senderImage ?? ''),
               radius: 16.r,
+              child: Text(senderName[0].toUpperCase()),
             ),
           if (!isMe) widthBox4 else widthBox10,
           SizedBox(
