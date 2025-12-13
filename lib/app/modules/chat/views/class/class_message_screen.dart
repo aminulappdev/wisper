@@ -148,7 +148,12 @@ class _ClassChatScreenState extends State<ClassChatScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SizedBox(width: 200.w, child: ChattingFieldWidget()),
+                        SizedBox(
+                          width: 200.w,
+                          child: ChattingFieldWidget(
+                            controller: TextEditingController(),
+                          ),
+                        ),
                         Row(
                           children: [
                             CircleIconWidget(

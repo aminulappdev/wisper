@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/services/socket/socket_service.dart';
+import 'package:wisper/app/core/utils/date_formatter.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/modules/chat/controller/message_controller.dart';
 import 'package:wisper/app/modules/chat/model/message_keys.dart';
@@ -120,6 +121,22 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  Future<void> sendMessageBTN(String chatId, String text) async {
+    print('BUTTON CLICKED');
+    print('Chat ID: $chatId');
+    print('Text: $text');
+    if (text.trim().isEmpty) {
+      Get.snackbar('Error', 'Message or image cannot be empty');
+      return;
+    }
+    socketService.socket.emit('sendMessage', {
+      "chatId": chatId,
+      "text": text.trim(),
+    });
+
+    textCtrl.clear();
+  }
+
   @override
   void dispose() {
     // অবশ্যই off করো → না হলে ডুপ্লিকেট মেসেজ আসবে
@@ -167,13 +184,17 @@ class _ChatScreenState extends State<ChatScreen> {
                   final msg = messages[index];
                   final isMe = _isMe(msg);
                   final imageUrl = _safeImageUrl(msg['imageUrl']);
-
+                  final DateFormatter formattedTime = DateFormatter(
+                    msg[SocketMessageKeys.createdAt],
+                  );
+                  final String time = formattedTime.getRelativeTimeFormat();
                   return MessageBubble(
                     message: msg,
                     isMe: isMe,
                     imageUrl: imageUrl,
                     receiverImage:
                         widget.receiverImage ?? Assets.images.image.keyName,
+                    time: time,
                   );
                 },
               );
@@ -196,8 +217,8 @@ class _ChatScreenState extends State<ChatScreen> {
           padding: const EdgeInsets.all(10),
           child: Row(
             children: [
-              SizedBox(width: 200.w, child: const ChattingFieldWidget()),
-              const Spacer(),
+              Expanded(child: ChattingFieldWidget(controller: textCtrl)),
+
               CircleIconWidget(
                 imagePath: Assets.images.attatchment.keyName,
                 onTap: _showAttachmentOptions,
@@ -208,7 +229,7 @@ class _ChatScreenState extends State<ChatScreen> {
               CircleIconWidget(
                 imagePath: Assets.images.send.keyName,
                 onTap: () {
-                  // Send functionality later
+                  sendMessageBTN(widget.chatId ?? '', textCtrl.text);
                 },
                 radius: 18,
                 iconRadius: 24,
@@ -227,6 +248,7 @@ class MessageBubble extends StatelessWidget {
   final bool isMe;
   final String imageUrl;
   final String receiverImage;
+  final String time;
 
   const MessageBubble({
     super.key,
@@ -234,6 +256,7 @@ class MessageBubble extends StatelessWidget {
     required this.isMe,
     required this.imageUrl,
     required this.receiverImage,
+    required this.time,
   });
 
   @override
@@ -322,7 +345,7 @@ class MessageBubble extends StatelessWidget {
                       : MainAxisAlignment.start,
                   children: [
                     Text(
-                      '11:30 AM', // পরে dynamic করো
+                      time, // পরে dynamic করো
                       style: TextStyle(
                         fontSize: 10.sp,
                         color: isMe ? Colors.white70 : Colors.grey,

@@ -129,6 +129,22 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     );
   }
 
+  Future<void> sendMessageBTN(String chatId, String text) async {
+    print('BUTTON CLICKED');
+    print('Chat ID: $chatId');
+    print('Text: $text');
+    if (text.trim().isEmpty) {
+      Get.snackbar('Error', 'Message or image cannot be empty');
+      return;
+    }
+    socketService.socket.emit('sendMessage', {
+      "chatId": chatId,
+      "text": text.trim(),
+    });
+
+    textCtrl.clear();
+  }
+
   @override
   void dispose() {
     // অবশ্যই off করো → না হলে ডুপ্লিকেট মেসেজ আসবে
@@ -206,8 +222,8 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
           padding: const EdgeInsets.all(10),
           child: Row(
             children: [
-              SizedBox(width: 200.w, child: const ChattingFieldWidget()),
-              const Spacer(),
+              Expanded(child: ChattingFieldWidget(controller: textCtrl)),
+
               CircleIconWidget(
                 imagePath: Assets.images.attatchment.keyName,
                 onTap: _showAttachmentOptions,
@@ -218,7 +234,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
               CircleIconWidget(
                 imagePath: Assets.images.send.keyName,
                 onTap: () {
-                  // Send functionality later
+                  sendMessageBTN(widget.chatId ?? '', textCtrl.text);
                 },
                 radius: 18,
                 iconRadius: 24,

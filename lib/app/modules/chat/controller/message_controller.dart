@@ -1,4 +1,6 @@
 // app/modules/chat/controller/message_controller.dart
+// ignore_for_file: avoid_print
+
 import 'package:get/get.dart';
 import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/services/network_caller/network_caller.dart';
@@ -8,7 +10,7 @@ import 'package:wisper/app/modules/chat/model/message_keys.dart';
 import 'package:wisper/app/modules/chat/model/message_model.dart';
 import 'package:wisper/app/urls.dart';
 
-class MessageController extends GetxController {
+class MessageController extends GetxController { 
   bool _inProgress = false;
   bool get inProgress => _inProgress;
 
