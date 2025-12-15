@@ -8,10 +8,12 @@ import 'package:wisper/app/core/utils/validator_service.dart';
 import 'package:wisper/app/core/widgets/custom_text_filed.dart';
 import 'package:wisper/app/core/widgets/label.dart';
 import 'package:wisper/app/core/widgets/line_widget.dart';
+import 'package:wisper/app/modules/chat/controller/all_chats_controller.dart';
 import 'package:wisper/app/modules/chat/controller/create_group_controller.dart';
 import 'package:wisper/app/modules/chat/views/group/group_message_screen.dart';
 import 'package:wisper/app/modules/chat/widgets/create_header.dart';
 import 'package:wisper/app/modules/chat/widgets/toggle_option.dart';
+import 'package:wisper/app/modules/dashboard/views/dashboard_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class CreateGroupButtomSheet extends StatefulWidget {
@@ -72,7 +74,10 @@ class _CreateGroupButtomSheetState extends State<CreateGroupButtomSheet> {
     );
 
     if (isSuccess && mounted) {
-      Get.off(() => const GroupChatScreen()); // অথবা Get.to() যেটা চাও
+      final AllChatsController allChatsController =
+          Get.find<AllChatsController>();
+      await allChatsController.getAllChats();
+      Get.offAll(() => const MainButtonNavbarScreen());
     } else if (mounted) {
       showSnackBarMessage(context, createGroupController.errorMessage, true);
     }

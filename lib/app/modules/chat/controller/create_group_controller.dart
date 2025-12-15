@@ -1,7 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/services/network_caller/network_caller.dart';
 import 'package:wisper/app/core/services/network_caller/network_response.dart';
+import 'package:wisper/app/modules/chat/controller/all_chats_controller.dart';
 import 'package:wisper/app/urls.dart';
 
 class CreateGroupController extends GetxController {
@@ -38,6 +40,8 @@ class CreateGroupController extends GetxController {
 
       if (response.isSuccess && response.responseData != null) {
         _errorMessage.value = '';
+
+       
 
         _inProgress.value = false;
         return true;

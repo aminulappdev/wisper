@@ -1,12 +1,12 @@
 class AllChatsModel {
     AllChatsModel({
-        required this.success,
-        required this.message,
-        required this.data,
+         this.success,
+         this.message,
+         this.data,
     });
 
     final bool? success;
-    final String? message;
+    final String? message; 
     final Data? data;
 
     factory AllChatsModel.fromJson(Map<String, dynamic> json){ 

@@ -28,7 +28,9 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
 
   @override
   void initState() {
-    allConnectionController.getAllConnection('ACCEPTED');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      allConnectionController.getAllConnection('ACCEPTED');
+    });
     super.initState();
   }
 
@@ -151,8 +153,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                     itemBuilder: (context, index) {
                       var data =
                           allConnectionController.allConnectionData![index];
-                      final userId = (data.partner?.id ?? '')
-                          .toString();
+                      final userId = (data.partner?.id ?? '').toString();
 
                       bool isSelected = selectedMemberIds.contains(userId);
 
@@ -193,7 +194,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
         ),
       ),
     );
-  } 
+  }
 
   void _showCreateGroup() {
     showModalBottomSheet(
