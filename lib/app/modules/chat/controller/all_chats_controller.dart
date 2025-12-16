@@ -21,8 +21,7 @@ class AllChatsController extends GetxController {
   List<AllChatsItemModel> get allChatsData =>
       _allChatsModel.value?.data?.chats ?? [];
 
-  final String myAuthId =
-      StorageUtil.getData(StorageUtil.userAuthId) ?? '';
+  final String myAuthId = StorageUtil.getData(StorageUtil.userAuthId) ?? '';
 
   @override
   void onInit() {
@@ -35,8 +34,8 @@ class AllChatsController extends GetxController {
   Future<void> _bootstrap() async {
     await socketService.init(); // ✅ Socket initialized FIRST
 
-    _setupSocketListeners();    // ✅ Safe now
-    await getAllChats();        // API load
+    _setupSocketListeners(); // ✅ Safe now
+    await getAllChats(); // API load
   }
 
   // ================= SOCKET =================
@@ -44,7 +43,6 @@ class AllChatsController extends GetxController {
   void _setupSocketListeners() {
     socketService.socket.off('chatList');
     socketService.socket.on('chatList', _handleIncomingChat);
-   
   }
 
   void _handleIncomingChat(dynamic rawData) {
@@ -60,15 +58,13 @@ class AllChatsController extends GetxController {
     if (chatId.isEmpty) return;
 
     final latestMessage = chat['latestMessage'];
-    final String text =
-        latestMessage?['text']?.toString() ?? 'New message';
+    final String text = latestMessage?['text']?.toString() ?? 'New message';
 
     final String time =
         latestMessage?['createdAt']?.toString() ??
         DateTime.now().toIso8601String();
 
-    final String senderId =
-        latestMessage?['sender']?['id']?.toString() ?? '';
+    final String senderId = latestMessage?['sender']?['id']?.toString() ?? '';
 
     final bool isFromMe = senderId == myAuthId;
 
@@ -83,8 +79,7 @@ class AllChatsController extends GetxController {
       item['latestMessageAt'] = time;
 
       if (!isFromMe) {
-        item['unreadMessageCount'] =
-            (item['unreadMessageCount'] ?? 0) + 1;
+        item['unreadMessageCount'] = (item['unreadMessageCount'] ?? 0) + 1;
       }
 
       list.removeAt(index);
@@ -128,8 +123,7 @@ class AllChatsController extends GetxController {
           socketService.socketFriendList.add({
             "id": chat.id ?? '',
             "type": chat.type ?? 'INDIVIDUAL',
-            "latestMessageAt":
-                chat.latestMessageAt?.toIso8601String() ?? '',
+            "latestMessageAt": chat.latestMessageAt?.toIso8601String() ?? '',
             "lastMessage": chat.messages.isNotEmpty
                 ? chat.messages.first.text ?? ''
                 : 'No messages yet',
@@ -137,11 +131,7 @@ class AllChatsController extends GetxController {
             "group": chat.group,
             "chatClass": chat.chatClass,
             "messages": chat.messages.map((m) {
-              return {
-                "id": m.id,
-                "text": m.text,
-                "senderId": m.sender?.id,
-              };
+              return {"id": m.id, "text": m.text, "senderId": m.sender?.id};
             }).toList(),
           });
         }
@@ -165,11 +155,9 @@ class AllChatsController extends GetxController {
   void _sortSocketList() {
     socketService.socketFriendList.sort((a, b) {
       final aTime =
-          DateTime.tryParse(a['latestMessageAt'] ?? '') ??
-          DateTime(1970);
+          DateTime.tryParse(a['latestMessageAt'] ?? '') ?? DateTime(1970);
       final bTime =
-          DateTime.tryParse(b['latestMessageAt'] ?? '') ??
-          DateTime(1970);
+          DateTime.tryParse(b['latestMessageAt'] ?? '') ?? DateTime(1970);
       return bTime.compareTo(aTime);
     });
 

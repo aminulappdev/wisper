@@ -110,7 +110,7 @@ class _ChatHeaderState extends State<ChatHeader> {
       ],
       optionActions: {
         '0': () {
-          Get.to(() => OthersProfileScreen());
+          Get.to(() => OthersProfileScreen(userId: 'DemoId'));
         },
         '1': () {
           _showMutePopup();

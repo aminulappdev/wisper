@@ -1,3 +1,5 @@
+import 'package:wisper/app/modules/profile/widget/recommendation_widget.dart';
+
 class Urls {
   // =========================================== Base ================================================ //
   // static const String _baseUrl = 'http://10.10.10.17:5005/api/v1';
@@ -35,7 +37,16 @@ class Urls {
   static const String updateProfileUrl = '$_baseUrl/teachers/profile';
   static const String updateProfilImageUrl =
       '$_baseUrl/teachers/profile/change-image';
-  static const String allConnectionUrl = '$_baseUrl/connections';
+  static const String allConnectionUrl = '$_baseUrl/connections'; 
+  static const String recommendationsUrl = '$_baseUrl/recommendations'; 
+
+   static String otherProfileById(String id) {
+    return '$_baseUrl/persons/$id';
+  }
+
+    static String recommendationById(String id) {
+    return '$_baseUrl/recommendations/$id';
+  }
 
   // =========================================== Home Block ========================================== //
   static const String feedPostUrl = '$_baseUrl/posts/feed';
@@ -46,6 +57,8 @@ class Urls {
   static String editPostId(String id) {
     return '$_baseUrl/posts/$id';
   }
+
+ 
 
   static String singleJobById(String id) {
     return '$_baseUrl/jobs/$id';

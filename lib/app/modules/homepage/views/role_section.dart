@@ -2,11 +2,16 @@
 import 'package:flutter/material.dart';
 import 'package:wisper/app/modules/homepage/widget/role_card.dart';
 
-class RoleSection extends StatelessWidget {
+class RoleSection extends StatefulWidget {
   const RoleSection({
-    super.key,
+    super.key, 
   });
 
+  @override
+  State<RoleSection> createState() => _RoleSectionState();
+}
+
+class _RoleSectionState extends State<RoleSection> {
   @override
   Widget build(BuildContext context) {
     return Expanded(

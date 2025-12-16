@@ -8,6 +8,8 @@ import 'package:wisper/app/modules/chat/views/group/group_info_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class InfoCard extends StatelessWidget {
+  
+  final bool? isEditImage;
   final String imagePath;
   final VoidCallback editOnTap;
   final String title;
@@ -20,7 +22,7 @@ class InfoCard extends StatelessWidget {
 
   const InfoCard({
     super.key,
-    required this.imagePath,
+    required this.imagePath, 
     required this.editOnTap,
     required this.title,
     required this.memberInfo,
@@ -28,7 +30,8 @@ class InfoCard extends StatelessWidget {
     this.isTrailing = false,
     this.trailingOnTap,
     this.trailingKey,
-    this.showMember, // Include trailingKey in constructor
+    this.showMember,
+    this.isEditImage = true, // Include trailingKey in constructor
   });
 
   @override
@@ -87,18 +90,25 @@ class InfoCard extends StatelessWidget {
                         backgroundColor: Colors.grey.shade800,
                         backgroundImage: NetworkImage(imagePath),
                       ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: CircleIconWidget(
-                          color: const Color(0xff3C90CB),
-                          iconColor: const Color.fromARGB(255, 255, 255, 255),
-                          iconRadius: 10,
-                          radius: 10,
-                          imagePath: Assets.images.edit.keyName,
-                          onTap: editOnTap,
-                        ),
-                      ),
+                      isEditImage! == false
+                          ? const SizedBox()
+                          : Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: CircleIconWidget(
+                                color: const Color(0xff3C90CB),
+                                iconColor: const Color.fromARGB(
+                                  255,
+                                  255,
+                                  255,
+                                  255,
+                                ),
+                                iconRadius: 10,
+                                radius: 10,
+                                imagePath: Assets.images.edit.keyName,
+                                onTap: editOnTap,
+                              ),
+                            ),
                     ],
                   ),
                   SizedBox(height: 20.h),

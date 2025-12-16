@@ -10,6 +10,9 @@ import 'package:wisper/app/modules/chat/views/doc_info.dart';
 import 'package:wisper/app/modules/chat/widgets/location_info.dart';
 import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart';
 import 'package:wisper/app/modules/homepage/views/post_section.dart';
+import 'package:wisper/app/modules/profile/controller/person/others_profile_controller.dart';
+import 'package:wisper/app/modules/profile/controller/recommendetion_controller.dart';
+import 'package:wisper/app/modules/profile/model/recommendation_model.dart';
 import 'package:wisper/app/modules/profile/views/person/edit_person_profile_screen.dart';
 import 'package:wisper/app/modules/profile/views/recommendation_screen.dart';
 import 'package:wisper/app/modules/profile/views/settings_screen.dart';
@@ -18,14 +21,31 @@ import 'package:wisper/app/modules/profile/widget/recommendation_widget.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class OthersProfileScreen extends StatefulWidget {
-  const OthersProfileScreen({super.key});
+  final String userId;
+  const OthersProfileScreen({super.key, required this.userId});
 
   @override
   State<OthersProfileScreen> createState() => _OthersProfileScreenState();
 }
 
 class _OthersProfileScreenState extends State<OthersProfileScreen> {
+  final OtherProfileController controller = Get.put(OtherProfileController());
+  final AllRecommendationController recommendationController = Get.put(
+    AllRecommendationController(),
+  );
+
   int selectedIndex = 0;
+
+  @override
+  void initState() {
+    controller.getOthersProfile(widget.userId);
+    recommendationController.getAllRecommendations(widget.userId);
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      recommendationController.getAllRecommendations(widget.userId);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,59 +76,91 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
         child: Column(
           children: [
             SizedBox(height: 30.h),
-            InfoCard(
-              trailingKey: suffixButtonKey, // Pass the GlobalKey
-              trailingOnTap: () {
-                customPopupMenu.showMenuAtPosition(context);
-              },
-              imagePath: Assets.images.person.keyName,
-              editOnTap: () {},
-              title: 'Md Aminul Islam',
-              memberInfo: 'Software engineer',
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleIconWidget(
-                    imagePath: Assets.images.call.keyName,
-                    onTap: () {},
-                    radius: 15,
-                    color: LightThemeColors.blueColor,
-                    iconColor: Colors.white,
+            Obx(() {
+              if (controller.inProgress) {
+                return SizedBox(
+                  height: 200,
+                  child: const Center(
+                    child: CircularProgressIndicator(strokeAlign: 1),
                   ),
-                  SizedBox(width: 10.w),
-                  CircleIconWidget(
-                    imagePath: Assets.images.unselectedChat.keyName,
-                    onTap: () {},
-                    radius: 15,
-                    color: LightThemeColors.blueColor,
-                    iconColor: Colors.white,
+                );
+              }
+              {
+                return InfoCard(
+                  
+                  isEditImage: false,
+                  trailingKey: suffixButtonKey, // Pass the GlobalKey
+                  trailingOnTap: () {
+                    customPopupMenu.showMenuAtPosition(context);
+                  },
+                  imagePath: Assets.images.person.keyName,
+                  editOnTap: () {},
+                  title: controller.profileData?.auth?.person?.name ?? '',
+                  memberInfo: controller.profileData?.auth?.person?.title ?? '',
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircleIconWidget(
+                        imagePath: Assets.images.call.keyName,
+                        onTap: () {},
+                        radius: 15,
+                        color: LightThemeColors.blueColor,
+                        iconColor: Colors.white,
+                      ),
+                      SizedBox(width: 10.w),
+                      CircleIconWidget(
+                        imagePath: Assets.images.unselectedChat.keyName,
+                        onTap: () {},
+                        radius: 15,
+                        color: LightThemeColors.blueColor,
+                        iconColor: Colors.white,
+                      ),
+                      SizedBox(width: 10.w),
+                      SizedBox(
+                        height: 31.h,
+                        width: 116.w,
+                        child: CustomElevatedButton(
+                          color: LightThemeColors.blueColor,
+                          textSize: 12,
+                          title: 'Block',
+                          onPress: () {
+                            Get.to(() => const EditPersonProfileScreen());
+                          },
+                          borderRadius: 50,
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(width: 10.w),
-                  SizedBox(
-                    height: 31.h,
-                    width: 116.w,
-                    child: CustomElevatedButton(
-                      color: LightThemeColors.blueColor,
-                      textSize: 12,
-                      title: 'Edit Profile',
-                      onPress: () {
-                        Get.to(() => const EditPersonProfileScreen());
-                      },
-                      borderRadius: 50,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                );
+              }
+            }),
             SizedBox(height: 10.h),
-            Recommendation(
-              onTap: () {
-                _showCreateGroup();
-              },
-              count: 3,
-            ),
+            Obx(() {
+              if (recommendationController.inProgress) {
+                return SizedBox(height: 30, child: const Center());
+              } else if (recommendationController.recommendationData!.isEmpty) {
+                return Recommendation(
+                  onTap: () {
+                    _showCreateGroup(
+                      recommendationController.recommendationData ?? [],
+                    );
+                  },
+                  count: 0,
+                );
+              } else {
+                return Recommendation(
+                  onTap: () {
+                    _showCreateGroup(
+                      recommendationController.recommendationData!,
+                    );
+                  },
+                  count:
+                      recommendationController.recommendationData?.length ?? 0,
+                );
+              }
+            }),
             SizedBox(height: 10.h),
-            const LocationInfo(),
+             LocationInfo(isDate: false,),
             SizedBox(height: 20.h),
             const StraightLiner(height: 0.4, color: Color(0xff454545)),
             SizedBox(height: 10.h),
@@ -159,12 +211,16 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
     );
   }
 
-  void _showCreateGroup() {
+  void _showCreateGroup(List<RecommendationItemModel> model) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
-        return const RcommendationButtomSheet();
+        return RcommendationButtomSheet(
+          recommendationItemModel: model,
+          isCreateReview: true,
+          recieverId: widget.userId,
+        );
       },
     );
   }

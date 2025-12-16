@@ -27,7 +27,8 @@ class _PostSectionState extends State<PostSection> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(                        // Expanded Obx এর বাইরে → সমস্যা সমাধান!
+    return Expanded(
+      // Expanded Obx এর বাইরে → সমস্যা সমাধান!
       child: Obx(() {
         // লোডিং স্টেট
         if (controller.inProgress) {
@@ -52,11 +53,14 @@ class _PostSectionState extends State<PostSection> {
           itemCount: controller.allPostData.length,
           itemBuilder: (context, index) {
             final post = controller.allPostData[index];
-            final formattedTime = DateFormatter(post.createdAt!).getRelativeTimeFormat();
+            final formattedTime = DateFormatter(
+              post.createdAt!,
+            ).getRelativeTimeFormat();
 
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: PostCard(
+                ownerId: post.author?.id ?? '',
                 trailing: const Text(
                   'Sponsor',
                   style: TextStyle(
@@ -68,10 +72,12 @@ class _PostSectionState extends State<PostSection> {
                 ownerName: StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
                     ? post.author?.person?.name ?? 'Unknown User'
                     : post.author?.business?.name ?? 'Unknown Business',
-                ownerImage: StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
+                ownerImage:
+                    StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
                     ? post.author?.person?.image ?? ''
                     : post.author?.business?.image ?? '',
-                ownerProfession: StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
+                ownerProfession:
+                    StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
                     ? post.author?.person?.title ?? 'Professional'
                     : post.author?.business?.name ?? 'Business',
                 postImage: post.images.isNotEmpty ? post.images.first : null,

@@ -18,7 +18,9 @@ import 'package:wisper/app/modules/homepage/views/my_job_section.dart';
 import 'package:wisper/app/modules/homepage/views/my_post_section.dart';
 import 'package:wisper/app/modules/profile/controller/buisness/buisness_controller.dart';
 import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
+import 'package:wisper/app/modules/profile/controller/recommendetion_controller.dart';
 import 'package:wisper/app/modules/profile/controller/upload_photo_controller.dart';
+import 'package:wisper/app/modules/profile/model/recommendation_model.dart';
 import 'package:wisper/app/modules/profile/views/business/edit_business_profile_screen.dart';
 import 'package:wisper/app/modules/profile/views/person/edit_person_profile_screen.dart';
 import 'package:wisper/app/modules/profile/views/recommendation_screen.dart';
@@ -42,6 +44,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final ProfilePhotoController photoController =
       Get.find<ProfilePhotoController>();
 
+  final AllRecommendationController recommendationController = Get.put(
+    AllRecommendationController(),
+  );
+
   late final String userRole;
   final RxString currentImagePath = ''.obs;
 
@@ -51,6 +57,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     userRole = StorageUtil.getData(StorageUtil.userRole) ?? 'PERSON';
     _updateProfileImage();
     _getProfileImage();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      recommendationController.getAllRecommendations(
+        StorageUtil.getData(StorageUtil.userAuthId),
+      );
+    });
   }
 
   Future<void> _getProfileImage() async {
@@ -110,11 +122,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  void _showCreateGroup() {
+  void _showCreateGroup(List<RecommendationItemModel> model) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (_) => const RcommendationButtomSheet(),
+      builder: (BuildContext context) {
+        return RcommendationButtomSheet(
+          recommendationItemModel: model,
+          isCreateReview: false,
+          recieverId: StorageUtil.getData(StorageUtil.userAuthId),
+        );
+      },
     );
   }
 
@@ -254,7 +272,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
 
               SizedBox(height: 10.h),
-              Recommendation(onTap: _showCreateGroup, count: 3),
+              SizedBox(
+                height: 30.h,
+                child: Obx(() {
+                  if (recommendationController.inProgress) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (recommendationController
+                      .recommendationData!
+                      .isEmpty) {
+                    return Recommendation(
+                      onTap: () {
+                        _showCreateGroup(
+                          recommendationController.recommendationData ?? [],
+                        );
+                      },
+                      count: 0,
+                    );
+                  } else {
+                    return Recommendation(
+                      onTap: () {
+                        _showCreateGroup(
+                          recommendationController.recommendationData ?? [],
+                        );
+                      },
+                      count:
+                          recommendationController.recommendationData?.length ??
+                          0,
+                    );
+                  }
+                }),
+              ),
               SizedBox(height: 10.h),
 
               LocationInfo(

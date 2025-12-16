@@ -10,6 +10,7 @@ import 'package:wisper/gen/assets.gen.dart';
 
 class PostCard extends StatelessWidget {
   final Widget trailing;
+  final String? ownerId;
   final String? ownerName;
   final String? ownerImage;
   final String? ownerProfession;
@@ -27,6 +28,7 @@ class PostCard extends StatelessWidget {
     this.postDescription,
     this.postTime,
     this.views,
+    this.ownerId,
   });
 
   @override
@@ -36,7 +38,7 @@ class PostCard extends StatelessWidget {
       children: [
         GestureDetector(
           onTap: () {
-            Get.to(() => const OthersProfileScreen());
+            Get.to(() => OthersProfileScreen(userId: ownerId ?? ''));
           },
           child: CircleAvatar(
             backgroundColor: Colors.grey.shade800,

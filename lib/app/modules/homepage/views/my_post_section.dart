@@ -45,11 +45,15 @@ class _MyPostSectionState extends State<MyPostSection> {
   }
 
   Future<void> performDeletePost(BuildContext context, String postId) async {
-    final bool isSuccess = await deletePostController.deletePost(postId: postId);
+    final bool isSuccess = await deletePostController.deletePost(
+      postId: postId,
+    );
 
     if (isSuccess) {
-      final MyFeedPostController myFeedPostController = Get.find<MyFeedPostController>();
-      final AllFeedPostController allFeedPostController = Get.find<AllFeedPostController>();
+      final MyFeedPostController myFeedPostController =
+          Get.find<MyFeedPostController>();
+      final AllFeedPostController allFeedPostController =
+          Get.find<AllFeedPostController>();
 
       allFeedPostController.resetPagination();
       myFeedPostController.resetPagination();
@@ -94,15 +98,24 @@ class _MyPostSectionState extends State<MyPostSection> {
             options: [
               Text(
                 'Edit Post',
-                style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500, color: Colors.white),
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                ),
               ),
               Text(
                 'Delete Post',
-                style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500, color: Colors.redAccent),
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.redAccent,
+                ),
               ),
             ],
             optionActions: {
-              '0': () => Get.to(() => EditGalleryPostScreen(feedPostItemModel: post)),
+              '0': () =>
+                  Get.to(() => EditGalleryPostScreen(feedPostItemModel: post)),
               '1': () => _showDeletePost(post.id!),
             },
             menuWidth: 180.w,
@@ -112,6 +125,7 @@ class _MyPostSectionState extends State<MyPostSection> {
           return Padding(
             padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 4.w),
             child: PostCard(
+              ownerId: post.author?.id ?? '',
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -129,7 +143,11 @@ class _MyPostSectionState extends State<MyPostSection> {
                   GestureDetector(
                     key: suffixButtonKey,
                     onTap: () => customPopupMenu.showMenuAtPosition(context),
-                    child: const Icon(Icons.more_vert_rounded, color: Color(0xff8C8C8C), size: 24),
+                    child: const Icon(
+                      Icons.more_vert_rounded,
+                      color: Color(0xff8C8C8C),
+                      size: 24,
+                    ),
                   ),
                 ],
               ),
@@ -139,7 +157,8 @@ class _MyPostSectionState extends State<MyPostSection> {
               ownerImage: StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
                   ? post.author?.person?.image ?? ''
                   : post.author?.business?.image ?? '',
-              ownerProfession: StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
+              ownerProfession:
+                  StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
                   ? post.author?.person?.title ?? 'Professional'
                   : post.author?.business?.name ?? 'Business',
               postImage: post.images.isNotEmpty ? post.images.first : '',
@@ -173,9 +192,22 @@ class _MyPostSectionState extends State<MyPostSection> {
                 iconColor: const Color(0xffDC8B44),
               ),
               heightBox20,
-              Text('Delete?', style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600, color: Colors.white)),
+              Text(
+                'Delete?',
+                style: TextStyle(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
               heightBox8,
-              Text('Are you sure you want to delete?', style: TextStyle(fontSize: 14.sp, color: const Color(0xff9FA3AA))),
+              Text(
+                'Are you sure you want to delete?',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: const Color(0xff9FA3AA),
+                ),
+              ),
               heightBox12,
               Row(
                 children: [

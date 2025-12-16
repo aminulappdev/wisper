@@ -5,9 +5,10 @@ import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class LocationInfo extends StatelessWidget {
+  final bool? isDate;
   final String? location;
   final String? date;
-  const LocationInfo({super.key, this.location, this.date});
+  const LocationInfo({super.key, this.location, this.date, this.isDate = true});
 
   @override
   Widget build(BuildContext context) {
@@ -33,24 +34,26 @@ class LocationInfo extends StatelessWidget {
           ],
         ),
         widthBox10,
-        Row(
-          children: [
-            CrashSafeImage(
-              Assets.images.calendar.keyName,
-              height: 16.h,
-              color: const Color(0xff7F8694),
-            ),
-            widthBox4,
-            Text(
-              'Created $date',
-              style: TextStyle(
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w400,
-                color: const Color(0xff7F8694),
-              ),
-            ),
-          ],
-        ),
+        isDate!
+            ? Row(
+                children: [
+                  CrashSafeImage(
+                    Assets.images.calendar.keyName,
+                    height: 16.h,
+                    color: const Color(0xff7F8694),
+                  ),
+                  widthBox4,
+                  Text(
+                    'Created $date',
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w400,
+                      color: const Color(0xff7F8694),
+                    ),
+                  ),
+                ],
+              )
+            : Container(),
       ],
     );
   }

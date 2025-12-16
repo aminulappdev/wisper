@@ -11,7 +11,8 @@ import 'package:wisper/app/modules/profile/views/others_profile_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class RoleCard extends StatelessWidget {
-  const RoleCard({super.key});
+  final String? id;
+  const RoleCard({super.key, this.id});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +24,7 @@ class RoleCard extends StatelessWidget {
           children: [
             GestureDetector(
               onTap: () {
-                Get.to(() => const OthersProfileScreen());
+                Get.to(() =>  OthersProfileScreen(userId: id ?? '',));
               },
               child: Row(
                 children: [

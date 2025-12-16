@@ -3,33 +3,40 @@ import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/services/network_caller/network_caller.dart';
 import 'package:wisper/app/core/services/network_caller/network_response.dart';
 import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
-import 'package:wisper/app/modules/homepage/model/single_job_model.dart';
+import 'package:wisper/app/modules/profile/model/recommendation_model.dart';
 import 'package:wisper/app/urls.dart';
- 
-class SingleJobController extends GetxController {
+
+class AllRecommendationController extends GetxController {
   final RxBool _inProgress = false.obs;
   bool get inProgress => _inProgress.value;
 
   final RxString _errorMessage = ''.obs;
   String get errorMessage => _errorMessage.value;
 
-  final Rx<SingleJobModel?> _singleJobModel = Rx<SingleJobModel?>(null);
-  JobData? get singleJobData => _singleJobModel.value?.data;
+  final Rx<RecommendationModel?> _recommendationModel =
+      Rx<RecommendationModel?>(null);
 
-  Future<bool> getSingleJob(String id) async {
+  List<RecommendationItemModel>? get recommendationData => 
+      _recommendationModel.value!.data;
+
+  Future<bool> getAllRecommendations(String? id) async {
     _inProgress.value = true;
 
     try {
       final NetworkResponse response = await Get.find<NetworkCaller>()
           .getRequest(
-            Urls.singleJobById(id),
+            Urls.recommendationById(id ?? ''),
+
             accessToken: StorageUtil.getData(StorageUtil.userAccessToken),
           );
 
       if (response.isSuccess && response.responseData != null) {
         _errorMessage.value = '';
 
-        _singleJobModel.value = SingleJobModel.fromJson(response.responseData);
+        _recommendationModel.value = RecommendationModel.fromJson(
+          response.responseData,
+        );
+
         _inProgress.value = false;
         return true;
       } else {
