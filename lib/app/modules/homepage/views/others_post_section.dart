@@ -3,27 +3,31 @@ import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
-import 'package:wisper/app/modules/homepage/controller/feed_post_controller.dart';
+import 'package:wisper/app/modules/homepage/controller/others_post_controller.dart';
 import 'package:wisper/app/modules/homepage/widget/post_card.dart';
 
-class PostSection extends StatefulWidget {
-
-  const PostSection({super.key,});
+class OthersPostSection extends StatefulWidget {
+  final String? userId;
+  const OthersPostSection({super.key, this.userId});
 
   @override
-  State<PostSection> createState() => _PostSectionState();
+  State<OthersPostSection> createState() => _OthersPostSectionState();
 }
 
-class _PostSectionState extends State<PostSection> {
-  final AllFeedPostController controller = Get.find<AllFeedPostController>();
+class _OthersPostSectionState extends State<OthersPostSection> {
+  final OthersFeedPostController controller = Get.put(
+    OthersFeedPostController(),
+  );
 
   @override
   void initState() {
     super.initState();
     // প্রথমবার ডেটা লোড করা
-   
+    print('User ID: ${widget.userId}');
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.getAllPost();
+      controller.resetPagination();
+      print('User ID avobe callback: ${widget.userId}');
+      controller.getAllPost(userId: widget.userId);
     });
   }
 

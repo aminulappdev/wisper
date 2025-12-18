@@ -42,7 +42,7 @@ class Urls {
 
    static String otherProfileById(String id) {
     return '$_baseUrl/persons/$id';
-  }
+  } 
 
     static String recommendationById(String id) {
     return '$_baseUrl/recommendations/$id';
@@ -53,10 +53,15 @@ class Urls {
   static const String myFeedPostUrl = '$_baseUrl/posts/my';
   static const String postUrl = '$_baseUrl/posts';
   static const String feedJobUrl = '$_baseUrl/jobs';
+  static const String roleUrl = '$_baseUrl/persons/roles';
 
   static String editPostId(String id) {
     return '$_baseUrl/posts/$id';
   }
+
+  static String otherUserPostById(String id) {
+    return '$_baseUrl/posts/user/$id';
+  } 
 
  
 

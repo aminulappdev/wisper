@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:get/get.dart';
 import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/services/network_caller/network_caller.dart';
@@ -6,7 +8,7 @@ import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
 import 'package:wisper/app/modules/homepage/model/feed_post_model.dart';
 import 'package:wisper/app/urls.dart';
 
-class AllFeedPostController extends GetxController {
+class OthersFeedPostController extends GetxController {
   final NetworkCaller networkCaller = Get.find<NetworkCaller>();
 
   final RxBool _inProgress = false.obs;
@@ -31,9 +33,10 @@ class AllFeedPostController extends GetxController {
     update(); // Ensure UI updates
   }
 
-  Future<bool> getAllPost({String? categoryId}) async {
+  Future<bool> getAllPost({String? userId}) async {
+    print('User ID avobe getAllPost: $userId');
     if (_inProgress.value) {
-      print('Fetch already in progress, skipping');
+      print('Fetch already in progress, skipping'); 
       return false;
     }
 
@@ -41,7 +44,7 @@ class AllFeedPostController extends GetxController {
       print('Reached last page: $lastPage');
       _inProgress.value = false;
       update();
-      return false; // Stop if we've reached the last page
+      return false;
     }
 
     _inProgress.value = true;
@@ -53,15 +56,15 @@ class AllFeedPostController extends GetxController {
       print('Fetching assets for page: $page');
 
       Map<String, dynamic> queryParams = {'limit': _limit, 'page': page};
-      final effectiveCategoryId = categoryId ?? _selectedCategoryId.value;
-      if (effectiveCategoryId.isNotEmpty) {
-        queryParams['category'] = effectiveCategoryId;
-      }
 
       print('Fetching assets with params: $queryParams');
 
+      if (userId != null || userId != '') {
+        print('Fetching assets with userId: $userId');
+      }
+
       final NetworkResponse response = await networkCaller.getRequest(
-        Urls.feedPostUrl,
+        Urls.otherUserPostById(userId ?? ''),
         queryParams: queryParams,
         accessToken: StorageUtil.getData(StorageUtil.userAccessToken),
       );
@@ -109,6 +112,5 @@ class AllFeedPostController extends GetxController {
     lastPage = null;
     _allPostList.clear();
     print('Pagination reset, fetching with categoryId: $_selectedCategoryId');
-    getAllPost(categoryId: _selectedCategoryId.value);
   }
 }

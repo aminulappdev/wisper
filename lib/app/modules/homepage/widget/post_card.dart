@@ -35,7 +35,7 @@ class PostCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: [ 
         GestureDetector(
           onTap: () {
             Get.to(() => OthersProfileScreen(userId: ownerId ?? ''));

@@ -9,7 +9,7 @@ import 'package:wisper/app/core/widgets/line_widget.dart';
 import 'package:wisper/app/modules/chat/views/doc_info.dart';
 import 'package:wisper/app/modules/chat/widgets/location_info.dart';
 import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart';
-import 'package:wisper/app/modules/homepage/views/post_section.dart';
+import 'package:wisper/app/modules/homepage/views/others_post_section.dart';
 import 'package:wisper/app/modules/profile/controller/person/others_profile_controller.dart';
 import 'package:wisper/app/modules/profile/controller/recommendetion_controller.dart';
 import 'package:wisper/app/modules/profile/model/recommendation_model.dart';
@@ -26,7 +26,7 @@ class OthersProfileScreen extends StatefulWidget {
 
   @override
   State<OthersProfileScreen> createState() => _OthersProfileScreenState();
-}
+} 
 
 class _OthersProfileScreenState extends State<OthersProfileScreen> {
   final OtherProfileController controller = Get.put(OtherProfileController());
@@ -39,12 +39,20 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
   @override
   void initState() {
     controller.getOthersProfile(widget.userId);
-    recommendationController.getAllRecommendations(widget.userId);
+
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      
       recommendationController.getAllRecommendations(widget.userId);
     });
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    recommendationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -87,7 +95,6 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
               }
               {
                 return InfoCard(
-                  
                   isEditImage: false,
                   trailingKey: suffixButtonKey, // Pass the GlobalKey
                   trailingOnTap: () {
@@ -160,7 +167,7 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
               }
             }),
             SizedBox(height: 10.h),
-             LocationInfo(isDate: false,),
+            LocationInfo(isDate: false),
             SizedBox(height: 20.h),
             const StraightLiner(height: 0.4, color: Color(0xff454545)),
             SizedBox(height: 10.h),
@@ -198,7 +205,7 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
             ),
             const StraightLiner(height: 0.4, color: Color(0xff454545)),
             SizedBox(height: 10.h),
-            if (selectedIndex == 0) PostSection(),
+            if (selectedIndex == 0) OthersPostSection(userId: widget.userId),
             if (selectedIndex == 1)
               DocInfo(
                 title: 'job_description.pdf',

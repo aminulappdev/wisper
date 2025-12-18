@@ -1,5 +1,7 @@
 // lib/app/modules/profile/views/profile_screen.dart
 
+// ignore_for_file: use_build_context_synchronously, avoid_print
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -83,7 +85,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // প্রোফাইল ইমেজ আপডেট করার হেল্পার
   void _updateProfileImage() {
     String? imageUrl;
     if (userRole == 'PERSON') {
@@ -96,17 +97,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ? imageUrl!
         : (userRole == 'PERSON'
               ? Assets.images.person.keyName
-              : Assets.images.person.keyName); // BUSINESS এর জন্য ডিফল্ট ইমেজ
+              : Assets.images.person.keyName);
   }
 
-  // ইমেজ পিক করার পর আপলোড + রিফ্রেশ
   void _onImagePicked(File imageFile) async {
-    currentImagePath.value = imageFile.path; // লোকাল ইমেজ দেখানোর জন্য
+    currentImagePath.value = imageFile.path;
 
     final bool success = await photoController.uploadProfilePhoto(imageFile);
 
     if (success) {
-      // API থেকে লেটেস্ট ডাটা রিফ্রেশ
       if (userRole == 'PERSON') {
         await personController.getMyProfile();
       } else {
@@ -114,11 +113,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
 
       await Future.delayed(const Duration(milliseconds: 800));
-      _updateProfileImage(); // UI আপডেট
+      _updateProfileImage();
       showSnackBarMessage(context, 'Profile photo updated!', false);
     } else {
       showSnackBarMessage(context, 'Failed to upload image', true);
-      _updateProfileImage(); // পুরানো ইমেজে ফিরে যাও
+      _updateProfileImage();
     }
   }
 
@@ -136,7 +135,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ট্যাব কন্টেন্ট – রোল অনুযায়ী
   Widget _getTabContent(int index) {
     if (userRole == 'PERSON') {
       if (index == 0) return const MyPostSection();
@@ -165,7 +163,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final GlobalKey suffixButtonKey = GlobalKey();
 
     return Obx(() {
-      // লেটেস্ট প্রোফাইল ডাটা
       final personData = userRole == 'PERSON'
           ? personController.profileData?.auth?.person
           : null;
@@ -193,7 +190,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ? DateFormatter(createdAt)
           : DateFormatter(DateTime.now());
 
-      // ট্যাব লিস্ট – রোল অনুযায়ী
       final List<Map<String, String>> tabs = userRole == 'PERSON'
           ? [
               {'index': '0', 'title': 'Post'},

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
@@ -11,8 +10,26 @@ import 'package:wisper/app/modules/profile/views/others_profile_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class RoleCard extends StatelessWidget {
+  final String? title;
+  final String? imagePath;
+  final String? role;
+  final int? post;
+  final int? recommendations;
+  final VoidCallback? addOnTap;
+  final VoidCallback? messagesOnTap;
+
   final String? id;
-  const RoleCard({super.key, this.id});
+  const RoleCard({
+    super.key,
+    this.id,
+    this.title,
+    this.imagePath,
+    this.role,
+    this.post,
+    this.recommendations,
+    this.addOnTap,
+    this.messagesOnTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +41,7 @@ class RoleCard extends StatelessWidget {
           children: [
             GestureDetector(
               onTap: () {
-                Get.to(() =>  OthersProfileScreen(userId: id ?? '',));
+                Get.to(() => OthersProfileScreen(userId: id ?? ''));
               },
               child: Row(
                 children: [
@@ -37,14 +54,14 @@ class RoleCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Aminul Islam',
+                        title ?? '',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
                         ),
                       ),
                       Text(
-                        'Flutter Developer',
+                        role ?? '',
                         style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontSize: 12,
@@ -57,14 +74,14 @@ class RoleCard extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                '5',
+                                '$post',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   fontSize: 8,
                                   color: Color.fromARGB(255, 255, 255, 255),
                                 ),
                               ),
-              
+
                               Text(
                                 ' Post',
                                 style: TextStyle(
@@ -79,14 +96,14 @@ class RoleCard extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                '5',
+                                '$recommendations',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   fontSize: 8,
                                   color: Color.fromARGB(255, 255, 255, 255),
                                 ),
                               ),
-              
+
                               Text(
                                 ' Recommendation',
                                 style: TextStyle(
@@ -108,7 +125,9 @@ class RoleCard extends StatelessWidget {
               children: [
                 CircleIconWidget(
                   imagePath: Assets.images.unselectedChat.keyName,
-                  onTap: () {},
+                  onTap: () {
+                    messagesOnTap!();
+                  },
                   iconRadius: 18.r,
                 ),
                 widthBox8,
@@ -119,7 +138,7 @@ class RoleCard extends StatelessWidget {
                     borderRadius: 50,
                     textSize: 12.sp,
                     title: '+ Add',
-                    onPress: () {},
+                    onPress: addOnTap,
                   ),
                 ),
               ],
