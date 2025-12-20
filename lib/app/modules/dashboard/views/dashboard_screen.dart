@@ -72,7 +72,7 @@ class _MainButtonNavbarScreenState extends State<MainButtonNavbarScreen> {
       allFeedPostController.getAllPost(),
       myFeedJobController.getJobs(),
       myFeedPostController.getAllPost(),
-      allRoleController.getAllRole(),
+      allRoleController.getAllRole(''),
     ]);
 
     if (StorageUtil.getData(StorageUtil.userRole) == 'PERSON') {

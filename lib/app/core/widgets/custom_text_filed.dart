@@ -7,7 +7,7 @@ class CustomTextField extends StatefulWidget {
     this.controller, 
     this.initialValue,
     this.focusNode,
-    this.decoration,
+    this.decoration, 
     this.keyboardType,
     this.style = const TextStyle(color: Color(0xff8C8C8C)),
     this.textDirection,

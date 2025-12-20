@@ -22,16 +22,10 @@ class AllFeedJobController extends GetxController {
   int page = 0;
   int? lastPage;
 
-  // Category filter
-  final RxString _selectedCategoryId = ''.obs;
-  String get selectedCategoryId => _selectedCategoryId.value;
-  set selectedCategoryId(String value) {
-    _selectedCategoryId.value = value;
-    resetPagination(); // Reset and fetch data when category changes
-    update(); // Ensure UI updates
-  }
-
-  Future<bool> getJobs({String? categoryId}) async {
+  Future<bool> getJobs({String? searchQuery}) async {
+    print(
+      'User ID avobe getAllJob: ${StorageUtil.getData(StorageUtil.userAccessToken)}',
+    );
     if (_inProgress.value) {
       print('Fetch already in progress, skipping');
       return false;
@@ -52,11 +46,11 @@ class AllFeedJobController extends GetxController {
       page++;
       print('Fetching assets for page: $page');
 
-      Map<String, dynamic> queryParams = {'limit': _limit, 'page': page};
-      final effectiveCategoryId = categoryId ?? _selectedCategoryId.value;
-      if (effectiveCategoryId.isNotEmpty) {
-        queryParams['category'] = effectiveCategoryId;
-      }
+      Map<String, dynamic> queryParams = {
+        'limit': _limit,
+        'page': page,
+        'searchTerm': searchQuery ?? '',
+      };
 
       print('Fetching assets with params: $queryParams');
 
@@ -105,7 +99,7 @@ class AllFeedJobController extends GetxController {
     page = 0; // Reset to 0 so first call uses page 1
     lastPage = null;
     _allJobList.clear();
-    print('Pagination reset, fetching with categoryId: $_selectedCategoryId');
-    getJobs(categoryId: _selectedCategoryId.value);
+    print('Pagination reset, fetching with categoryId');
+    update();
   }
 }

@@ -40,6 +40,7 @@ class GroupChatScreen extends StatelessWidget {
       body: Column(
         children: [
           GroupChatHeader(
+            chatId: chatId ?? '',
             groupName: groupName ?? '',
             groupImage: groupImage ?? '',
             groupId: groupId ?? '',

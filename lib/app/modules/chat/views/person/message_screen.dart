@@ -37,9 +37,10 @@ class ChatScreen extends StatelessWidget {
       body: Column(
         children: [
           ChatHeader(
+            chatId: chatId,
             name: receiverName,
             image: receiverImage,
-            id: receiverId,
+            memberId: receiverId,
             status: 'online', 
           ),
 

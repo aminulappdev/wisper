@@ -5,19 +5,25 @@ import 'package:wisper/app/modules/homepage/controller/feed_job_controller.dart'
 import 'package:wisper/app/modules/homepage/widget/job_card.dart';
 
 class JobSection extends StatefulWidget {
-  const JobSection({super.key});
+  final String? searchQuery;
+  const JobSection({super.key, this.searchQuery});
 
   @override
   State<JobSection> createState() => _JobSectionState();
 }
 
 class _JobSectionState extends State<JobSection> {
-  final AllFeedJobController controller = Get.find<AllFeedJobController>();
+  final AllFeedJobController controller = Get.put(AllFeedJobController());
 
   @override
   void initState() {
     super.initState();
-    controller.getJobs();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.searchQuery != null || widget.searchQuery != '') {
+        controller.resetPagination();
+      }
+      controller.getJobs(searchQuery: widget.searchQuery);
+    });
   }
 
   @override

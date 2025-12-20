@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/line_widget.dart';
 import 'package:wisper/app/modules/homepage/views/job_section.dart';
 import 'package:wisper/app/modules/homepage/views/post_section.dart';
 import 'package:wisper/app/modules/homepage/views/role_section.dart';
+import 'package:wisper/app/modules/homepage/views/search_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -16,15 +19,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
- 
-
   @override
   void initState() {
-   
     super.initState();
   }
-
-
 
   int selectedIndex = 0;
   @override
@@ -50,13 +48,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     CircleIconWidget(
                       imagePath: Assets.images.search.keyName,
-                      onTap: () {},
-                      iconRadius: 18.r,
-                    ),
-                    widthBox8,
-                    CircleIconWidget(
-                      imagePath: Assets.images.moreHor.keyName,
-                      onTap: () {},
+                      onTap: () {
+                        Get.to(() => SearchScreen());
+                      },
                       iconRadius: 18.r,
                     ),
                   ],

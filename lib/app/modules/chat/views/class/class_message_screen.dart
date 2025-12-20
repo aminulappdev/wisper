@@ -34,7 +34,12 @@ class _ClassChatScreenState extends State<ClassChatScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              GroupChatHeader(groupId: '', groupName: '', groupImage: ''),
+              GroupChatHeader(
+                groupId: '',
+                groupName: '',
+                groupImage: '',
+                chatId: '',
+              ),
               heightBox16,
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),

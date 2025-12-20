@@ -7,12 +7,15 @@ import 'package:get/get_navigation/get_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/utils/show_over_loading.dart';
+import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/custom_popup.dart';
 import 'package:wisper/app/core/widgets/details_card.dart';
 import 'package:wisper/app/modules/calls/views/audio_call_screen.dart';
 import 'package:wisper/app/modules/calls/views/video_call_screen.dart';
+import 'package:wisper/app/modules/chat/controller/block_user_controller.dart';
 import 'package:wisper/app/modules/profile/views/others_profile_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
@@ -20,8 +23,16 @@ class ChatHeader extends StatefulWidget {
   final String? name;
   final String? image;
   final String? status;
-  final String? id;
-  const ChatHeader({super.key, this.name, this.image, this.status, this.id});
+  final String? memberId;
+  final String? chatId;
+  const ChatHeader({
+    super.key,
+    this.name,
+    this.image,
+    this.status,
+    this.memberId,
+    this.chatId,
+  });
 
   @override
   State<ChatHeader> createState() => _ChatHeaderState();
@@ -29,11 +40,43 @@ class ChatHeader extends StatefulWidget {
 
 class _ChatHeaderState extends State<ChatHeader> {
   List<CameraDescription>? cameras; // Nullable to handle initialization
+  final BlockUnblockMemberController blockUnblockMemberController =
+      BlockUnblockMemberController();
 
   @override
   void initState() {
     super.initState();
     _initializeCamera();
+  }
+
+  void blockMember(String? chatId, String? memberId) {
+    showLoadingOverLay(
+      asyncFunction: () async =>
+          await performBlockMember(context, chatId, memberId),
+      msg: 'Please wait...',
+    );
+  }
+
+  Future<void> performBlockMember(
+    BuildContext context,
+    String? chatId,
+    String? memberId,
+  ) async {
+    final bool isSuccess = await blockUnblockMemberController.blockMember(
+      chatId: chatId,
+      memberId: memberId,
+    );
+
+    if (isSuccess) {
+      setState(() {});
+      showSnackBarMessage(context, 'Blocked successfully', false);
+    } else {
+      showSnackBarMessage(
+        context,
+        blockUnblockMemberController.errorMessage,
+        true,
+      );
+    }
   }
 
   // Initialize Camera
@@ -443,7 +486,9 @@ class _ChatHeaderState extends State<ChatHeader> {
                       child: CustomElevatedButton(
                         color: Color(0xffE62047),
                         title: 'Block',
-                        onPress: () {},
+                        onPress: () {
+                          blockMember(widget.chatId, widget.memberId);
+                        },
                       ),
                     ),
                   ],

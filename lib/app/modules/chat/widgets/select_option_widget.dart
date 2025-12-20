@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
 
 class SelectOptionWidget extends StatelessWidget {
@@ -28,7 +28,7 @@ class SelectOptionWidget extends StatelessWidget {
             fontSize: 16.sp,
             fontWeight: FontWeight.w600,
             color: selectedIndex == currentIndex
-                ? Colors.white
+                ? LightThemeColors.blueColor
                 : const Color(0xff93A4B0),
           ),
         ),

@@ -39,6 +39,7 @@ class Urls {
       '$_baseUrl/teachers/profile/change-image';
   static const String allConnectionUrl = '$_baseUrl/connections'; 
   static const String recommendationsUrl = '$_baseUrl/recommendations'; 
+  static const String addRequestUrl = '$_baseUrl/connections'; 
 
    static String otherProfileById(String id) {
     return '$_baseUrl/persons/$id';
@@ -77,12 +78,28 @@ class Urls {
   static const String createGroupUrl = '$_baseUrl/groups';
   static const String createClassUrl = '$_baseUrl/classes';
   static const String allChatsUrl = '$_baseUrl/chats/my';
+  static const String blockChatUserUrl = '$_baseUrl/chats/block-participant';
+  static const String unblockChatUserUrl = '$_baseUrl/chats/unblock-participant';
+  static const String muteChatUserUrl = '$_baseUrl/chats/mute';
+
   static String groupInfoById(String id) {
     return '$_baseUrl/groups/$id';
   }
 
+  static String groupMuteInfoById(String id) {
+    return '$_baseUrl/chats/mute-info/$id';
+  }
+
   static String groupMembersById(String id) {
     return '$_baseUrl/groups/members/$id';
+  }
+
+   static String addMembersById(String id) {
+    return '$_baseUrl/groups/$id';
+  }
+
+   static String deleteGroupById(String id) {
+    return '$_baseUrl/chats/$id';
   }
 
   static String messagesById(String id) {

@@ -3,9 +3,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
+import 'package:wisper/app/core/utils/show_over_loading.dart';
+import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/line_widget.dart';
+import 'package:wisper/app/modules/chat/controller/add_group_member.dart';
 import 'package:wisper/app/modules/chat/controller/all_connection_controller.dart';
 import 'package:wisper/app/modules/chat/controller/all_group_member_controller.dart';
 import 'package:wisper/app/modules/chat/controller/group_info_controller.dart';
@@ -36,6 +39,8 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
   final AllConnectionController allConnectionController =
       Get.find<AllConnectionController>();
 
+  final AddMemberController addMemberController = AddMemberController();
+
   @override
   void initState() {
     groupInfoController.getGroupInfo(widget.groupId);
@@ -45,6 +50,36 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
   }
 
   int selectedIndex = 0;
+
+  void addMember(String? memberId, String? groupId) {
+    showLoadingOverLay(
+      asyncFunction: () async =>
+          await performAddMember(context, memberId, groupId),
+      msg: 'Please wait...',
+    );
+  }
+
+  Future<void> performAddMember(
+    BuildContext context,
+    String? memberId,
+    String? groupId,
+  ) async {
+    final bool isSuccess = await addMemberController.addRequest(
+      groupId: groupId,
+      memberId: memberId,
+    );
+
+    if (isSuccess) {
+      final AllConnectionController allConnectionController = Get.put(
+        AllConnectionController(),
+      );
+      await allConnectionController.getAllConnection('ACCEPTED');
+      setState(() {});
+      showSnackBarMessage(context, 'Added successfully', false);
+    } else {
+      showSnackBarMessage(context, addMemberController.errorMessage, true);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +145,9 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                         child: CustomElevatedButton(
                           textSize: 12,
                           title: 'Add Members',
-                          onPress: _showConnectionInfo,
+                          onPress: () {
+                            _showConnectionInfo(widget.groupId);
+                          },
                           borderRadius: 50,
                         ),
                       ),
@@ -254,7 +291,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
     );
   }
 
-  void _showConnectionInfo() {
+  void _showConnectionInfo(String? groupId) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -265,11 +302,40 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
             if (allConnectionController.inProgress) {
               return const Center(child: CircularProgressIndicator());
             } else {
+              // Step 1: Existing member user IDs collect করি
+              final Set<String?> existingMemberIds = groupMembersController
+                  .groupMemnersData!
+                  .map(
+                    (member) => member.auth?.id,
+                  ) // <--- যদি path অন্য হয় তাহলে change করো
+                  .toSet();
+
+              final filteredConnections = allConnectionController
+                  .allConnectionData!
+                  .where(
+                    (connection) =>
+                        !existingMemberIds.contains(connection.partner?.id),
+                  )
+                  .toList();
+
+              // যদি কোনো eligible connection না থাকে
+              if (filteredConnections.isEmpty) {
+                return const Center(
+                  child: Text(
+                    'No more connections to add',
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                );
+              }
+
               return ListView.builder(
-                itemCount: allConnectionController.allConnectionData!.length,
+                itemCount: filteredConnections.length,
                 itemBuilder: (context, index) {
+                  final connection =
+                      filteredConnections[index]; // filtered item
+
                   return Padding(
-                    padding: EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                       vertical: 6.0,
                       horizontal: 20.0,
                     ),
@@ -288,30 +354,13 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  allConnectionController
-                                          .allConnectionData![index]
-                                          .partner!
-                                          .person
-                                          ?.name ??
-                                      '',
-                                ),
+                                Text(connection.partner?.person?.name ?? ''),
                                 heightBox4,
                                 Text(
-                                  allConnectionController
-                                          .allConnectionData![index]
-                                          .partner!
-                                          .person
-                                          ?.title ??
-                                      '',
-                                  style: TextStyle(
-                                    fontSize: 10.sp,
-                                    color: const Color.fromARGB(
-                                      255,
-                                      255,
-                                      255,
-                                      255,
-                                    ),
+                                  connection.partner?.person?.title ?? '',
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    color: Color.fromARGB(255, 255, 255, 255),
                                   ),
                                 ),
                               ],
@@ -324,7 +373,9 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                           child: CustomElevatedButton(
                             title: 'Add Member',
                             textSize: 10.sp,
-                            onPress: () {},
+                            onPress: () {
+                              addMember(connection.partner?.id, groupId);
+                            },
                           ),
                         ),
                       ],

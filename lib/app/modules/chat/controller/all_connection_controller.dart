@@ -6,7 +6,7 @@ import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
 import 'package:wisper/app/modules/profile/model/all_connection_model.dart';
 import 'package:wisper/app/urls.dart';
 
-class AllConnectionController extends GetxController {
+class AllConnectionController extends GetxController { 
   final RxBool _inProgress = false.obs;
   bool get inProgress => _inProgress.value;
 
