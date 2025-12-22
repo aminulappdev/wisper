@@ -14,7 +14,7 @@ import 'package:wisper/gen/assets.gen.dart';
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({super.key});
 
-  @override 
+  @override
   State<ChatListScreen> createState() => _ChatListScreenState();
 }
 
@@ -154,7 +154,13 @@ class _ChatListScreenState extends State<ChatListScreen> {
                               ),
                             );
                           } else if (type == 'CLASS') {
-                            Get.to(() => ClassChatScreen());
+                            Get.to(
+                              () => ClassChatScreen(
+                                chatId: chat.id,
+                                className: chat.chatClass?.name ?? '',
+                                classId: chat.classId ?? '',
+                              ),
+                            );
                           } else {
                             Get.to(
                               () => ChatScreen(

@@ -125,6 +125,8 @@ class _MyPostSectionState extends State<MyPostSection> {
           return Padding(
             padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 4.w),
             child: PostCard(
+              onTapComment: () {},
+              isComment: true,
               ownerId: post.author?.id ?? '',
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -136,7 +138,8 @@ class _MyPostSectionState extends State<MyPostSection> {
                       title: 'Boost Post',
                       textSize: 12,
                       borderRadius: 50,
-                      onPress: () => Get.to(() => const BoostScreen()),
+                      onPress: () =>
+                          Get.to(() => BoostScreen(feedPostItemModel: post)),
                     ),
                   ),
                   SizedBox(width: 12.w),

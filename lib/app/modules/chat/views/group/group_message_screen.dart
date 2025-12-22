@@ -16,7 +16,7 @@ import 'package:wisper/gen/assets.gen.dart';
 class GroupChatScreen extends StatelessWidget {
   final String? groupName;
   final String? groupImage;
-  final String? chatId;
+  final String? chatId; 
   final String? groupId;
 
   const GroupChatScreen({

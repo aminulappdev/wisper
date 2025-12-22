@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/widgets/image_container_widget.dart';
-import 'package:wisper/app/modules/profile/views/others_profile_screen.dart';
+import 'package:wisper/app/modules/profile/views/others_person_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class PostCard extends StatelessWidget {
@@ -18,6 +18,8 @@ class PostCard extends StatelessWidget {
   final String? postDescription;
   final String? postTime;
   final String? views;
+  final bool? isComment;
+  final VoidCallback onTapComment;
   const PostCard({
     super.key,
     required this.trailing,
@@ -29,16 +31,18 @@ class PostCard extends StatelessWidget {
     this.postTime,
     this.views,
     this.ownerId,
+    this.isComment = false,
+    required this.onTapComment,
   });
 
   @override
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [ 
+      children: [
         GestureDetector(
           onTap: () {
-            Get.to(() => OthersProfileScreen(userId: ownerId ?? ''));
+            Get.to(() => OthersPersonScreen(userId: ownerId ?? ''));
           },
           child: CircleAvatar(
             backgroundColor: Colors.grey.shade800,
@@ -48,7 +52,7 @@ class PostCard extends StatelessWidget {
         ),
         widthBox8,
         SizedBox(
-          width: MediaQuery.of(context).size.width * 0.7,
+          width: MediaQuery.of(context).size.width * 0.75,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -80,7 +84,7 @@ class PostCard extends StatelessWidget {
               ),
               heightBox10,
               Container(
-                width: MediaQuery.of(context).size.width * 0.7,
+                width: MediaQuery.of(context).size.width * 0.75,
                 decoration: BoxDecoration(
                   color: Colors.transparent,
                   borderRadius: BorderRadius.circular(8.r),
@@ -131,11 +135,24 @@ class PostCard extends StatelessWidget {
                       ),
                     ],
                   ),
+                  isComment ?? true
+                      ? const SizedBox()
+                      : GestureDetector(
+                          onTap: onTapComment,
+                          child: Text(
+                            'Comments',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 10,
+                              color: LightThemeColors.themeGreyColor,
+                            ),
+                          ),
+                        ),
                   Text(
                     postTime ?? '',
                     style: TextStyle(
                       fontWeight: FontWeight.w400,
-                      fontSize: 12,
+                      fontSize: 10,
                       color: LightThemeColors.themeGreyColor,
                     ),
                   ),

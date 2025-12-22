@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -8,11 +10,11 @@ import 'package:wisper/app/core/utils/validator_service.dart';
 import 'package:wisper/app/core/widgets/custom_text_filed.dart';
 import 'package:wisper/app/core/widgets/label.dart';
 import 'package:wisper/app/core/widgets/line_widget.dart';
-import 'package:wisper/app/modules/chat/controller/all_connection_controller.dart';
-import 'package:wisper/app/modules/chat/controller/create_class_controller.dart';
-import 'package:wisper/app/modules/chat/views/group/group_message_screen.dart';
+import 'package:wisper/app/modules/chat/controller/all_chats_controller.dart';
+import 'package:wisper/app/modules/chat/controller/class/create_class_controller.dart';
 import 'package:wisper/app/modules/chat/widgets/create_header.dart';
 import 'package:wisper/app/modules/chat/widgets/toggle_option.dart';
+import 'package:wisper/app/modules/dashboard/views/dashboard_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class CreateClassButtomSheet extends StatefulWidget {
@@ -29,46 +31,54 @@ class _CreateClassButtomSheetState extends State<CreateClassButtomSheet> {
     CreateClassController(),
   );
 
-  final TextEditingController _classNameC = TextEditingController();
-  final TextEditingController _classDescriptionC = TextEditingController();
+  // Text Controllers
+  final TextEditingController _groupNameC = TextEditingController();
+  final TextEditingController _groupDescriptionC = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
+  // Toggle states (RxBool for reactivity if needed later)
   final RxBool _isPrivate = false.obs;
   final RxBool _allowInvitation = true.obs;
 
-  final AllConnectionController allConnectionController =
-      Get.find<AllConnectionController>();
+  @override
+  void initState() {
+    print(widget.selectedMemberIds);
+    super.initState();
+  }
 
   @override
   void dispose() {
-    _classNameC.dispose();
-    _classDescriptionC.dispose();
+    _groupNameC.dispose();
+    _groupDescriptionC.dispose();
     super.dispose();
   }
 
-  void createClass() {
-    if (_classNameC.text.trim().isEmpty) {
+  void createGroup() {
+    if (_groupNameC.text.trim().isEmpty) {
       showSnackBarMessage(context, 'Please enter class name', true);
       return;
     }
 
     showLoadingOverLay(
-      asyncFunction: () async => await performCreateClass(),
+      asyncFunction: () async => await performCreateGroup(),
       msg: 'Please wait...',
     );
   }
 
-  Future<void> performCreateClass() async {
+  Future<void> performCreateGroup() async {
     final bool isSuccess = await createClassController.createGroup(
-      name: _classNameC.text.trim(),
-      description: _classDescriptionC.text.trim(),
+      name: _groupNameC.text.trim(),
+      description: _groupDescriptionC.text.trim(),
       members: widget.selectedMemberIds,
       isPrivate: _isPrivate.value,
       allowInvitation: _allowInvitation.value,
     );
 
     if (isSuccess && mounted) {
-      Get.off(() => const GroupChatScreen());
+      final AllChatsController allChatsController =
+          Get.find<AllChatsController>();
+      await allChatsController.getAllChats();
+      Get.offAll(() => const MainButtonNavbarScreen());
     } else if (mounted) {
       showSnackBarMessage(context, createClassController.errorMessage, true);
     }
@@ -92,13 +102,13 @@ class _CreateClassButtomSheetState extends State<CreateClassButtomSheet> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CreateHeader(
-                    bgColor: const Color(0xff102B19),
-                    iconColor: const Color(0xff11AE46),
+                    bgColor: const Color(0xff051B33),
+                    iconColor: const Color(0xff1F7DE9),
                     title: 'Create Class',
                     imagePath: Assets.images.education.keyName,
                     onTap: () {
                       if (formKey.currentState!.validate()) {
-                        createClass();
+                        createGroup();
                       }
                     },
                     trailinlgText: 'Create',
@@ -109,7 +119,7 @@ class _CreateClassButtomSheetState extends State<CreateClassButtomSheet> {
                   const Label(label: 'Class Name'),
                   heightBox10,
                   CustomTextField(
-                    controller: _classNameC,
+                    controller: _groupNameC,
                     hintText: 'Enter class name',
                     keyboardType: TextInputType.name,
                     validator: ValidatorService.validateSimpleField,
@@ -118,7 +128,7 @@ class _CreateClassButtomSheetState extends State<CreateClassButtomSheet> {
                   const Label(label: 'Description'),
                   heightBox10,
                   CustomTextField(
-                    controller: _classDescriptionC,
+                    controller: _groupDescriptionC,
                     hintText: 'Write description',
                     keyboardType: TextInputType.multiline,
                     maxLines: 3,

@@ -15,7 +15,7 @@ class ChatScreen extends StatelessWidget {
   final String? receiverName;
   final String? receiverImage;
   final String? chatId;
- 
+
   const ChatScreen({
     super.key,
     this.receiverId,
@@ -28,7 +28,6 @@ class ChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final MessageController ctrl = Get.put(MessageController());
 
-    
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ctrl.setupChat(chatId: chatId);
     });
@@ -41,7 +40,7 @@ class ChatScreen extends StatelessWidget {
             name: receiverName,
             image: receiverImage,
             memberId: receiverId,
-            status: 'online', 
+            status: 'online',
           ),
 
           Expanded(

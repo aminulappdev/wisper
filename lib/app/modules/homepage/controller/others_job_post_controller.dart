@@ -5,20 +5,20 @@ import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/services/network_caller/network_caller.dart';
 import 'package:wisper/app/core/services/network_caller/network_response.dart';
 import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
-import 'package:wisper/app/modules/homepage/model/feed_post_model.dart';
+import 'package:wisper/app/modules/homepage/model/feed_job_model.dart';
 import 'package:wisper/app/urls.dart';
 
-class OthersFeedPostController extends GetxController {
-  final NetworkCaller networkCaller = Get.find<NetworkCaller>();  
-  
+class OthersJobController extends GetxController {
+  final NetworkCaller networkCaller = Get.find<NetworkCaller>();
+
   final RxBool _inProgress = false.obs;
   bool get inProgress => _inProgress.value;
 
   final RxString _errorMessage = ''.obs;
   String get errorMessage => _errorMessage.value;
 
-  final RxList<FeedPostItemModel> _allPostList = <FeedPostItemModel>[].obs;
-  RxList<FeedPostItemModel> get allPostData => _allPostList;
+  final RxList<FeedJobItemModel> _allJobList = <FeedJobItemModel>[].obs;
+  RxList<FeedJobItemModel> get allJobData => _allJobList;
 
   final int _limit = 20;
   int page = 0;
@@ -33,10 +33,10 @@ class OthersFeedPostController extends GetxController {
     update(); // Ensure UI updates
   }
 
-  Future<bool> getAllPost({String? userId}) async {
+  Future<bool> getAllJob({String? userId}) async {
     print('User ID avobe getAllPost: $userId');
     if (_inProgress.value) {
-      print('Fetch already in progress, skipping'); 
+      print('Fetch already in progress, skipping');
       return false;
     }
 
@@ -55,7 +55,9 @@ class OthersFeedPostController extends GetxController {
       page++;
       print('Fetching assets for page: $page');
 
-      Map<String, dynamic> queryParams = {'limit': _limit, 'page': page};
+      Map<String, dynamic> queryParams = userId != null || userId != ''
+          ? {'limit': _limit, 'page': page, 'authorId': userId ?? ''}
+          : {'limit': _limit, 'page': page};
 
       print('Fetching assets with params: $queryParams');
 
@@ -64,7 +66,7 @@ class OthersFeedPostController extends GetxController {
       }
 
       final NetworkResponse response = await networkCaller.getRequest(
-        Urls.otherUserPostById(userId ?? ''),
+        Urls.feedJobUrl,
         queryParams: queryParams,
         accessToken: StorageUtil.getData(StorageUtil.userAccessToken),
       );
@@ -73,16 +75,15 @@ class OthersFeedPostController extends GetxController {
 
       if (response.isSuccess && response.responseData != null) {
         _errorMessage.value = '';
-        FeedPostModel assetsModel = FeedPostModel.fromJson(
-          response.responseData,
-        );
-        _allPostList.addAll(assetsModel.data?.posts ?? []);
 
-        if (assetsModel.data?.meta?.total != null &&
-            assetsModel.data?.meta?.limit != null) {
-          lastPage =
-              (assetsModel.data!.meta!.total! / assetsModel.data!.meta!.limit!)
-                  .ceil();
+        FeedJobModel jobModel = FeedJobModel.fromJson(response.responseData);
+
+        _allJobList.addAll(jobModel.data?.jobs ?? []);
+
+        if (jobModel.data?.meta?.total != null &&
+            jobModel.data?.meta?.limit != null) {
+          lastPage = (jobModel.data!.meta!.total! / jobModel.data!.meta!.limit!)
+              .ceil();
           print('Last page calculated: $lastPage');
         }
 
@@ -110,7 +111,7 @@ class OthersFeedPostController extends GetxController {
   void resetPagination() {
     page = 0; // Reset to 0 so first call uses page 1
     lastPage = null;
-    _allPostList.clear();
+    _allJobList.clear();
     print('Pagination reset, fetching with categoryId: $_selectedCategoryId');
   }
 }

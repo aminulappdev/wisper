@@ -9,8 +9,9 @@ import 'package:wisper/app/core/widgets/line_widget.dart';
 import 'package:wisper/app/modules/chat/views/doc_info.dart';
 import 'package:wisper/app/modules/chat/widgets/location_info.dart';
 import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart';
+import 'package:wisper/app/modules/homepage/views/others_job_section.dart';
 import 'package:wisper/app/modules/homepage/views/others_post_section.dart';
-import 'package:wisper/app/modules/profile/controller/person/others_profile_controller.dart';
+import 'package:wisper/app/modules/profile/controller/buisness/other_business_controller.dart';
 import 'package:wisper/app/modules/profile/controller/recommendetion_controller.dart';
 import 'package:wisper/app/modules/profile/model/recommendation_model.dart';
 import 'package:wisper/app/modules/profile/views/person/edit_person_profile_screen.dart';
@@ -20,16 +21,16 @@ import 'package:wisper/app/modules/profile/widget/info_card.dart';
 import 'package:wisper/app/modules/profile/widget/recommendation_widget.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
-class OthersProfileScreen extends StatefulWidget {
+class OthersBusinessScreen extends StatefulWidget {
   final String userId;
-  const OthersProfileScreen({super.key, required this.userId});
+  const OthersBusinessScreen({super.key, required this.userId});
 
   @override
-  State<OthersProfileScreen> createState() => _OthersProfileScreenState();
-} 
+  State<OthersBusinessScreen> createState() => _OthersBusinessScreenState();
+}
 
-class _OthersProfileScreenState extends State<OthersProfileScreen> {
-  final OtherProfileController controller = Get.put(OtherProfileController());
+class _OthersBusinessScreenState extends State<OthersBusinessScreen> {
+  final OtherBusinessController controller = Get.put(OtherBusinessController());
   final AllRecommendationController recommendationController = Get.put(
     AllRecommendationController(),
   );
@@ -38,12 +39,12 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
 
   @override
   void initState() {
+    print('User ID: ${widget.userId}');
     controller.getOthersProfile(widget.userId);
 
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      
       recommendationController.getAllRecommendations(widget.userId);
     });
   }
@@ -102,8 +103,11 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
                   },
                   imagePath: Assets.images.person.keyName,
                   editOnTap: () {},
-                  title: controller.profileData?.auth?.person?.name ?? '',
-                  memberInfo: controller.profileData?.auth?.person?.title ?? '',
+                  title:
+                      controller.profileData?.auth?.business?.name ?? 'No Name',
+                  memberInfo:
+                      controller.profileData?.auth?.business?.industry ??
+                      'No Industry',
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -172,7 +176,7 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
             const StraightLiner(height: 0.4, color: Color(0xff454545)),
             SizedBox(height: 10.h),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 GestureDetector(
                   onTap: () {
@@ -187,7 +191,7 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
                     lineColor: const Color.fromARGB(255, 255, 255, 255),
                   ),
                 ),
-                SizedBox(width: 100.w),
+
                 GestureDetector(
                   onTap: () {
                     setState(() {
@@ -196,6 +200,20 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
                   },
                   child: SelectOptionWidget(
                     currentIndex: 1,
+                    selectedIndex: selectedIndex,
+                    title: 'Job',
+                    lineColor: const Color.fromARGB(255, 255, 255, 255),
+                  ),
+                ),
+
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedIndex = 2;
+                    });
+                  },
+                  child: SelectOptionWidget(
+                    currentIndex: 2,
                     selectedIndex: selectedIndex,
                     title: 'Resume',
                     lineColor: const Color.fromARGB(255, 255, 255, 255),
@@ -206,7 +224,8 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
             const StraightLiner(height: 0.4, color: Color(0xff454545)),
             SizedBox(height: 10.h),
             if (selectedIndex == 0) OthersPostSection(userId: widget.userId),
-            if (selectedIndex == 1)
+            if (selectedIndex == 1) OthersJobSection(userId: widget.userId),
+            if (selectedIndex == 2)
               DocInfo(
                 title: 'job_description.pdf',
                 isDownloaded: true,

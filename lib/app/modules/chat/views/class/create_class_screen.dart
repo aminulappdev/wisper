@@ -6,6 +6,7 @@ import 'package:wisper/app/core/widgets/custom_text_filed.dart';
 import 'package:wisper/app/core/widgets/line_widget.dart';
 import 'package:wisper/app/modules/chat/controller/all_connection_controller.dart';
 import 'package:wisper/app/modules/chat/views/class/create_class_buttom_sheet.dart';
+import 'package:wisper/app/modules/chat/views/group/create_group_button_sheet.dart';
 import 'package:wisper/app/modules/chat/widgets/add_icon_widget.dart';
 import 'package:wisper/app/modules/chat/widgets/contact_widget.dart';
 import 'package:wisper/app/modules/chat/widgets/create_header.dart';
@@ -23,12 +24,14 @@ class _CreateClassScreenState extends State<CreateClassScreen> {
   final AllConnectionController allConnectionController =
       Get.find<AllConnectionController>();
 
-  // শুধুমাত্র member ID গুলো রাখবো
+  // শুধুমাত্র ID গুলো রাখবো এখানে
   final List<String> selectedMemberIds = [];
 
   @override
   void initState() {
-    allConnectionController.getAllConnection('ACCEPTED');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      allConnectionController.getAllConnection('ACCEPTED');
+    });
     super.initState();
   }
 
@@ -42,10 +45,10 @@ class _CreateClassScreenState extends State<CreateClassScreen> {
           children: [
             heightBox40,
             CreateHeader(
-              bgColor: const Color(0xff102B19),
-              iconColor: const Color(0xff11AE46),
+              bgColor: const Color(0xff051B33),
+              iconColor: const Color(0xff1F7DE9),
               title: 'Create Class',
-              imagePath: Assets.images.education.keyName,
+              imagePath: Assets.images.userGroup.keyName,
               onTap: () {
                 if (selectedMemberIds.isEmpty) {
                   Get.snackbar(
@@ -56,7 +59,7 @@ class _CreateClassScreenState extends State<CreateClassScreen> {
                   );
                   return;
                 }
-                _showCreateClass();
+                _showCreateGroup();
               },
               trailinlgText: 'Next',
             ),
@@ -101,22 +104,23 @@ class _CreateClassScreenState extends State<CreateClassScreen> {
                               itemBuilder: (context, index) {
                                 final selectedId = selectedMemberIds[index];
 
-                                // Find connection by ID
+                                // Find the connection object using ID
                                 final connection = allConnectionController
                                     .allConnectionData!
                                     .firstWhere(
                                       (c) =>
                                           (c.partner?.id ?? '').toString() ==
                                           selectedId,
-                                      orElse: () => allConnectionController
-                                          .allConnectionData![0], // fallback
                                     );
 
                                 return Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 4,
+                                  ),
                                   child: MemberWidget(
                                     imagePath: Assets.images.image.keyName,
-                                    name: connection.partner?.person?.name ??
+                                    name:
+                                        connection.partner?.person?.name ??
                                         'Unknown',
                                     onTap: () {
                                       setState(() {
@@ -145,9 +149,11 @@ class _CreateClassScreenState extends State<CreateClassScreen> {
                 return Expanded(
                   child: ListView.builder(
                     padding: EdgeInsets.zero,
-                    itemCount: allConnectionController.allConnectionData!.length,
+                    itemCount:
+                        allConnectionController.allConnectionData!.length,
                     itemBuilder: (context, index) {
-                      var data = allConnectionController.allConnectionData![index];
+                      var data =
+                          allConnectionController.allConnectionData![index];
                       final userId = (data.partner?.id ?? '').toString();
 
                       bool isSelected = selectedMemberIds.contains(userId);
@@ -191,13 +197,13 @@ class _CreateClassScreenState extends State<CreateClassScreen> {
     );
   }
 
-  void _showCreateClass() {
+  void _showCreateGroup() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
         return CreateClassButtomSheet(
-          selectedMemberIds: selectedMemberIds,
+          selectedMemberIds: selectedMemberIds, // শুধু ID লিস্ট পাস হচ্ছে
         );
       },
     );

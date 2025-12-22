@@ -14,6 +14,7 @@ import 'package:wisper/app/modules/chat/widgets/toggle_option.dart';
 import 'package:wisper/app/modules/profile/controller/buisness/buisness_controller.dart';
 import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
 import 'package:wisper/app/modules/profile/views/change_password_screen.dart';
+import 'package:wisper/app/modules/profile/views/content_screen.dart';
 import 'package:wisper/app/modules/profile/views/profile_screen.dart';
 import 'package:wisper/app/modules/profile/views/wallet_screen.dart';
 import 'package:wisper/app/modules/profile/widget/my_info_card.dart';
@@ -209,22 +210,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     heightBox20,
-                    ToggleOption(
-                      title: 'Contact List Visibility',
-                      subtitle: 'Show your contacts to others',
-                      onToggle: (bool p1) {},
+                    // ToggleOption(
+                    //   title: 'Contact List Visibility',
+                    //   subtitle: 'Show your contacts to others',
+                    //   onToggle: (bool p1) {},
+                    // ),
+                    // heightBox10,
+                    // ToggleOption(
+                    //   title: 'Last Seen',
+                    //   subtitle: 'Show when you were last online',
+                    //   onToggle: (bool p1) {},
+                    // ),
+                    // heightBox10,
+                    // ToggleOption(
+                    //   title: 'Read Receipts',
+                    //   subtitle: 'Show when you\'ve read messages',
+                    //   onToggle: (bool p1) {},
+                    // ),
+                    StraightLiner(height: 0.5),
+                    heightBox10,
+                    SettingsFeatureRow(
+                      title: 'Privacy Policy',
+                      onTap: () {
+                        Get.to(() => ContentScreen(title: 'Privacy Policy'));
+                      },
                     ),
                     heightBox10,
-                    ToggleOption(
-                      title: 'Last Seen',
-                      subtitle: 'Show when you were last online',
-                      onToggle: (bool p1) {},
-                    ),
+                    StraightLiner(height: 0.5),
                     heightBox10,
-                    ToggleOption(
-                      title: 'Read Receipts',
-                      subtitle: 'Show when you\'ve read messages',
-                      onToggle: (bool p1) {},
+                    SettingsFeatureRow(
+                      title: 'Terms & Conditions',
+                      onTap: () {
+                        Get.to(
+                          () => ContentScreen(title: 'Terms & Conditions'),
+                        );
+                      },
                     ),
                   ],
                 ),

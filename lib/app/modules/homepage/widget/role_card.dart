@@ -6,7 +6,7 @@ import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/line_widget.dart';
-import 'package:wisper/app/modules/profile/views/others_profile_screen.dart';
+import 'package:wisper/app/modules/profile/views/others_person_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class RoleCard extends StatelessWidget {
@@ -17,6 +17,8 @@ class RoleCard extends StatelessWidget {
   final int? recommendations;
   final VoidCallback? addOnTap;
   final VoidCallback? messagesOnTap;
+  final String? status;
+  final bool? isEnable;
 
   final String? id;
   const RoleCard({
@@ -29,6 +31,7 @@ class RoleCard extends StatelessWidget {
     this.recommendations,
     this.addOnTap,
     this.messagesOnTap,
+    this.status, this.isEnable,
   });
 
   @override
@@ -41,7 +44,7 @@ class RoleCard extends StatelessWidget {
           children: [
             GestureDetector(
               onTap: () {
-                Get.to(() => OthersProfileScreen(userId: id ?? ''));
+                Get.to(() => OthersPersonScreen(userId: id ?? ''));
               },
               child: Row(
                 children: [
@@ -133,11 +136,12 @@ class RoleCard extends StatelessWidget {
                 widthBox8,
                 SizedBox(
                   height: 30.h,
-                  width: 60.w,
+                  width: 70.w,
                   child: CustomElevatedButton(
+                    color: isEnable! ? LightThemeColors.blueColor : Colors.grey,
                     borderRadius: 50,
                     textSize: 12.sp,
-                    title: '+ Add',
+                    title: status ?? '',
                     onPress: addOnTap,
                   ),
                 ),

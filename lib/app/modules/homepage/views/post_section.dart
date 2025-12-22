@@ -4,11 +4,11 @@ import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
 import 'package:wisper/app/modules/homepage/controller/feed_post_controller.dart';
+import 'package:wisper/app/modules/homepage/views/comment_screen.dart';
 import 'package:wisper/app/modules/homepage/widget/post_card.dart';
 
 class PostSection extends StatefulWidget {
-
-  const PostSection({super.key,});
+  const PostSection({super.key});
 
   @override
   State<PostSection> createState() => _PostSectionState();
@@ -21,7 +21,7 @@ class _PostSectionState extends State<PostSection> {
   void initState() {
     super.initState();
     // প্রথমবার ডেটা লোড করা
-   
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.getAllPost();
     });
@@ -62,6 +62,10 @@ class _PostSectionState extends State<PostSection> {
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: PostCard(
+                onTapComment: () {
+                  Get.to(CommentScreen(postId: post.id ?? ''));
+                },
+                isComment: false,
                 ownerId: post.author?.id ?? '',
                 trailing: const Text(
                   'Sponsor',

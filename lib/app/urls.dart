@@ -1,4 +1,4 @@
-import 'package:wisper/app/modules/profile/widget/recommendation_widget.dart';
+
 
 class Urls {
   // =========================================== Base ================================================ //
@@ -9,6 +9,8 @@ class Urls {
   static const String socketUrl = 'http://10.10.10.17:5000';  
 
   // =========================================== Common ============================================== //
+  static const String paymentUrl = '$_baseUrl/boosts/checkout-session';
+  static const String contentUrl = '$_baseUrl/legal';
 
   // =========================================== Profile ============================================== //
   static const String personProfileUrl = '$_baseUrl/persons/profile';
@@ -40,9 +42,14 @@ class Urls {
   static const String allConnectionUrl = '$_baseUrl/connections'; 
   static const String recommendationsUrl = '$_baseUrl/recommendations'; 
   static const String addRequestUrl = '$_baseUrl/connections'; 
+  static const String boostPackaegesUrl = '$_baseUrl/boost-packages'; 
 
    static String otherProfileById(String id) {
     return '$_baseUrl/persons/$id';
+  } 
+
+  static String otherBusinessProfileById(String id) {
+    return '$_baseUrl/businesses/$id';
   } 
 
     static String recommendationById(String id) {
@@ -54,14 +61,23 @@ class Urls {
   static const String myFeedPostUrl = '$_baseUrl/posts/my';
   static const String postUrl = '$_baseUrl/posts';
   static const String feedJobUrl = '$_baseUrl/jobs';
-  static const String roleUrl = '$_baseUrl/persons/roles';
+  static const String roleUrl = '$_baseUrl/persons/roles'; 
+
 
   static String editPostId(String id) {
     return '$_baseUrl/posts/$id';
   }
 
+    static String commentPostId(String id) {
+    return '$_baseUrl/comments/$id';
+  }
+
   static String otherUserPostById(String id) {
-    return '$_baseUrl/posts/user/$id';
+    return '$_baseUrl/posts/user/$id'; 
+  } 
+
+  static String otherUserJobById(String id) {
+    return '$_baseUrl/jobs/user/$id'; 
   } 
 
  
@@ -86,12 +102,20 @@ class Urls {
     return '$_baseUrl/groups/$id';
   }
 
+   static String classInfoById(String id) {
+    return '$_baseUrl/classes/$id';
+  }
+
   static String groupMuteInfoById(String id) {
     return '$_baseUrl/chats/mute-info/$id';
   }
 
   static String groupMembersById(String id) {
     return '$_baseUrl/groups/members/$id';
+  }
+
+  static String classMembersById(String id) {
+    return '$_baseUrl/classes/members/$id';
   }
 
    static String addMembersById(String id) {

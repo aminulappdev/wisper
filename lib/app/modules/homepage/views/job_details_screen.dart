@@ -10,6 +10,8 @@ import 'package:wisper/app/core/widgets/details_card.dart';
 import 'package:wisper/app/core/widgets/label_data.dart';
 import 'package:wisper/app/modules/homepage/controller/single_job_controller.dart';
 import 'package:wisper/app/modules/homepage/widget/feature_list.dart';
+import 'package:wisper/app/modules/profile/views/others_business_screen.dart';
+import 'package:wisper/app/modules/profile/views/others_person_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class JobDetailsScreen extends StatefulWidget {
@@ -104,26 +106,31 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                     ],
                   ),
                   heightBox10,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      CircleAvatar(
-                        radius: 20.r,
-                        backgroundImage: job!.author?.business?.image != null
-                            ? NetworkImage(job.author!.business!.image!)
-                            : AssetImage(Assets.images.icon01.keyName),
-                      ),
-                      widthBox8,
-                      Text(
-                        job.author?.business?.name ?? '',
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xffD1D1D1),
+                  GestureDetector(
+                    onTap: () {
+                      Get.to(OthersBusinessScreen(userId: job.author!.id!));
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 20.r,
+                          backgroundImage: job!.author?.business?.image != null
+                              ? NetworkImage(job.author!.business!.image!)
+                              : AssetImage(Assets.images.icon01.keyName),
                         ),
-                      ),
-                    ],
+                        widthBox8,
+                        Text(
+                          job.author?.business?.name ?? '',
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xffD1D1D1),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   heightBox20,
                   Row(

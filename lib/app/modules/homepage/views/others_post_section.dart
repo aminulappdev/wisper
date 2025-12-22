@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
-import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
 import 'package:wisper/app/modules/homepage/controller/others_post_controller.dart';
 import 'package:wisper/app/modules/homepage/widget/post_card.dart';
@@ -15,16 +14,15 @@ class OthersPostSection extends StatefulWidget {
 }
 
 class _OthersPostSectionState extends State<OthersPostSection> {
-  final OthersFeedPostController controller = Get.put(
+  final OthersFeedPostController controller = Get.put( 
     OthersFeedPostController(),
   );
 
   @override
   void initState() {
     super.initState();
-    // প্রথমবার ডেটা লোড করা
     print('User ID: ${widget.userId}');
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) { 
       controller.resetPagination();
       print('User ID avobe callback: ${widget.userId}');
       controller.getAllPost(userId: widget.userId);
@@ -36,14 +34,12 @@ class _OthersPostSectionState extends State<OthersPostSection> {
     return Expanded(
       // Expanded Obx এর বাইরে → সমস্যা সমাধান!
       child: Obx(() {
-        // লোডিং স্টেট
         if (controller.inProgress) {
           return const Center(
             child: CircularProgressIndicator(color: Colors.white),
           );
         }
 
-        // খালি লিস্ট
         if (controller.allPostData.isEmpty) {
           return const Center(
             child: Text(
@@ -53,7 +49,6 @@ class _OthersPostSectionState extends State<OthersPostSection> {
           );
         }
 
-        // মূল পোস্ট লিস্ট
         return ListView.builder(
           padding: EdgeInsets.zero,
           itemCount: controller.allPostData.length,
@@ -66,6 +61,8 @@ class _OthersPostSectionState extends State<OthersPostSection> {
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: PostCard(
+                isComment: true,
+                onTapComment: () {},
                 ownerId: post.author?.id ?? '',
                 trailing: const Text(
                   'Sponsor',
@@ -75,17 +72,15 @@ class _OthersPostSectionState extends State<OthersPostSection> {
                     color: LightThemeColors.themeGreyColor,
                   ),
                 ),
-                ownerName: StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
-                    ? post.author?.person?.name ?? 'Unknown User'
-                    : post.author?.business?.name ?? 'Unknown Business',
-                ownerImage:
-                    StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
-                    ? post.author?.person?.image ?? ''
+                ownerName: post.author?.person != null
+                    ? post.author?.person?.name ?? ''
+                    : post.author?.business?.name ?? '',
+                ownerImage: post.author?.person != null
+                    ? post.author?.person?.image
                     : post.author?.business?.image ?? '',
-                ownerProfession:
-                    StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
-                    ? post.author?.person?.title ?? 'Professional'
-                    : post.author?.business?.name ?? 'Business',
+                ownerProfession: post.author?.person != null
+                    ? post.author?.person?.title
+                    : post.author?.business?.industry ?? '',
                 postImage: post.images.isNotEmpty ? post.images.first : null,
                 postDescription: post.caption ?? '',
                 postTime: formattedTime,

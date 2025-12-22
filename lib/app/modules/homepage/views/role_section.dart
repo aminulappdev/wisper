@@ -1,5 +1,8 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/modules/homepage/controller/add_request_controller.dart';
@@ -45,6 +48,8 @@ class _RoleSectionState extends State<RoleSection> {
     );
 
     if (isSuccess) {
+      final AllRoleController allRoleController = Get.find<AllRoleController>();
+      await allRoleController.getAllRole('');
       showSnackBarMessage(context, 'Request sent successfully', false);
     } else {
       showSnackBarMessage(context, addRequestController.errorMessage, true);
@@ -67,21 +72,39 @@ class _RoleSectionState extends State<RoleSection> {
             padding: EdgeInsets.all(0),
             itemCount: data!.length,
             itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: RoleCard(
-                  title: data[index].person?.name ?? 'N/A',
-                  post: data[index].count?.posts ?? 0,
-                  recommendations:
-                      data[index].count?.receivedRecommendations ?? 0,
-                  messagesOnTap: () {},
-                  addOnTap: () {
-                    addRequest(data[index].id);
-                  },
-                  role: data[index].person?.title ?? 'N/A',
-                  id: data[index].id ?? 'N/A',
-                ),
+              var status = data[index].connectionStatus;
+              print(
+                'id ${data[index].id} and my id ${StorageUtil.getData(StorageUtil.userId)}',
               );
+              var id =
+                  data[index].id == StorageUtil.getData(StorageUtil.userId);
+              return status == 'ACCEPTED'
+                  ? Container()
+                  : id == true
+                  ? Container()
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: RoleCard(
+                        isEnable: status == 'REQUEST_SENT' ? false : true,
+                        status: status == 'REQUEST_SENT'
+                            ? 'Pending'
+                            : status == 'NOT_CONNECTED'
+                            ? '+ Add'
+                            : 'N/A',
+                        title: data[index].person?.name ?? 'N/A',
+                        post: data[index].count?.posts ?? 0,
+                        recommendations:
+                            data[index].count?.receivedRecommendations ?? 0,
+                        messagesOnTap: () {},
+                        addOnTap: () {
+                          status == 'NOT_CONNECTED'
+                              ? addRequest(data[index].id)
+                              : null;
+                        },
+                        role: data[index].person?.title ?? 'N/A',
+                        id: data[index].id ?? 'N/A',
+                      ),
+                    );
             },
           );
         }

@@ -1,256 +1,156 @@
-import 'package:crash_safe_image/crash_safe_image.dart';
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
-import 'package:wisper/app/core/custom_size.dart';
-import 'package:wisper/app/core/widgets/circle_icon.dart';
-import 'package:wisper/app/core/widgets/details_card.dart';
-import 'package:wisper/app/modules/chat/widgets/chat_custom_elevated_button.dart';
-import 'package:wisper/app/modules/chat/widgets/chatting_field.dart';
-import 'package:wisper/app/modules/chat/widgets/group_chatting_header.dart';
+import 'package:get/get.dart';
+import 'package:wisper/app/core/utils/date_formatter.dart';
+import 'package:wisper/app/modules/chat/controller/message_controller.dart';
+import 'package:wisper/app/modules/chat/model/message_keys.dart';
+import 'package:wisper/app/modules/chat/views/person/message_input_bar.dart';
+import 'package:wisper/app/modules/chat/widgets/class_chatting_header.dart';
+import 'package:wisper/app/modules/chat/widgets/empty_group_card.dart';
+import 'package:wisper/app/modules/chat/widgets/message_bubble.dart';
 import 'package:wisper/app/modules/chat/widgets/option.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
-class ClassChatScreen extends StatefulWidget {
-  const ClassChatScreen({super.key});
+class ClassChatScreen extends StatelessWidget {
+  final String? className;
+  final String? classImage;
+  final String? chatId;
+  final String? classId;
 
-  @override
-  State<ClassChatScreen> createState() => _ClassChatScreenState();
-}
-
-class _ClassChatScreenState extends State<ClassChatScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
+  const ClassChatScreen({
+    super.key,
+    this.className,
+    this.classImage,
+    this.chatId,
+    this.classId,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final MessageController ctrl = Get.put(MessageController());
+
+    // Chat setup একবারই (group এর জন্য chatId ব্যবহার করছি)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ctrl.setupChat(chatId: chatId);
+    });
+
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.all(0.0.h),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              GroupChatHeader(
-                groupId: '',
-                groupName: '',
-                groupImage: '',
-                chatId: '',
-              ),
-              heightBox16,
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Column(
-                  children: [
-                    CircleIconWidget(
-                      color: Color(0xff102B19),
-                      iconColor: Color(0xff11AE46),
-                      iconRadius: 35,
-                      radius: 35,
-                      imagePath: Assets.images.education.keyName,
-                      onTap: () {},
-                    ),
-                    heightBox20,
-                    Text(
-                      'You created this Class',
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    heightBox8,
-                    Text(
-                      'Group • 3 members',
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w400,
-
-                        color: LightThemeColors.themeGreyColor,
-                      ),
-                    ),
-
-                    heightBox20,
-                    Text(
-                      'Corp members serving in Abuja',
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xff1F7DE9),
-                      ),
-                    ),
-                    heightBox10,
-                    ChatCustomElevatedButton(
-                      onTap: () => {},
-                      imagePath: Assets.images.userAdd.keyName,
-                      title: 'Add members',
-                    ),
-                    heightBox10,
-                    ChatCustomElevatedButton(
-                      onTap: () => {},
-                      imagePath: Assets.images.attatchment.keyName,
-                      title: 'Invite via link',
-                    ),
-
-                    heightBox14,
-                    DetailsCard(
-                      borderColor: Colors.transparent,
-                      bgColor: Color(0xff1B1E25).withValues(alpha: 0.50),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CrashSafeImage(
-                              Assets.images.adds.keyName,
-                              height: 20,
-                              color: LightThemeColors.themeGreyColor,
-                            ),
-                            widthBox10,
-                            Expanded(
-                              child: RichText(
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text:
-                                          'Messages and calls are end-to-end encrypted. Only people in this chat can read, listen to, or share them. ',
-                                      style: TextStyle(
-                                        fontSize: 12.sp,
-                                        fontWeight: FontWeight.w400,
-                                        color: LightThemeColors.themeGreyColor,
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text: 'Learn more',
-                                      style: TextStyle(
-                                        fontSize: 12.sp,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color(0xff1F7DE9),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(child: heightBox10),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Card(
-                  elevation: 2,
-                  color: Colors.black,
-                  child: Container(
-                    height: 70.h,
-                    padding: EdgeInsets.all(10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(
-                          width: 200.w,
-                          child: ChattingFieldWidget(
-                            controller: TextEditingController(),
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            CircleIconWidget(
-                              imagePath: Assets.images.attatchment.keyName,
-                              onTap: _showAttachmentOptions,
-                              radius: 18,
-                              iconRadius: 24,
-                            ),
-                            widthBox8,
-                            CircleIconWidget(
-                              imagePath: Assets.images.send.keyName,
-                              onTap: () {},
-                              radius: 18,
-                              iconRadius: 24,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
+      body: Column(
+        children: [
+          ClassChatHeader(
+            chatId: chatId ?? '',
+            className: className ?? '',
+            classImage: classImage ?? '',
+            classId: classId ?? '',
           ),
-        ),
+
+          Expanded(
+            child: Obx(() {
+              if (ctrl.isLoading.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (ctrl.messages.isEmpty) {
+                return Center(
+                  child: EmptyGroupInfoCard(
+                    isGroup: false,
+                    name: className ?? '',
+                    member: '5',
+                  ),
+                );
+              }
+
+              return ListView.builder(
+                reverse: true,
+                controller: ctrl.scrollController,
+                padding: EdgeInsets.all(10.r),
+                itemCount: ctrl.messages.length,
+                itemBuilder: (context, index) {
+                  final msg = ctrl.messages[index];
+                  final isMe =
+                      msg[SocketMessageKeys.senderId] == ctrl.userAuthId;
+
+                  final String senderName =
+                      msg[SocketMessageKeys.senderName] ?? 'Unknown';
+                  final String? senderImage =
+                      msg[SocketMessageKeys.senderImage];
+
+                  final imageUrl = msg[SocketMessageKeys.imageUrl] ?? "";
+                  final time = DateFormatter(
+                    msg[SocketMessageKeys.createdAt],
+                  ).getRelativeTimeFormat();
+
+                  return MessageBubble(
+                    message: msg,
+                    isMe: isMe,
+                    imageUrl: imageUrl,
+                    time: time,
+                    senderName: senderName,
+                    senderImage: senderImage,
+                    isGroupChat: true,
+                  );
+                },
+              );
+            }),
+          ),
+
+          MessageInputBar(
+            controller: ctrl.textController,
+            onSend: () => ctrl.sendMessage(chatId ?? ''),
+            onAttachment: () {
+              showModalBottomSheet(
+                context: context,
+                backgroundColor: Colors.transparent,
+                builder: (_) => const AttachmentBottomSheet(),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
+}
 
-  void _showAttachmentOptions() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          color: Colors.black,
-          height: 180,
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Option(
-                      onTap: () {},
-                      imagePath: Assets.images.gallery.keyName,
-                      iconColor: Color(0xff6192FD),
-                      title: 'Image',
-                    ),
-                    Option(
-                      onTap: () {},
-                      imagePath: Assets.images.video.keyName,
-                      iconColor: Color(0xffB95BFC),
-                      title: '  Video',
-                    ),
-                    Option(
-                      onTap: () {},
-                      imagePath: Assets.images.file.keyName,
-                      iconColor: Color(0xff00F359),
-                      title: 'Document',
-                    ),
-                  ],
-                ),
-                heightBox16,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Option(
-                      onTap: () {},
-                      imagePath: Assets.images.mic.keyName,
-                      iconColor: Color(0xffF5AD31),
-                      title: 'Audio',
-                    ),
-                    Option(
-                      onTap: () {},
-                      imagePath: Assets.images.location.keyName,
-                      iconColor: Color(0xffF67748),
-                      title: 'Location',
-                    ),
-                    Option(
-                      onTap: () {},
-                      imagePath: Assets.images.gallery.keyName,
-                      iconColor: Color(0xff6192FD),
-                      title: 'Contact  ',
-                    ),
-                  ],
-                ),
-              ],
-            ),
+// ====== MessageBubble & AttachmentBottomSheet (অপরিবর্তিত) ======
+
+class AttachmentBottomSheet extends StatelessWidget {
+  const AttachmentBottomSheet({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.black,
+      height: Get.height * 0.15,
+      padding: const EdgeInsets.all(20.0),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Option(
+                onTap: () {},
+                imagePath: Assets.images.gallery.keyName,
+                iconColor: const Color(0xff6192FD),
+                title: 'Image',
+              ),
+              Option(
+                onTap: () {},
+                imagePath: Assets.images.video.keyName,
+                iconColor: const Color(0xffB95BFC),
+                title: 'Video',
+              ),
+              Option(
+                onTap: () {},
+                imagePath: Assets.images.file.keyName,
+                iconColor: const Color(0xff00F359),
+                title: 'Document',
+              ),
+            ],
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }
