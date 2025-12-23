@@ -8,6 +8,7 @@ import 'package:wisper/app/modules/homepage/controller/feed_job_controller.dart'
 import 'package:wisper/app/modules/homepage/controller/feed_post_controller.dart';
 import 'package:wisper/app/modules/homepage/controller/my_job_controller.dart';
 import 'package:wisper/app/modules/homepage/controller/my_post_controller.dart';
+import 'package:wisper/app/modules/homepage/controller/my_resume_controller.dart';
 import 'package:wisper/app/modules/profile/controller/upload_photo_controller.dart';
 
 class ControllerBinder extends Bindings {
@@ -26,5 +27,7 @@ class ControllerBinder extends Bindings {
     Get.put(AllConnectionController());
     Get.put(GroupMembersController());
     Get.put(AllRoleController());
+    Get.put(MyResumeController());
+
   }
 }

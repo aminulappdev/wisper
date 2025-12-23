@@ -13,11 +13,11 @@ import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/custom_popup.dart';
 import 'package:wisper/app/core/widgets/line_widget.dart';
-import 'package:wisper/app/modules/chat/views/doc_info.dart';
 import 'package:wisper/app/modules/chat/widgets/location_info.dart';
 import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart';
 import 'package:wisper/app/modules/homepage/views/my_job_section.dart';
 import 'package:wisper/app/modules/homepage/views/my_post_section.dart';
+import 'package:wisper/app/modules/homepage/views/my_resume_section.dart';
 import 'package:wisper/app/modules/profile/controller/buisness/buisness_controller.dart';
 import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
 import 'package:wisper/app/modules/profile/controller/recommendetion_controller.dart';
@@ -56,6 +56,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
+    selectedIndex = 0;
     userRole = StorageUtil.getData(StorageUtil.userRole) ?? 'PERSON';
     _updateProfileImage();
     _getProfileImage();
@@ -139,17 +140,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (userRole == 'PERSON') {
       if (index == 0) return const MyPostSection();
       if (index == 1) {
-        return DocInfo(title: 'Resume.pdf', isDownloaded: true, onTap: () {});
+        return MyResumeSection(
+          userId: StorageUtil.getData(StorageUtil.userAuthId)!,
+        );
       }
     } else {
       // BUSINESS
       if (index == 0) return MyPostSection();
       if (index == 1) return MyJobSection();
       if (index == 2) {
-        return DocInfo(
-          title: 'Company Brochure.pdf',
-          isDownloaded: true,
-          onTap: () {},
+        return MyResumeSection(
+          userId: StorageUtil.getData(StorageUtil.userAuthId)!,
         );
       }
     }

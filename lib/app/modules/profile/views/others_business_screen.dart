@@ -9,6 +9,7 @@ import 'package:wisper/app/core/widgets/line_widget.dart';
 import 'package:wisper/app/modules/chat/views/doc_info.dart';
 import 'package:wisper/app/modules/chat/widgets/location_info.dart';
 import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart';
+import 'package:wisper/app/modules/homepage/views/my_resume_section.dart';
 import 'package:wisper/app/modules/homepage/views/others_job_section.dart';
 import 'package:wisper/app/modules/homepage/views/others_post_section.dart';
 import 'package:wisper/app/modules/profile/controller/buisness/other_business_controller.dart';
@@ -223,14 +224,10 @@ class _OthersBusinessScreenState extends State<OthersBusinessScreen> {
             ),
             const StraightLiner(height: 0.4, color: Color(0xff454545)),
             SizedBox(height: 10.h),
-            if (selectedIndex == 0) OthersPostSection(userId: widget.userId),
+            if (selectedIndex == 0)  OthersPostSection(userId: widget.userId),
             if (selectedIndex == 1) OthersJobSection(userId: widget.userId),
-            if (selectedIndex == 2)
-              DocInfo(
-                title: 'job_description.pdf',
-                isDownloaded: true,
-                onTap: () {},
-              ),
+            if (selectedIndex == 2) MyResumeSection(userId: widget.userId,),
+              
           ],
         ),
       ),

@@ -52,7 +52,7 @@ class PostCard extends StatelessWidget {
         ),
         widthBox8,
         SizedBox(
-          width: MediaQuery.of(context).size.width * 0.75,
+          width: MediaQuery.of(context).size.width * 0.73,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -84,7 +84,7 @@ class PostCard extends StatelessWidget {
               ),
               heightBox10,
               Container(
-                width: MediaQuery.of(context).size.width * 0.75,
+                width: MediaQuery.of(context).size.width * 0.73,
                 decoration: BoxDecoration(
                   color: Colors.transparent,
                   borderRadius: BorderRadius.circular(8.r),

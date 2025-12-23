@@ -43,9 +43,15 @@ class Urls {
   static const String recommendationsUrl = '$_baseUrl/recommendations'; 
   static const String addRequestUrl = '$_baseUrl/connections'; 
   static const String boostPackaegesUrl = '$_baseUrl/boost-packages'; 
+  static const String favoritesUrl = '$_baseUrl/favorites'; 
 
    static String otherProfileById(String id) {
     return '$_baseUrl/persons/$id';
+  } 
+
+
+  static String favoriteJobById(String id) {
+    return '$_baseUrl/favorites/$id';
   } 
 
   static String otherBusinessProfileById(String id) {
@@ -60,12 +66,17 @@ class Urls {
   static const String feedPostUrl = '$_baseUrl/posts/feed';
   static const String myFeedPostUrl = '$_baseUrl/posts/my';
   static const String postUrl = '$_baseUrl/posts';
+  static const String resumePostUrl = '$_baseUrl/resumes';
   static const String feedJobUrl = '$_baseUrl/jobs';
   static const String roleUrl = '$_baseUrl/persons/roles'; 
 
 
   static String editPostId(String id) {
     return '$_baseUrl/posts/$id';
+  }
+
+  static String resumeById(String id) {
+    return '$_baseUrl/resumes/$id';
   }
 
     static String commentPostId(String id) {

@@ -2,12 +2,16 @@ import 'dart:io';
 import 'package:crash_safe_image/crash_safe_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/get_storage.dart';
+import 'package:wisper/app/core/utils/show_over_loading.dart';
+import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
-import 'package:wisper/app/core/widgets/custom_text_filed.dart';
 import 'package:wisper/app/core/widgets/details_card.dart';
-import 'package:wisper/app/core/widgets/line_widget.dart';
+import 'package:wisper/app/modules/homepage/controller/create_resume_controller.dart';
+import 'package:wisper/app/modules/homepage/controller/my_resume_controller.dart';
 import 'package:wisper/gen/assets.gen.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -21,6 +25,7 @@ class ResumePostScreen extends StatefulWidget {
 class _ResumePostScreenState extends State<ResumePostScreen> {
   final List<File> _selectedFiles = [];
   final FilePickerHelper _filePickerHelper = FilePickerHelper();
+  final CreateResumeController createPostController = CreateResumeController();
 
   void _addFile(File file) {
     setState(() {
@@ -32,6 +37,33 @@ class _ResumePostScreenState extends State<ResumePostScreen> {
     setState(() {
       _selectedFiles.removeAt(index);
     });
+  }
+
+  void createPost() {
+    showLoadingOverLay(
+      asyncFunction: () async => await performCreatePost(context),
+      msg: 'Please wait...',
+    );
+  }
+
+  Future<void> performCreatePost(BuildContext context) async {
+    final bool isSuccess = await createPostController.createResume(
+      file: _selectedFiles,
+    );
+
+    if (isSuccess) {
+      if (isSuccess) {
+        final MyResumeController myResumeController =
+            Get.find<MyResumeController>();
+        await myResumeController.getAllResume(
+          StorageUtil.getData(StorageUtil.userAuthId),
+        );
+        Navigator.pop(context);
+        showSnackBarMessage(context, "Post created successfully!", false);
+      }
+    } else {
+      showSnackBarMessage(context, createPostController.errorMessage, true);
+    }
   }
 
   @override
@@ -74,7 +106,9 @@ class _ResumePostScreenState extends State<ResumePostScreen> {
                         title: 'Post',
                         textSize: 12,
                         borderRadius: 50,
-                        onPress: () {},
+                        onPress: () {
+                          createPost();
+                        },
                       ),
                     ),
                   ],
@@ -110,41 +144,53 @@ class _ResumePostScreenState extends State<ResumePostScreen> {
                     ),
                   ],
                 ),
-                heightBox20,
-                SizedBox(
-                  height: 150.h,
-                  child: CustomTextField(
-                    maxLines: 5,
-                    hintText: 'Share your thoughts',
-                    hintStyle: TextStyle(
-                      fontSize: 14.sp,
-                      color: Color(0xff8C8C8C),
-                    ),
-                  ),
-                ),
-                heightBox10,
-                StraightLiner(height: 0.5),
+                // heightBox20,
+                // SizedBox(
+                //   height: 150.h,
+                //   child: CustomTextField(
+                //     controller: _captionCtrl,
+                //     maxLines: 5,
+                //     hintText: 'Share your thoughts',
+                //     hintStyle: TextStyle(
+                //       fontSize: 14.sp,
+                //       color: Color(0xff8C8C8C),
+                //     ),
+                //   ),
+                // ),
+                // heightBox10,
+                // StraightLiner(height: 0.5),
                 heightBox10,
                 GestureDetector(
                   onTap: () {
                     _filePickerHelper.showAlertDialog(context, _addFile);
                   },
-                  child: Row(
-                    children: [
-                      CrashSafeImage(
-                        Assets.images.gallery02.keyName,
-                        height: 24.h,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: const Color.fromARGB(255, 96, 96, 107),
                       ),
-                      widthBox10,
-                      Text(
-                        'Add Resume',
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w400,
-                          color: LightThemeColors.blueColor,
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                    height: 80.h,
+                    width: double.infinity,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CrashSafeImage(
+                          Assets.images.gallery02.keyName,
+                          height: 24.h,
                         ),
-                      ),
-                    ],
+                        widthBox10,
+                        Text(
+                          'Add Resume',
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w400,
+                            color: LightThemeColors.blueColor,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 heightBox10,
@@ -170,7 +216,9 @@ class _ResumePostScreenState extends State<ResumePostScreen> {
                                     ),
                                     widthBox10,
                                     Text(
-                                      _selectedFiles[index].path.split('/').last,
+                                      _selectedFiles[index].path
+                                          .split('/')
+                                          .last,
                                       style: TextStyle(
                                         fontSize: 12.sp,
                                         fontWeight: FontWeight.w400,

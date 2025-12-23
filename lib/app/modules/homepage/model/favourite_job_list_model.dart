@@ -1,5 +1,5 @@
-class SingleJobModel {
-  SingleJobModel({
+class FavoriteJobModel {
+  FavoriteJobModel({
     required this.success,
     required this.message,
     required this.data,
@@ -7,19 +7,46 @@ class SingleJobModel {
 
   final bool? success;
   final String? message;
-  final JobData? data;
+  final List<FavoriteJobItemModel> data;
 
-  factory SingleJobModel.fromJson(Map<String, dynamic> json) {
-    return SingleJobModel(
+  factory FavoriteJobModel.fromJson(Map<String, dynamic> json) {
+    return FavoriteJobModel(
       success: json["success"],
       message: json["message"],
-      data: json["data"] == null ? null : JobData.fromJson(json["data"]),
+      data: json["data"] == null
+          ? []
+          : List<FavoriteJobItemModel>.from(
+              json["data"]!.map((x) => FavoriteJobItemModel.fromJson(x)),
+            ),
     );
   }
 }
 
-class JobData {
-  JobData({
+class FavoriteJobItemModel {
+  FavoriteJobItemModel({
+    required this.id,
+    required this.jobId,
+    required this.authId,
+    required this.job,
+  });
+
+  final String? id;
+  final String? jobId;
+  final String? authId;
+  final Job? job;
+
+  factory FavoriteJobItemModel.fromJson(Map<String, dynamic> json) {
+    return FavoriteJobItemModel(
+      id: json["id"],
+      jobId: json["jobId"],
+      authId: json["authId"],
+      job: json["job"] == null ? null : Job.fromJson(json["job"]),
+    );
+  }
+}
+
+class Job {
+  Job({
     required this.id,
     required this.authorId,
     required this.title,
@@ -38,7 +65,6 @@ class JobData {
     required this.createdAt,
     required this.updatedAt,
     required this.author,
-    required this.isFavorite,
   });
 
   final String? id;
@@ -59,10 +85,9 @@ class JobData {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final Author? author;
-  final bool? isFavorite;
 
-  factory JobData.fromJson(Map<String, dynamic> json) {
-    return JobData(
+  factory Job.fromJson(Map<String, dynamic> json) {
+    return Job(
       id: json["id"],
       authorId: json["authorId"],
       title: json["title"],
@@ -85,7 +110,6 @@ class JobData {
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
       updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
       author: json["author"] == null ? null : Author.fromJson(json["author"]),
-      isFavorite: json["isFavorite"],
     );
   }
 }
@@ -107,27 +131,13 @@ class Author {
 }
 
 class Business {
-  Business({
-    required this.id,
-    required this.name,
-    required this.industry,
-    required this.address,
-    required this.image,
-  });
+  Business({required this.id, required this.name, required this.image});
 
   final String? id;
   final String? name;
-  final String? industry;
-  final dynamic address;
   final String? image;
 
   factory Business.fromJson(Map<String, dynamic> json) {
-    return Business(
-      id: json["id"],
-      name: json["name"],
-      industry: json["industry"],
-      address: json["address"],
-      image: json["image"],
-    );
+    return Business(id: json["id"], name: json["name"], image: json["image"]);
   }
 }

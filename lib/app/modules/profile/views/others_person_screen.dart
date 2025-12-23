@@ -6,9 +6,9 @@ import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/custom_popup.dart';
 import 'package:wisper/app/core/widgets/line_widget.dart';
-import 'package:wisper/app/modules/chat/views/doc_info.dart';
 import 'package:wisper/app/modules/chat/widgets/location_info.dart';
 import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart';
+import 'package:wisper/app/modules/homepage/views/my_resume_section.dart';
 import 'package:wisper/app/modules/homepage/views/others_post_section.dart';
 import 'package:wisper/app/modules/profile/controller/person/others_profile_controller.dart';
 import 'package:wisper/app/modules/profile/controller/recommendetion_controller.dart';
@@ -26,7 +26,7 @@ class OthersPersonScreen extends StatefulWidget {
 
   @override
   State<OthersPersonScreen> createState() => _OthersPersonScreenState();
-} 
+}
 
 class _OthersPersonScreenState extends State<OthersPersonScreen> {
   final OtherPersonController controller = Get.put(OtherPersonController());
@@ -43,7 +43,6 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      
       recommendationController.getAllRecommendations(widget.userId);
     });
   }
@@ -91,7 +90,7 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
                   child: const Center(
                     child: CircularProgressIndicator(strokeAlign: 1),
                   ),
-                );
+                ); 
               }
               {
                 return InfoCard(
@@ -206,12 +205,7 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
             const StraightLiner(height: 0.4, color: Color(0xff454545)),
             SizedBox(height: 10.h),
             if (selectedIndex == 0) OthersPostSection(userId: widget.userId),
-            if (selectedIndex == 1)
-              DocInfo(
-                title: 'job_description.pdf',
-                isDownloaded: true,
-                onTap: () {},
-              ),
+            if (selectedIndex == 1) MyResumeSection(userId: widget.userId),
           ],
         ),
       ),

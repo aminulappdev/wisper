@@ -8,31 +8,27 @@ import 'package:wisper/app/core/services/network_caller/network_caller.dart';
 import 'package:wisper/app/core/services/network_caller/network_response.dart';
 import 'package:wisper/app/urls.dart';
 
-class CreatePostController extends GetxController {
+class CreateResumeController extends GetxController {
   final RxBool _inProgress = false.obs;
   bool get inProgress => _inProgress.value;
- 
+
   final RxString _errorMessage = ''.obs;
   String get errorMessage => _errorMessage.value;
 
-  Future<bool> createPost({
+  Future<bool> createResume({
     String? privacy,
     String? description,
-    List<File>? images,
+    List<File>? file,
   }) async {
     _inProgress.value = true;
 
     try {
-      Map<String, dynamic> body = {
-        "caption": description,
-        "commentAccess": privacy,
-      };
       final NetworkResponse response = await Get.find<NetworkCaller>()
           .postRequest(
-            images: images,
-            keyNameImage: 'images',
-            Urls.postUrl,
-            body: body,
+            images: file,
+            keyNameImage: 'file',
+            Urls.resumePostUrl,
+
             accessToken: StorageUtil.getData(StorageUtil.userAccessToken),
           );
 

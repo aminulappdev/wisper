@@ -18,65 +18,50 @@ class DocInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ListView.builder(
-        padding: const EdgeInsets.all(0),
-        itemCount: 10,
-        itemBuilder: (context, index) => Padding(
-          padding: const EdgeInsets.symmetric(vertical: 6.0),
-          child: DetailsCard(
-            bgColor: Colors.transparent,
-            borderWidth: 0.5,
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      CrashSafeImage(
-                        Assets.images.pdf.keyName,
-                        height: 24,
-                        width: 24,
-                      ),
-                      widthBox10,
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            title,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12.sp,
-                            ),
-                          ),
-                          Text(
-                            'PDF Document',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 10.sp,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  isDownloaded
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: GestureDetector(
-                            onTap: onTap,
-                            child: CrashSafeImage(
-                              Assets.images.download.keyName,
-                              height: 18,
-                            ),
-                          ),
-                        )
-                      : Container(),
-                ],
-              ),
+    return DetailsCard(
+      bgColor: Colors.transparent,
+      borderWidth: 0.5,
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                CrashSafeImage(
+                  Assets.images.pdf.keyName,
+                  height: 24,
+                  width: 24,
+                ),
+                widthBox10,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(color: Colors.white, fontSize: 12.sp),
+                    ),
+                    Text(
+                      'PDF Document',
+                      style: TextStyle(color: Colors.white, fontSize: 10.sp),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ),
+            isDownloaded
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: GestureDetector(
+                      onTap: onTap,
+                      child: CrashSafeImage(
+                        Assets.images.download.keyName,
+                        height: 18,
+                      ),
+                    ),
+                  )
+                : Container(),
+          ],
         ),
       ),
     );

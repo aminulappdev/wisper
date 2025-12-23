@@ -56,7 +56,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 ? PostOptionCard(
                     onTap: () {
                       Get.to(JobPostScreen());
-                    },
+                    }, 
                     imagePath: Assets.images.file.keyName,
                     color: Color(0xffDBFFE8),
                     title: "Job",

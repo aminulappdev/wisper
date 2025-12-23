@@ -4,14 +4,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/utils/show_over_loading.dart';
+import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/details_card.dart';
 import 'package:wisper/app/core/widgets/label_data.dart';
+import 'package:wisper/app/modules/homepage/controller/favorite_job_controller.dart';
 import 'package:wisper/app/modules/homepage/controller/single_job_controller.dart';
 import 'package:wisper/app/modules/homepage/widget/feature_list.dart';
 import 'package:wisper/app/modules/profile/views/others_business_screen.dart';
-import 'package:wisper/app/modules/profile/views/others_person_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class JobDetailsScreen extends StatefulWidget {
@@ -27,10 +29,33 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
     SingleJobController(),
   );
 
+  final FavoriteController favoriteController = FavoriteController();
+
   @override
   void initState() {
     super.initState();
     singleJobController.getSingleJob(widget.jobId);
+  }
+
+  void favorite() {
+    showLoadingOverLay(
+      asyncFunction: () async => await perforfavorite(context),
+      msg: 'Please wait...',
+    );
+  }
+
+  Future<void> perforfavorite(BuildContext context) async {
+    final bool isSuccess = await favoriteController.favorite(
+      jobId: widget.jobId,
+    );
+
+    if (isSuccess) {
+      final SingleJobController singleJobController =
+          Get.find<SingleJobController>();
+      await singleJobController.getSingleJob(widget.jobId);
+    } else {
+      showSnackBarMessage(context, favoriteController.errorMessage, true);
+    }
   }
 
   bool isDescriptionExpanded = false;
@@ -44,6 +69,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
             return const Center(child: CircularProgressIndicator());
           } else {
             var job = singleJobController.singleJobData;
+            bool isFavorite = job?.isFavorite ?? false;
             var shift = job?.compensationType == 'MONTHLY' ? 'mo' : 'onOff';
             var experience = (job?.experienceLevel == 'SENIOR'
                 ? 'Senior'
@@ -97,11 +123,25 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      CircleIconWidget(
-                        imagePath: Assets.images.heart.keyName,
-                        onTap: () {},
-                        color: Color(0xff292727),
-                        iconRadius: 18,
+                      GestureDetector(
+                        onTap: () {
+                          favorite();
+                        },
+                        child: CircleAvatar(
+                          backgroundColor: LightThemeColors.circleIconColor,
+                          radius: 16.r,
+                          child: isFavorite
+                              ? Icon(
+                                  Icons.favorite,
+                                  color: Colors.white,
+                                  size: 20.r,
+                                )
+                              : Icon(
+                                  Icons.favorite_border,
+                                  color: Colors.white,
+                                  size: 20.r,
+                                ),
+                        ),
                       ),
                     ],
                   ),

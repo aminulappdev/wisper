@@ -58,7 +58,7 @@ class _OthersPostSectionState extends State<OthersPostSection> {
               post.createdAt!,
             ).getRelativeTimeFormat();
 
-            return Padding(
+            return Padding( 
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: PostCard(
                 isComment: true,
