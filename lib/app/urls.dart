@@ -5,7 +5,8 @@ class Urls {
   // static const String _baseUrl = 'http://10.10.10.17:5005/api/v1';
   // static const String socketUrl = 'http://10.10.10.17:4000/';
 
-  static const String _baseUrl = 'http://10.10.10.17:5000/api/v1';
+  // static const String _baseUrl = 'http://10.10.10.17:5000/api/v1';
+  static const String _baseUrl = 'https://wisper.up.railway.app/api/v1';
   static const String socketUrl = 'http://10.10.10.17:5000';  
 
   // =========================================== Common ============================================== //
@@ -48,7 +49,10 @@ class Urls {
    static String otherProfileById(String id) {
     return '$_baseUrl/persons/$id';
   } 
-
+  
+  static String updateConnectionById(String id) {
+    return '$_baseUrl/connections/$id';
+  } 
 
   static String favoriteJobById(String id) {
     return '$_baseUrl/favorites/$id';
@@ -111,6 +115,14 @@ class Urls {
 
   static String groupInfoById(String id) {
     return '$_baseUrl/groups/$id';
+  }
+  
+  static String changeGroupImageById(String id) {
+    return '$_baseUrl/groups/image/$id';
+  }
+
+  static String changeClassImageById(String id) {
+    return '$_baseUrl/classes/image/$id';
   }
 
    static String classInfoById(String id) {

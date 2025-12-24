@@ -54,7 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final RxString currentImagePath = ''.obs;
 
   @override
-  void initState() {
+  void initState() { 
     super.initState();
     selectedIndex = 0;
     userRole = StorageUtil.getData(StorageUtil.userRole) ?? 'PERSON';
@@ -67,7 +67,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
     });
   }
-
+  
   Future<void> _getProfileImage() async {
     print('Called get image');
     await personController.getMyProfile();

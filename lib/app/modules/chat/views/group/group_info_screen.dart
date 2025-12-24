@@ -1,12 +1,18 @@
+// ignore_for_file: use_build_context_synchronously, avoid_print
+
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
+import 'package:wisper/app/core/utils/image_picker.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
+import 'package:wisper/app/core/widgets/custom_popup.dart';
 import 'package:wisper/app/core/widgets/line_widget.dart';
 import 'package:wisper/app/modules/chat/controller/group/add_group_member.dart';
 import 'package:wisper/app/modules/chat/controller/all_connection_controller.dart';
@@ -17,6 +23,8 @@ import 'package:wisper/app/modules/chat/views/link_info.dart';
 import 'package:wisper/app/modules/chat/views/media_info.dart';
 import 'package:wisper/app/modules/chat/widgets/location_info.dart';
 import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart';
+import 'package:wisper/app/modules/profile/controller/upload_photo_controller.dart';
+import 'package:wisper/app/modules/profile/views/settings_screen.dart';
 import 'package:wisper/app/modules/profile/widget/info_card.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
@@ -39,10 +47,15 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
   final AllConnectionController allConnectionController =
       Get.find<AllConnectionController>();
 
-  final AddMemberController addMemberController = AddMemberController();
+  final ProfilePhotoController photoController =
+      Get.find<ProfilePhotoController>();
 
+  final AddMemberController addMemberController = AddMemberController();
+  final RxString currentImagePath = ''.obs;
   @override
   void initState() {
+    _updateProfileImage();
+    _getProfileImage();
     groupInfoController.getGroupInfo(widget.groupId);
     groupMembersController.getGroupMembers(widget.groupId);
     allConnectionController.getAllConnection('ACCEPTED');
@@ -81,8 +94,44 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
     }
   }
 
+  Future<void> _getProfileImage() async {
+    print('Called get image');
+    await groupInfoController.getGroupInfo(widget.groupId);
+
+    currentImagePath.value = groupInfoController.groupInfoData?.image ?? '';
+  }
+
+  void _updateProfileImage() {
+    String? imageUrl;
+
+    imageUrl = groupInfoController.groupInfoData?.image;
+
+    currentImagePath.value = imageUrl?.isNotEmpty == true
+        ? imageUrl!
+        : Assets.images.person.keyName;
+  }
+
+  void _onImagePicked(File imageFile) async {
+    currentImagePath.value = imageFile.path;
+
+    final bool success = await photoController.uploadGroupPhoto(imageFile, widget.groupId!);
+
+    if (success) {
+      groupInfoController.getGroupInfo(widget.groupId);
+      ();
+
+      await Future.delayed(const Duration(milliseconds: 800));
+      _updateProfileImage();
+      showSnackBarMessage(context, 'Group photo updated!', false);
+    } else {
+      showSnackBarMessage(context, 'Failed to upload image', true);
+      _updateProfileImage();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final GlobalKey suffixButtonKey = GlobalKey();
     return Scaffold(
       body: Obx(() {
         if (groupInfoController.inProgress) {
@@ -119,8 +168,27 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                 ),
                 heightBox10,
                 InfoCard(
-                  imagePath: Assets.images.userGroup.keyName,
-                  editOnTap: () {},
+                  trailingKey: suffixButtonKey,
+                  trailingOnTap: () => CustomPopupMenu(
+                    targetKey: suffixButtonKey,
+                    options: [
+                      Text(
+                        'Edit Group',
+                        style: TextStyle(fontSize: 12.sp, color: Colors.white),
+                      ),
+                    ],
+                    optionActions: {
+                      '0': () => Get.to(() => const SettingsScreen()),
+                    },
+                    menuWidth: 200,
+                    menuHeight: 40,
+                  ).showMenuAtPosition(context),
+                  imagePath: currentImagePath.value,
+                  editOnTap: () => ImagePickerHelper().showAlertDialog(
+                    context,
+                    _onImagePicked,
+                  ),
+
                   showMember: _showMemberInfo,
                   title: groupInfoController.groupInfoData?.name ?? '',
                   memberInfo: 'Group • 3 members',
@@ -212,6 +280,8 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                 if (selectedIndex == 1) const LinkInfo(),
                 if (selectedIndex == 2)
                   DocInfo(
+                    isMyResume: false,
+                    onDelete: () {},
                     title: 'job_description.pdf',
                     isDownloaded: false,
                     onTap: () {},

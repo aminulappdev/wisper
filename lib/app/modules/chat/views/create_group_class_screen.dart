@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/get_navigation.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/custom_text_filed.dart';
@@ -24,7 +22,7 @@ class CreateGroupClassScreen extends StatefulWidget {
 class _CreateGroupClassScreenState extends State<CreateGroupClassScreen> {
   final AllConnectionController allConnectionController =
       Get.find<AllConnectionController>();
-
+ 
   @override
   void initState() {
     allConnectionController.getAllConnection('ACCEPTED');

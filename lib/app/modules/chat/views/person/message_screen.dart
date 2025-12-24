@@ -53,7 +53,7 @@ class ChatScreen extends StatelessWidget {
                 return Center(
                   child: Text(
                     "No messages yet. Start the conversation!",
-                    style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+                    style: TextStyle(fontSize: 12.sp, color: Colors.grey),
                   ),
                 );
               }

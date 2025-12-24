@@ -37,6 +37,7 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('Post Image: $postImage');
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -93,12 +94,12 @@ class PostCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ImageContainer(
+                   postImage != null || postImage != '' ? ImageContainer(
                       image: postImage ?? '',
                       height: 168,
                       width: double.infinity,
                       borderRadius: 8,
-                    ),
+                    ) : const SizedBox(),
 
                     Padding(
                       padding: const EdgeInsets.all(12.0),

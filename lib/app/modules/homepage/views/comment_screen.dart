@@ -4,8 +4,12 @@ import 'package:get/get.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
+import 'package:wisper/app/core/widgets/circle_icon.dart';
+import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/custom_text_filed.dart';
 import 'package:wisper/app/modules/homepage/controller/comment_controller.dart';
+import 'package:wisper/app/modules/homepage/controller/edit_comment_controller.dart';
+import 'package:wisper/gen/assets.gen.dart';
 
 class CommentScreen extends StatefulWidget {
   final String postId;
@@ -17,7 +21,11 @@ class CommentScreen extends StatefulWidget {
 
 class _CommentScreenState extends State<CommentScreen> {
   final CommentController commentController = Get.put(CommentController());
+  final EditCommentController editCommentController = EditCommentController();
   final TextEditingController commentCtrl = TextEditingController();
+
+  // এডিট মোডে আছি কিনা এবং কোন কমেন্ট এডিট করছি
+  String? currentEditingCommentId;
 
   @override
   void initState() {
@@ -25,25 +33,83 @@ class _CommentScreenState extends State<CommentScreen> {
     commentController.getAllComment(widget.postId);
   }
 
-  void comment() {
+  // সেন্ড বাটনের কাজ (Add অথবা Edit)
+  void submitComment() {
+    if (commentCtrl.text.trim().isEmpty) {
+      showSnackBarMessage(context, "Please write something", true);
+      return;
+    }
+
     showLoadingOverLay(
-      asyncFunction: () async => await performComment(context),
+      asyncFunction: () async => await performSubmit(context),
       msg: 'Please wait...',
     );
   }
 
-  Future<void> performComment(BuildContext context) async {
-    final bool isSuccess = await commentController.addComment(
-      widget.postId,
-      commentCtrl.text,
+  Future<void> performSubmit(BuildContext context) async {
+    bool isSuccess = false;
+
+    if (currentEditingCommentId != null) {
+      // Edit mode
+      isSuccess = await editCommentController.editComment(
+        commentId: currentEditingCommentId!,
+        comment: commentCtrl.text.trim(),
+      );
+    } else {
+      // Add mode
+      isSuccess = await commentController.addComment(
+        widget.postId,
+        commentCtrl.text.trim(),
+      );
+    }
+
+    if (isSuccess) {
+      await commentController.getAllComment(widget.postId);
+      commentCtrl.clear();
+      setState(() {
+        currentEditingCommentId = null; // এডিট মোড বন্ধ
+      });
+    } else {
+      final errorMsg = currentEditingCommentId != null
+          ? editCommentController.errorMessage
+          : commentController.errorMessage;
+      showSnackBarMessage(context, errorMsg, true);
+    }
+  }
+
+  // Delete comment
+  void deleteComment(String commentId) {
+    showLoadingOverLay(
+      asyncFunction: () async => await performDeleteComment(context, commentId),
+      msg: 'Please wait...',
+    );
+  }
+
+  Future<void> performDeleteComment(
+    BuildContext context,
+    String commentId,
+  ) async {
+    final bool isSuccess = await editCommentController.deleteComment(
+      commentId: commentId,
     );
 
     if (isSuccess) {
-      commentController.getAllComment(widget.postId);
-      commentCtrl.clear(); 
+      await commentController.getAllComment(widget.postId);
+      Get.back(); // বটমশিট বন্ধ
     } else {
-      showSnackBarMessage(context, commentController.errorMessage, true);
+      showSnackBarMessage(context, editCommentController.errorMessage, true);
     }
+  }
+
+  // Edit বাটনে ক্লিক → টেক্সট ফিল্ডে লোড
+  void startEdit(String commentId, String currentText) {
+    setState(() {
+      currentEditingCommentId = commentId;
+      commentCtrl.text = currentText;
+      commentCtrl.selection = TextSelection.fromPosition(
+        TextPosition(offset: commentCtrl.text.length),
+      ); // কার্সর শেষে রাখা
+    });
   }
 
   @override
@@ -58,13 +124,13 @@ class _CommentScreenState extends State<CommentScreen> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
         child: Column(
           children: [
-            /// ✅ COMMENT LIST
+            /// COMMENT LIST
             Expanded(
               child: Obx(() {
                 if (commentController.inProgress) {
@@ -99,9 +165,46 @@ class _CommentScreenState extends State<CommentScreen> {
                             color: Colors.white,
                           ),
                         ),
-                        subtitle: Text(
-                          comment.text ?? '',
-                          style: const TextStyle(color: Colors.white),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              comment.text ?? '',
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                            heightBox4,
+                            Row(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    startEdit(comment.id!, comment.text ?? '');
+                                  },
+                                  child: Text(
+                                    'Edit',
+                                    style: TextStyle(
+                                      fontSize: 12.sp,
+                                      color: Colors.grey,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
+                                ),
+                                widthBox8,
+                                GestureDetector(
+                                  onTap: () {
+                                    _showDeleteComment(comment.id!);
+                                  },
+                                  child: Text(
+                                    'Delete',
+                                    style: TextStyle(
+                                      fontSize: 12.sp,
+                                      color: Colors.grey,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     );
@@ -110,18 +213,20 @@ class _CommentScreenState extends State<CommentScreen> {
               }),
             ),
 
-            /// ✅ COMMENT INPUT
+            /// COMMENT INPUT
             Row(
               children: [
                 Expanded(
                   child: CustomTextField(
                     controller: commentCtrl,
-                    hintText: 'Comment',
+                    hintText: currentEditingCommentId != null
+                        ? 'Edit your comment...'
+                        : 'Write a comment...',
                   ),
                 ),
                 widthBox8,
                 GestureDetector(
-                  onTap: comment,
+                  onTap: submitComment,
                   child: CircleAvatar(
                     radius: 28.r,
                     backgroundColor: const Color(0xff121212),
@@ -133,6 +238,73 @@ class _CommentScreenState extends State<CommentScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showDeleteComment(String commentId) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.black,
+      builder: (context) {
+        return Container(
+          height: 250.h,
+          padding: EdgeInsets.all(20.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleIconWidget(
+                imagePath: Assets.images.delete.keyName,
+                onTap: () {},
+                iconRadius: 22.r,
+                radius: 24.r,
+                color: const Color(0xff312609),
+                iconColor: const Color(0xffDC8B44),
+              ),
+              heightBox20,
+              Text(
+                'Delete?',
+                style: TextStyle(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+              heightBox8,
+              Text(
+                'Are you sure you want to delete?',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: const Color(0xff9FA3AA),
+                ),
+              ),
+              heightBox12,
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomElevatedButton(
+                      color: const Color.fromARGB(255, 15, 15, 15),
+                      borderColor: const Color(0xff262629),
+                      title: 'Discard',
+                      onPress: () => Get.back(),
+                    ),
+                  ),
+                  widthBox12,
+                  Expanded(
+                    child: CustomElevatedButton(
+                      color: const Color(0xffE62047),
+                      title: 'Delete',
+                      onPress: () {
+                        Get.back();
+                        deleteComment(commentId);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

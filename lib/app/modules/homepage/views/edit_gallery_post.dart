@@ -206,7 +206,7 @@ class _EditGalleryPostScreenState extends State<EditGalleryPostScreen> {
                               widthBox10,
                               Text(
                                 _selectedPrivacy == 'EVERYONE'
-                                    ? 'Everyone can view'
+                                    ? 'Everyone can comment'
                                     : 'Only me',
                                 style: TextStyle(
                                   color: LightThemeColors.blueColor,
@@ -366,7 +366,7 @@ class _EditGalleryPostScreenState extends State<EditGalleryPostScreen> {
             ),
             heightBox20,
 
-            _privacyOption('Everyone can view', 'EVERYONE', Icons.public),
+            _privacyOption('Everyone can comment', 'EVERYONE', Icons.public),
             _privacyOption('Only me', 'FOLLOWERS', Icons.lock_outline),
 
             heightBox20,

@@ -217,7 +217,7 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
                         widthBox10,
                         Text(
                           _selectedPrivacy == 'EVERYONE'
-                              ? 'Everyone can view'
+                              ? 'Everyone can comment'
                               : 'Only me',
                           style: TextStyle(
                             fontSize: 14.sp,
@@ -317,7 +317,7 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
   // Privacy Bottom Sheet – White background + Grey handle
   Widget _privacyBottomSheet() {
     final List<Map<String, dynamic>> privacyOptions = [
-      {'title': 'Everyone can view', 'value': 'EVERYONE', 'icon': Icons.public},
+      {'title': 'Everyone can comment', 'value': 'EVERYONE', 'icon': Icons.public},
       {'title': 'Only me', 'value': 'FOLLOWERS', 'icon': Icons.lock_outline},
     ];
 

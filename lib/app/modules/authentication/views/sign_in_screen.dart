@@ -28,9 +28,9 @@ class _SignInScreenState extends State<SignInScreen> {
   final SignInController signInController = Get.put(SignInController());
   final formKey = GlobalKey<FormState>();
   final emailController = TextEditingController(
-    text: 'fositak321@moondyal.com',
+    text: 'aminulappdev@gmail.com',
   );
-  final passwordController = TextEditingController(text: 'Aminul@1234');
+  final passwordController = TextEditingController(text: 'Aminul@123');
   void signIn() {
     showLoadingOverLay(
       asyncFunction: () async => await performSignIn(context),

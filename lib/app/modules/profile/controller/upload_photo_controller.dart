@@ -44,4 +44,70 @@ class ProfilePhotoController extends GetxController {
       return false;
     }
   }
+
+  Future<bool> uploadGroupPhoto(File image, String groupId) async {
+    _inProgress.value = true;
+
+    print('Uploading group photo...');
+    update();
+
+    try {
+      final response = await Get.find<NetworkCaller>().patchRequest(
+        image: image,
+        keyNameImage: 'image',
+       Urls.changeGroupImageById(groupId),
+        accessToken: StorageUtil.getData(StorageUtil.userAccessToken),
+      );
+
+      if (response.isSuccess) {
+        update();
+        return true;
+      } else {
+        final msg = response.errorMessage;
+        if (msg.toLowerCase().contains('expired') ||
+            msg.toLowerCase().contains('unauthenticated')) {
+          Get.offAll(() => const SignInScreen());
+        } else {}
+        _inProgress.value = false;
+        update();
+        return false;
+      }
+    } catch (e) {
+      _inProgress.value = false;
+      update();
+      return false;
+    }
+  }
+
+  Future<bool> uploadClassPhoto(File image, String classId) async {
+    _inProgress.value = true;
+    update();
+
+    try {
+      final response = await Get.find<NetworkCaller>().patchRequest(
+        image: image,
+        keyNameImage: 'image',
+       Urls.changeClassImageById(classId),
+        accessToken: StorageUtil.getData(StorageUtil.userAccessToken),
+      );
+
+      if (response.isSuccess) {
+        update();
+        return true;
+      } else {
+        final msg = response.errorMessage;
+        if (msg.toLowerCase().contains('expired') ||
+            msg.toLowerCase().contains('unauthenticated')) {
+          Get.offAll(() => const SignInScreen());
+        } else {}
+        _inProgress.value = false;
+        update();
+        return false;
+      }
+    } catch (e) {
+      _inProgress.value = false;
+      update();
+      return false;
+    }
+  }
 }

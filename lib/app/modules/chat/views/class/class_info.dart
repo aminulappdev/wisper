@@ -213,6 +213,8 @@ class _ClassInfoScreenState extends State<ClassInfoScreen> {
                 if (selectedIndex == 1) const LinkInfo(),
                 if (selectedIndex == 2)
                   DocInfo(
+                    isMyResume: false,
+                    onDelete: () {},
                     title: 'job_description.pdf',
                     isDownloaded: false,
                     onTap: () {},

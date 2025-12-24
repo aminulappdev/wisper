@@ -6,6 +6,8 @@ import 'package:wisper/app/core/widgets/details_card.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class DocInfo extends StatelessWidget {
+  final bool isMyResume;
+  final VoidCallback onDelete;
   final String title;
   final bool isDownloaded;
   final VoidCallback onTap;
@@ -14,6 +16,8 @@ class DocInfo extends StatelessWidget {
     required this.title,
     required this.isDownloaded,
     required this.onTap,
+    required this.isMyResume,
+    required this.onDelete,
   });
 
   @override
@@ -37,9 +41,14 @@ class DocInfo extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      title,
-                      style: TextStyle(color: Colors.white, fontSize: 12.sp),
+                    SizedBox(
+                      width: 200.w,
+                      child: Text(
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        title,
+                        style: TextStyle(color: Colors.white, fontSize: 12.sp),
+                      ),
                     ),
                     Text(
                       'PDF Document',
@@ -58,6 +67,16 @@ class DocInfo extends StatelessWidget {
                         Assets.images.download.keyName,
                         height: 18,
                       ),
+                    ),
+                  )
+                : Container(),
+
+            isMyResume == true
+                ? GestureDetector(
+                    onTap: onDelete,
+                    child: CrashSafeImage(
+                      Assets.images.delete.keyName,
+                      height: 18,
                     ),
                   )
                 : Container(),

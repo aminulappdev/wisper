@@ -11,6 +11,7 @@ import 'package:wisper/app/core/widgets/details_card.dart';
 import 'package:wisper/app/core/widgets/line_widget.dart';
 import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
 import 'package:wisper/app/modules/chat/widgets/toggle_option.dart';
+import 'package:wisper/app/modules/homepage/views/connection_screen.dart';
 import 'package:wisper/app/modules/homepage/views/favorite_job_screen.dart';
 import 'package:wisper/app/modules/profile/controller/buisness/buisness_controller.dart';
 import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
@@ -93,6 +94,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       title: 'Favorites',
                       onTap: () {
                         Get.to(() => const FavoriteJobScreen());
+                      },
+                    ),
+                    heightBox20,
+                    StraightLiner(height: 0.5),
+                    heightBox10,
+                    SettingsFeatureRow(
+                      title: 'Connections',
+                      onTap: () {
+                        Get.to(() => const ConnectionScreen());
                       },
                     ),
                   ],

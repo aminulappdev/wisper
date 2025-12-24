@@ -1,0 +1,181 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:wisper/app/core/utils/show_over_loading.dart';
+import 'package:wisper/app/core/utils/snack_bar.dart';
+import 'package:wisper/app/core/widgets/custom_button.dart';
+import 'package:wisper/app/modules/chat/controller/all_connection_controller.dart';
+import 'package:wisper/app/modules/chat/controller/update_connection_controller.dart';
+
+class ConnectionScreen extends StatefulWidget {
+  const ConnectionScreen({super.key});
+
+  @override
+  State<ConnectionScreen> createState() => _ConnectionScreenState();
+}
+
+class _ConnectionScreenState extends State<ConnectionScreen> {
+  AllConnectionController allConnectionController =
+      Get.find<AllConnectionController>();
+  UpdateConnectionController updateConnectionController =
+      UpdateConnectionController();
+
+  // এডিট মোডে আছি কিনা এবং কোন কমেন্ট এডিট করছি
+  String? currentEditingCommentId;
+
+  @override
+  void initState() {
+    allConnectionController.getAllConnection('PENDING');
+    super.initState();
+  }
+
+  // সেন্ড বাটনের কাজ (Add অথবা Edit)
+  void changeStatus(String userId, String status) {
+    showLoadingOverLay(
+      asyncFunction: () async => await performSubmit(context, userId, status),
+      msg: 'Please wait...',
+    );
+  }
+
+  Future<void> performSubmit(
+    BuildContext context,
+    String userId,
+    String status,
+  ) async {
+    bool isSuccess = false;
+
+    // Edit mode
+    isSuccess = await updateConnectionController.updateConnection(
+      userId: userId,
+      status: status,
+    );
+
+    if (isSuccess) {
+      final AllConnectionController allConnectionController =
+          Get.find<AllConnectionController>();
+
+      await allConnectionController.getAllConnection('PENDING');
+    } else {
+      showSnackBarMessage(
+        context,
+        updateConnectionController.errorMessage,
+        true,
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Connections',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+        child: Column(
+          children: [
+            /// COMMENT LIST
+            Expanded(
+              child: Obx(() {
+                if (allConnectionController.inProgress) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (allConnectionController.allConnectionData == null ||
+                    allConnectionController.allConnectionData!.isEmpty) {
+                  return const Center(child: Text('No comment found'));
+                }
+
+                return ListView.builder(
+                  itemCount: allConnectionController.allConnectionData!.length,
+                  padding: EdgeInsets.zero,
+                  itemBuilder: (context, index) {
+                    final data =
+                        allConnectionController.allConnectionData![index];
+                    return SizedBox(
+                      height: 70.h,
+                      child: ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        trailing: SizedBox(
+                          width: 140.w,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: SizedBox(
+                                  height: 30.h,
+                                  child: CustomElevatedButton(
+                                    title: 'Accept',
+                                    textSize: 10.sp,
+                                    onPress: () {
+                                      changeStatus(
+                                        data.id ?? '',
+                                        'ACCEPTED',
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 8.w),
+                              Expanded(
+                                child: SizedBox(
+                                  height: 30.h,
+                                  child: CustomElevatedButton(
+                                    title: 'Reject',
+                                    textSize: 10.sp,
+                                    color: Colors.red,
+                                    onPress: () {
+                                      changeStatus(
+                                        data.id ?? '',
+                                        'REJECTED',
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        leading: CircleAvatar(
+                          backgroundImage: NetworkImage(
+                            data.partner?.person?.image ?? '',
+                          ),
+                          radius: 20.r,
+                        ),
+                        title: Text(
+                          data.partner?.person?.name ?? '',
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                        subtitle: Text(
+                          data.partner?.person?.title ?? '',
+
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
