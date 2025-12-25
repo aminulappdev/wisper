@@ -19,12 +19,12 @@ import 'package:wisper/app/modules/chat/controller/all_connection_controller.dar
 import 'package:wisper/app/modules/chat/controller/group/all_group_member_controller.dart';
 import 'package:wisper/app/modules/chat/controller/group/group_info_controller.dart';
 import 'package:wisper/app/modules/chat/views/doc_info.dart';
+import 'package:wisper/app/modules/chat/views/group/edit_group_screen.dart';
 import 'package:wisper/app/modules/chat/views/link_info.dart';
 import 'package:wisper/app/modules/chat/views/media_info.dart';
 import 'package:wisper/app/modules/chat/widgets/location_info.dart';
 import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart';
 import 'package:wisper/app/modules/profile/controller/upload_photo_controller.dart';
-import 'package:wisper/app/modules/profile/views/settings_screen.dart';
 import 'package:wisper/app/modules/profile/widget/info_card.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
@@ -93,7 +93,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
       showSnackBarMessage(context, addMemberController.errorMessage, true);
     }
   }
-
+ 
   Future<void> _getProfileImage() async {
     print('Called get image');
     await groupInfoController.getGroupInfo(widget.groupId);
@@ -114,7 +114,10 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
   void _onImagePicked(File imageFile) async {
     currentImagePath.value = imageFile.path;
 
-    final bool success = await photoController.uploadGroupPhoto(imageFile, widget.groupId!);
+    final bool success = await photoController.uploadGroupPhoto(
+      imageFile,
+      widget.groupId!,
+    );
 
     if (success) {
       groupInfoController.getGroupInfo(widget.groupId);
@@ -178,7 +181,18 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                       ),
                     ],
                     optionActions: {
-                      '0': () => Get.to(() => const SettingsScreen()),
+                      '0': () => Get.to(
+                        () => EditGroupScreen(
+                          groupId: groupInfoController.groupInfoData!.id ?? '',
+                          groupName:
+                              groupInfoController.groupInfoData!.name ?? '',
+                          groupCaption:
+                              groupInfoController.groupInfoData!.description ??
+                              '',
+                          isPublic: false,
+                          isAllowInvitation: false,
+                        ),
+                      ),
                     },
                     menuWidth: 200,
                     menuHeight: 40,

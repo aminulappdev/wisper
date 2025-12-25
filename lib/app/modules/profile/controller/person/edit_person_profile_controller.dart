@@ -11,7 +11,7 @@ class EditPersonProfileController extends GetxController {
   final RxString _errorMessage = ''.obs;
   String get errorMessage => _errorMessage.value;
 
-  Future<bool> editProfile({
+  Future<bool> editProfile({ 
     String? name,
     String? phone,
     String? title,

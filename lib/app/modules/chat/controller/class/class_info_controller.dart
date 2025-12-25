@@ -16,7 +16,7 @@ class ClassInfoController extends GetxController {
   final Rx<GroupInfoModel?> _groupInfoModel = Rx<GroupInfoModel?>(null);
   Data? get groupInfoData => _groupInfoModel.value?.data;
 
-  Future<bool> getGroupInfo(String? classId) async {
+  Future<bool> getClassInfo(String? classId) async {
     _inProgress.value = true;
 
     try {

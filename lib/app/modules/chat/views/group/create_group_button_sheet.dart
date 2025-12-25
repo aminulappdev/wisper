@@ -16,7 +16,7 @@ import 'package:wisper/app/modules/chat/widgets/create_header.dart';
 import 'package:wisper/app/modules/chat/widgets/toggle_option.dart';
 import 'package:wisper/app/modules/dashboard/views/dashboard_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
- 
+
 class CreateGroupButtomSheet extends StatefulWidget {
   final List<String> selectedMemberIds;
 
@@ -141,9 +141,11 @@ class _CreateGroupButtomSheetState extends State<CreateGroupButtomSheet> {
                     onToggle: (bool value) {
                       _isPrivate.value = value;
                     },
+                    isToggled: _isPrivate.value,
                   ),
                   heightBox10,
                   ToggleOption(
+                    isToggled: _allowInvitation.value,
                     title: 'Allow Member Invites',
                     subtitle: 'Let members invite others',
                     onToggle: (bool value) {

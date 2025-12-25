@@ -21,11 +21,11 @@ class ClassMembersController extends GetxController {
 
   // @override
   // void onInit() {
-  //   super.onInit();
+  //   super.onInit(); 
   //   getMyProfile();
   // }
 
-  Future<bool> getGroupMembers(String? classId) async {
+  Future<bool> getClassMembers(String? classId) async {
     _inProgress.value = true;
 
     try {

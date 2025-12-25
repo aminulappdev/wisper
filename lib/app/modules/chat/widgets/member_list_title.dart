@@ -60,7 +60,8 @@ class MemberListTile extends StatelessWidget {
                       )
                     : CircleAvatar(
                         radius: 25.r,
-                        backgroundImage: AssetImage(imagePath),
+                        backgroundColor: Colors.grey.shade800,
+                        backgroundImage: NetworkImage(imagePath),
                       ),
               ),
 

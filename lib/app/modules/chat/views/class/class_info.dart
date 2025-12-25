@@ -1,22 +1,28 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
+import 'package:wisper/app/core/utils/image_picker.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
+import 'package:wisper/app/core/widgets/custom_popup.dart';
 import 'package:wisper/app/core/widgets/line_widget.dart';
 import 'package:wisper/app/modules/chat/controller/group/add_group_member.dart';
 import 'package:wisper/app/modules/chat/controller/all_connection_controller.dart';
 import 'package:wisper/app/modules/chat/controller/class/class_info_controller.dart';
 import 'package:wisper/app/modules/chat/controller/class/class_member_controller.dart';
+import 'package:wisper/app/modules/chat/views/class/edit_class_screen.dart';
 import 'package:wisper/app/modules/chat/views/doc_info.dart';
 import 'package:wisper/app/modules/chat/views/link_info.dart';
 import 'package:wisper/app/modules/chat/views/media_info.dart';
 import 'package:wisper/app/modules/chat/widgets/location_info.dart';
 import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart';
+import 'package:wisper/app/modules/profile/controller/upload_photo_controller.dart';
 import 'package:wisper/app/modules/profile/widget/info_card.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
@@ -40,12 +46,17 @@ class _ClassInfoScreenState extends State<ClassInfoScreen> {
   final AllConnectionController allConnectionController =
       Get.find<AllConnectionController>();
 
-  final AddMemberController addMemberController = AddMemberController();
+  final ProfilePhotoController photoController =
+      Get.find<ProfilePhotoController>();
 
+  final AddMemberController addMemberController = AddMemberController();
+  final RxString currentImagePath = ''.obs;
   @override
   void initState() {
-    classInfoController.getGroupInfo(widget.classId);
-    classMembersController.getGroupMembers(widget.classId);
+    _updateProfileImage();
+    _getProfileImage();
+    classInfoController.getClassInfo(widget.classId);
+    classMembersController.getClassMembers(widget.classId);
     allConnectionController.getAllConnection('ACCEPTED');
     super.initState();
   }
@@ -82,8 +93,47 @@ class _ClassInfoScreenState extends State<ClassInfoScreen> {
     }
   }
 
+  Future<void> _getProfileImage() async {
+    print('Called get image');
+    await classInfoController.getClassInfo(widget.classId);
+
+    currentImagePath.value = classInfoController.groupInfoData?.image ?? '';
+  }
+
+  void _updateProfileImage() {
+    String? imageUrl;
+
+    imageUrl = classInfoController.groupInfoData?.image;
+
+    currentImagePath.value = imageUrl?.isNotEmpty == true
+        ? imageUrl!
+        : Assets.images.person.keyName;
+  }
+
+  void _onImagePicked(File imageFile) async {
+    currentImagePath.value = imageFile.path;
+
+    final bool success = await photoController.uploadClassPhoto(
+      imageFile,
+      widget.classId!,
+    );
+
+    if (success) {
+      classInfoController.getClassInfo(widget.classId);
+      ();
+
+      await Future.delayed(const Duration(milliseconds: 800));
+      _updateProfileImage();
+      showSnackBarMessage(context, 'Group photo updated!', false);
+    } else {
+      showSnackBarMessage(context, 'Failed to upload image', true);
+      _updateProfileImage();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final GlobalKey suffixButtonKey = GlobalKey();
     return Scaffold(
       body: Obx(() {
         if (classInfoController.inProgress) {
@@ -120,8 +170,38 @@ class _ClassInfoScreenState extends State<ClassInfoScreen> {
                 ),
                 heightBox10,
                 InfoCard(
-                  imagePath: Assets.images.userGroup.keyName,
-                  editOnTap: () {},
+                  trailingKey: suffixButtonKey,
+                  trailingOnTap: () => CustomPopupMenu(
+                    targetKey: suffixButtonKey,
+                    options: [
+                      Text(
+                        'Edit Class',
+                        style: TextStyle(fontSize: 12.sp, color: Colors.white),
+                      ),
+                    ],
+                    optionActions: {
+                      '0': () => Get.to(
+                        () => EditClassScreen(
+                          isPublic: false,
+                          isAllowInvitation: false,
+                          classId: classInfoController.groupInfoData?.id ?? '',
+                          className:
+                              classInfoController.groupInfoData?.name ?? '',
+                          classCaption:
+                              classInfoController.groupInfoData?.description ??
+                              '',
+                        ),
+                      ),
+                    },
+                    menuWidth: 200,
+                    menuHeight: 40,
+                  ).showMenuAtPosition(context),
+                  imagePath: currentImagePath.value,
+                  editOnTap: () => ImagePickerHelper().showAlertDialog(
+                    context,
+                    _onImagePicked,
+                  ),
+
                   showMember: _showMemberInfo,
                   title: classInfoController.groupInfoData?.name ?? '',
                   memberInfo: 'Group • 3 members',

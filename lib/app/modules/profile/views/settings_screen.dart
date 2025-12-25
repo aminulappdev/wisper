@@ -126,6 +126,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     heightBox20,
                     ToggleOption(
+                      isToggled: false,
                       title: 'Third-party Data',
                       subtitle: 'Use data from partner companies',
                       onToggle: (bool p1) {},
@@ -150,18 +151,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     heightBox20,
                     ToggleOption(
+                      isToggled: false,
                       title: 'Content Creator Mode',
                       subtitle: 'Enable advanced monetization features',
                       onToggle: (bool p1) {},
                     ),
                     heightBox10,
                     ToggleOption(
+                      isToggled: false,
                       title: 'Earn from Posts',
                       subtitle: 'Allow monetization of your content',
                       onToggle: (bool p1) {},
                     ),
                     heightBox10,
                     ToggleOption(
+                      isToggled: false,
                       title: 'Sponsored Content',
                       subtitle: 'Enable sponsored post opportunities',
                       onToggle: (bool p1) {},
@@ -195,18 +199,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     heightBox20,
                     ToggleOption(
+                      isToggled: false,
                       title: 'Messages',
                       subtitle: 'New messages and replies',
                       onToggle: (bool p1) {},
                     ),
                     heightBox10,
                     ToggleOption(
+                      isToggled: false,
                       title: 'Connections',
                       subtitle: 'New connection requests',
                       onToggle: (bool p1) {},
                     ),
                     heightBox10,
                     ToggleOption(
+                      isToggled: false,
                       title: 'Posts',
                       subtitle: 'New posts by your connection',
                       onToggle: (bool p1) {},
@@ -279,6 +286,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: [
                     heightBox20,
                     ToggleOption(
+                      isToggled: true,
                       title: 'Dark Mode',
                       subtitle: 'Switch to dark theme',
                       onToggle: (bool p1) {},

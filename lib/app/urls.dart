@@ -5,8 +5,8 @@ class Urls {
   // static const String _baseUrl = 'http://10.10.10.17:5005/api/v1';
   // static const String socketUrl = 'http://10.10.10.17:4000/';
 
-  // static const String _baseUrl = 'http://10.10.10.17:5000/api/v1';
-  static const String _baseUrl = 'https://wisper.up.railway.app/api/v1';
+  static const String _baseUrl = 'http://10.10.10.17:5000/api/v1';
+  // static const String _baseUrl = 'https://wisper.up.railway.app/api/v1';
   static const String socketUrl = 'http://10.10.10.17:5000';  
 
   // =========================================== Common ============================================== //
@@ -19,7 +19,7 @@ class Urls {
   static const String personEditProfileUrl = '$_baseUrl/persons/profile';
   static const String businessEditProfileUrl = '$_baseUrl/businesses/profile';
   static const String personEditProfilePhotoUrl =
-      '$_baseUrl/persons/profile-image';
+      '$_baseUrl/persons/profile-image'; 
   static const String businessEditProfilePhotoUrl =
       '$_baseUrl/businesses/profile-image';
 
@@ -112,6 +112,7 @@ class Urls {
   static const String blockChatUserUrl = '$_baseUrl/chats/block-participant';
   static const String unblockChatUserUrl = '$_baseUrl/chats/unblock-participant';
   static const String muteChatUserUrl = '$_baseUrl/chats/mute';
+  static const String fileDecodeUrl = '$_baseUrl/upload-files/';
 
   static String groupInfoById(String id) {
     return '$_baseUrl/groups/$id';

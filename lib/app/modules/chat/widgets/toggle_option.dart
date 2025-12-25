@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/widgets/toogle_button.dart';
@@ -6,11 +6,14 @@ import 'package:wisper/app/core/widgets/toogle_button.dart';
 class ToggleOption extends StatelessWidget {
   final String title;
   final String subtitle;
+  final bool isToggled;        // নতুন প্রপ
   final void Function(bool) onToggle;
+
   const ToggleOption({
     super.key,
     required this.title,
     required this.subtitle,
+    required this.isToggled,
     required this.onToggle,
   });
 
@@ -26,7 +29,6 @@ class ToggleOption extends StatelessWidget {
               title,
               style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
             ),
-
             Text(
               subtitle,
               style: TextStyle(
@@ -37,8 +39,10 @@ class ToggleOption extends StatelessWidget {
             ),
           ],
         ),
-
-        ToggleButton(isToggled: false, onToggle: (bool value) {}),
+        ToggleButton(
+          isToggled: isToggled,
+          onToggle: onToggle,
+        ),
       ],
     );
   }

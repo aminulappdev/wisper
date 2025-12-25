@@ -136,6 +136,7 @@ class _CreateClassButtomSheetState extends State<CreateClassButtomSheet> {
                   ),
                   heightBox16,
                   ToggleOption(
+                    isToggled: false,
                     title: 'Private Class',
                     subtitle: 'Only invited members can join',
                     onToggle: (bool value) {
@@ -144,6 +145,7 @@ class _CreateClassButtomSheetState extends State<CreateClassButtomSheet> {
                   ),
                   heightBox10,
                   ToggleOption(
+                    isToggled: false,
                     title: 'Allow Member Invites',
                     subtitle: 'Let members invite others',
                     onToggle: (bool value) {

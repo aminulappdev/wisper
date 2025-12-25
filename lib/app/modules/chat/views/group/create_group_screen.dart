@@ -13,7 +13,7 @@ import 'package:wisper/app/modules/chat/widgets/member_widget.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class CreateGroupScreen extends StatefulWidget {
-  const CreateGroupScreen({super.key});
+  const CreateGroupScreen({super.key}); 
 
   @override
   State<CreateGroupScreen> createState() => _CreateGroupScreenState();

@@ -6,38 +6,37 @@ import 'package:get/get.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
-import 'package:wisper/app/core/utils/validator_service.dart'; 
+import 'package:wisper/app/core/utils/validator_service.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/custom_text_filed.dart';
 import 'package:wisper/app/core/widgets/label.dart';
 import 'package:wisper/app/modules/authentication/widget/auth_header.dart';
-import 'package:wisper/app/modules/chat/controller/group/edit_group_controller.dart';
-import 'package:wisper/app/modules/chat/controller/group/group_info_controller.dart';
+import 'package:wisper/app/modules/chat/controller/class/class_info_controller.dart';
+import 'package:wisper/app/modules/chat/controller/class/edit_class_info_controller.dart';
 import 'package:wisper/app/modules/chat/widgets/toggle_option.dart';
 
-
-class EditGroupScreen extends StatefulWidget {
-  final String groupId;
-  final String groupName;
-  final String groupCaption;
-  final bool isPublic;
+class EditClassScreen extends StatefulWidget {
+  final String classId;
+  final String className;
+  final String classCaption;
+  final bool isPublic; // true = public, false = private
   final bool isAllowInvitation;
 
-  const EditGroupScreen({
+  const EditClassScreen({
     super.key,
-    required this.groupId,
-    required this.groupName,
-    required this.groupCaption,
+    required this.classId,
+    required this.className,
+    required this.classCaption,
     required this.isPublic,
     required this.isAllowInvitation,
   });
 
   @override
-  State<EditGroupScreen> createState() => _EditGroupScreenState();
+  State<EditClassScreen> createState() => _EditClassScreenState();
 }
 
-class _EditGroupScreenState extends State<EditGroupScreen> {
-  final EditGroupController editGroupController = EditGroupController();
+class _EditClassScreenState extends State<EditClassScreen> {
+  final EditClassController editClassController = EditClassController();
   final _formKey = GlobalKey<FormState>();
 
   final _nameCtrl = TextEditingController();
@@ -49,8 +48,8 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
   @override
   void initState() {
     super.initState();
-    _nameCtrl.text = widget.groupName;
-    _captionCtrl.text = widget.groupCaption;
+    _nameCtrl.text = widget.className;
+    _captionCtrl.text = widget.classCaption;
     _isPublic = widget.isPublic;
     _isAllowInvitation = widget.isAllowInvitation;
   }
@@ -62,31 +61,31 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
     super.dispose();
   }
 
-  void _updateGroup() {
+  void _updateClass() {
     if (_formKey.currentState!.validate()) {
       showLoadingOverLay(
-        asyncFunction: () async => await _performUpdateGroup(),
+        asyncFunction: () async => await _performUpdateClass(),
         msg: 'Updating group...',
       );
     }
   }
 
-  Future<void> _performUpdateGroup() async {
-    final bool isSuccess = await editGroupController.editGroup(
-      groupId: widget.groupId,
+  Future<void> _performUpdateClass() async {
+    final bool isSuccess = await editClassController.editClass(
+      classId: widget.classId,
       name: _nameCtrl.text.trim(),
       caption: _captionCtrl.text.trim(),
-      isPrivate: !_isPublic, // যদি _isPublic true হয় → isPrivate = false
+      isPrivate: !_isPublic,
       allowInvitation: _isAllowInvitation,
     );
 
     if (isSuccess) {
-      final groupInfoController = Get.find<GroupInfoController>();
-      await groupInfoController.getGroupInfo(widget.groupId);
+      final classInfoController = Get.find<ClassInfoController>();
+      await classInfoController.getClassInfo(widget.classId);
       Navigator.pop(context);
       showSnackBarMessage(context, 'Group updated successfully', false);
     } else {
-      showSnackBarMessage(context, editGroupController.errorMessage, true);
+      showSnackBarMessage(context, editClassController.errorMessage, true);
     }
   }
 
@@ -156,7 +155,7 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
                 child: CustomElevatedButton(
                   height: 56.h,
                   title: 'Update',
-                  onPress: _updateGroup,
+                  onPress: _updateClass,
                   color: Colors.blue,
                 ),
               ),
