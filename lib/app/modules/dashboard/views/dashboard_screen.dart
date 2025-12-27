@@ -73,13 +73,15 @@ class _MainButtonNavbarScreenState extends State<MainButtonNavbarScreen> {
       myFeedJobController.getJobs(),
       myFeedPostController.getAllPost(),
       allRoleController.getAllRole(''),
+      businessController.getMyProfile(),
+      profileController.getMyProfile(),
     ]);
 
-    if (StorageUtil.getData(StorageUtil.userRole) == 'PERSON') {
-      await profileController.getMyProfile();
-    } else {
-      await businessController.getMyProfile();
-    }
+    // if (StorageUtil.getData(StorageUtil.userRole) == 'PERSON') {
+    //   await profileController.getMyProfile();
+    // } else {
+    //   await businessController.getMyProfile();
+    // }
   }
 
   String _getProfileImageUrl() {

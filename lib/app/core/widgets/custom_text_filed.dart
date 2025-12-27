@@ -13,7 +13,7 @@ class CustomTextField extends StatefulWidget {
     this.textDirection,
     this.maxLines = 1,
     this.minLines,
-    this.expands = false,
+    this.expands = false, 
     this.maxLength,
     this.onChanged,
     this.onTap,

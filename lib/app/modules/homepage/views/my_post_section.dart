@@ -164,7 +164,7 @@ class _MyPostSectionState extends State<MyPostSection> {
                   StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
                   ? post.author?.person?.title ?? 'Professional'
                   : post.author?.business?.name ?? 'Business',
-              postImage: post.images.isNotEmpty ? post.images.first : '',
+              postImage: post.images.isNotEmpty ? post.images.first : null ,
               postDescription: post.caption ?? '',
               postTime: formattedTime.getRelativeTimeFormat(),
               views: post.views?.toString() ?? '0',

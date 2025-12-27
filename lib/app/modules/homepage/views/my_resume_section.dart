@@ -9,6 +9,7 @@ import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/modules/chat/views/doc_info.dart';
 import 'package:wisper/app/modules/homepage/controller/delete_reusme_controller.dart';
+import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
 import 'package:wisper/gen/assets.gen.dart';
 import '../controller/my_resume_controller.dart';
 
@@ -17,7 +18,7 @@ class MyResumeSection extends StatefulWidget {
   const MyResumeSection({super.key, required this.userId});
 
   @override
-  State<MyResumeSection> createState() => _MyResumeSectionState();
+  State<MyResumeSection> createState() => _MyResumeSectionState(); 
 }
 
 class _MyResumeSectionState extends State<MyResumeSection> {
@@ -25,13 +26,14 @@ class _MyResumeSectionState extends State<MyResumeSection> {
   final DeleteResumeController deleteResumeController =
       DeleteResumeController();
 
+
   @override
   void initState() {
     super.initState();
 
     /// ✅ controller only once
     controller = Get.find<MyResumeController>();
-
+ 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.getAllResume(widget.userId);
     });
@@ -57,7 +59,7 @@ class _MyResumeSectionState extends State<MyResumeSection> {
           Get.find<MyResumeController>();
 
       await myResumeController.getAllResume(
-        StorageUtil.getData(StorageUtil.userAuthId),
+        StorageUtil.getData(StorageUtil.userId),
       );
       Get.back();
       showSnackBarMessage(context, "Post deleted successfully!", false);
@@ -65,6 +67,8 @@ class _MyResumeSectionState extends State<MyResumeSection> {
       showSnackBarMessage(context, deleteResumeController.errorMessage, true);
     }
   }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +109,7 @@ class _MyResumeSectionState extends State<MyResumeSection> {
               child: DocInfo(
                 isMyResume:
                     widget.userId ==
-                    StorageUtil.getData(StorageUtil.userAuthId),
+                    StorageUtil.getData(StorageUtil.userId),
                 onDelete: () {
                   _showDeletePost(resume.id!);
                 },

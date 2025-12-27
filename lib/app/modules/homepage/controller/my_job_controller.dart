@@ -49,7 +49,7 @@ class MyFeedJobController extends GetxController {
       Map<String, dynamic> queryParams = {
         'limit': _limit,
         'page': page,
-        'authorId': StorageUtil.getData(StorageUtil.userAuthId),
+        'authorId': StorageUtil.getData(StorageUtil.userId),
       };
 
       print('Fetching assets with params: $queryParams');

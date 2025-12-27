@@ -13,9 +13,10 @@ import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/custom_text_filed.dart';
 import 'package:wisper/app/core/widgets/image_picker.dart';
 import 'package:wisper/app/core/widgets/line_widget.dart';
-import 'package:wisper/app/modules/homepage/controller/create_post_controller.dart'; 
+import 'package:wisper/app/modules/homepage/controller/create_post_controller.dart';
 import 'package:wisper/app/modules/homepage/controller/feed_post_controller.dart';
 import 'package:wisper/app/modules/homepage/controller/my_post_controller.dart';
+import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class GalleryPostScreen extends StatefulWidget {
@@ -28,6 +29,7 @@ class GalleryPostScreen extends StatefulWidget {
 class _GalleryPostScreenState extends State<GalleryPostScreen> {
   final TextEditingController _captionCtrl = TextEditingController();
   final CreatePostController createPostController = CreatePostController();
+  final ProfileController profileController = Get.find<ProfileController>();
   final formKey = GlobalKey<FormState>();
   final List<File> _selectedImages = [];
   final ImagePickerHelper _imagePickerHelper = ImagePickerHelper();
@@ -77,6 +79,12 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
     } else {
       showSnackBarMessage(context, createPostController.errorMessage, true);
     }
+  }
+
+  @override
+  void initState() {
+    profileController.getMyProfile();
+    super.initState();
   }
 
   @override
@@ -139,37 +147,63 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
                   heightBox16,
 
                   // User info
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 18.r,
-                        backgroundImage: AssetImage(
-                          Assets.images.image.keyName,
-                        ),
-                      ),
-                      widthBox8,
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                  Obx(() {
+                    if (profileController.inProgress) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else {
+                      var name =
+                          profileController.profileData?.auth?.person != null
+                          ? profileController.profileData!.auth?.person!.name
+                          : profileController.profileData!.auth?.business!.name;
+
+                      var title =
+                          profileController.profileData?.auth?.person != null
+                          ? profileController.profileData!.auth?.person!.title
+                          : profileController
+                                .profileData!
+                                .auth
+                                ?.business!
+                                .industry;
+                      var imageUrl =
+                          profileController.profileData?.auth?.person != null
+                          ? profileController.profileData!.auth!.person!.image
+                          : profileController
+                                .profileData!
+                                .auth!
+                                .business!
+                                .image;
+                      return Row(
                         children: [
-                          Text(
-                            'Aminul Islam',
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.white,
-                            ),
+                          CircleAvatar(
+                            backgroundColor: Colors.grey,
+                            radius: 18.r,
+                            backgroundImage: NetworkImage(imageUrl ?? ''),
                           ),
-                          Text(
-                            'Flutter Developer',
-                            style: TextStyle(
-                              fontSize: 10.sp,
-                              color: LightThemeColors.themeGreyColor,
-                            ),
+                          widthBox8,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                name ?? 'User Name',
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Text(
+                                title ?? 'User Title',
+                                style: TextStyle(
+                                  fontSize: 10.sp,
+                                  color: LightThemeColors.themeGreyColor,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
-                      ),
-                    ],
-                  ),
+                      );
+                    }
+                  }),
 
                   heightBox20,
 
@@ -317,7 +351,11 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
   // Privacy Bottom Sheet – White background + Grey handle
   Widget _privacyBottomSheet() {
     final List<Map<String, dynamic>> privacyOptions = [
-      {'title': 'Everyone can comment', 'value': 'EVERYONE', 'icon': Icons.public},
+      {
+        'title': 'Everyone can comment',
+        'value': 'EVERYONE',
+        'icon': Icons.public,
+      },
       {'title': 'Only me', 'value': 'FOLLOWERS', 'icon': Icons.lock_outline},
     ];
 
@@ -339,7 +377,7 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
             ),
             heightBox20,
             Text(
-              'Who can see this post?',
+              'Who can comment this post?',
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w600,

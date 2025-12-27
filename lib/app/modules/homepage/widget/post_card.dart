@@ -94,13 +94,16 @@ class PostCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                   postImage != null || postImage != '' ? ImageContainer(
-                      image: postImage ?? '',
-                      height: 168,
-                      width: double.infinity,
-                      borderRadius: 8,
-                    ) : const SizedBox(),
-
+                    if (postImage == null) ...{
+                      Container(),
+                    } else ...{
+                      ImageContainer(
+                        image: postImage ?? '',
+                        height: 168,
+                        width: double.infinity,
+                        borderRadius: 8,
+                      ),
+                    },
                     Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: Text(

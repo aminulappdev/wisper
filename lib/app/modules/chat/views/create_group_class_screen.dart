@@ -22,11 +22,26 @@ class CreateGroupClassScreen extends StatefulWidget {
 class _CreateGroupClassScreenState extends State<CreateGroupClassScreen> {
   final AllConnectionController allConnectionController =
       Get.find<AllConnectionController>();
- 
+
+  // Search related
+  final TextEditingController _searchController = TextEditingController();
+  final RxString searchQuery = ''.obs;
+
   @override
   void initState() {
-    allConnectionController.getAllConnection('ACCEPTED');
     super.initState();
+    allConnectionController.getAllConnection('ACCEPTED');
+
+    // Listen to search input changes
+    _searchController.addListener(() {
+      searchQuery.value = _searchController.text.toLowerCase().trim();
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -78,44 +93,68 @@ class _CreateGroupClassScreenState extends State<CreateGroupClassScreen> {
               style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
             ),
             heightBox12,
-            SizedBox(height: 40, child: CustomTextField(hintText: 'Search')),
+
+            // Search Field
+            SizedBox(
+              height: 40,
+              child: CustomTextField(
+                controller: _searchController,
+                hintText: 'Search',
+                prefixIcon: Icons.search_outlined,
+                pprefixIconColor: const Color(0xff8C8C8C),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              ),
+            ),
             heightBox10,
+
+            // Contacts List with Search Filter
             Expanded(
               child: Obx(() {
                 if (allConnectionController.inProgress) {
                   return const Center(child: CircularProgressIndicator());
-                } else if (allConnectionController.allConnectionData!.isEmpty) {
-                  return const Center(child: Text('No contacts found'));
-                } else {
-                  return ListView.builder(
-                    padding: EdgeInsets.all(0),
-                    itemCount:
-                        allConnectionController.allConnectionData!.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: EdgeInsets.symmetric(vertical: 6.0),
-                        child: ContactWidget(
-                          imagePath: Assets.images.image.keyName,
-                          title:
-                              allConnectionController
-                                  .allConnectionData![index]
-                                  .partner!
-                                  .person
-                                  ?.name ??
-                              '',
-                          subtitle:
-                              allConnectionController
-                                  .allConnectionData![index]
-                                  .partner!
-                                  .person
-                                  ?.title ??
-                              '',
-                          onTap: () {},
-                        ),
-                      );
-                    },
+                }
+
+                final originalList = allConnectionController.allConnectionData ?? [];
+                final query = searchQuery.value;
+
+                // Filter contacts based on name
+                final filteredList = query.isEmpty
+                    ? originalList
+                    : originalList.where((connection) {
+                        final name = connection.partner?.person?.name ?? '';
+                        return name.toLowerCase().contains(query);
+                      }).toList();
+
+                if (filteredList.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      'No contacts found',
+                      style: TextStyle(color: Colors.white70, fontSize: 16),
+                    ),
                   );
                 }
+
+                return ListView.builder(
+                  padding: EdgeInsets.zero,
+                  itemCount: filteredList.length,
+                  itemBuilder: (context, index) {
+                    final connection = filteredList[index];
+                    final name = connection.partner?.person?.name ?? 'Unknown';
+                    final title = connection.partner?.person?.title ?? '';
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6.0),
+                      child: ContactWidget(
+                        imagePath: Assets.images.image.keyName,
+                        title: name,
+                        subtitle: title,
+                        onTap: () {
+                          // TODO: Handle contact selection if needed
+                        },
+                      ),
+                    );
+                  },
+                );
               }),
             ),
           ],

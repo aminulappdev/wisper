@@ -49,7 +49,7 @@ class ProfileController extends GetxController {
 
         StorageUtil.saveData(
           StorageUtil.userId,
-          response.responseData['data']['auth']['person']['id'],
+          response.responseData['data']['auth']['id'],
         );
 
         _profileDetailsModel.value = ProfileModel.fromJson(

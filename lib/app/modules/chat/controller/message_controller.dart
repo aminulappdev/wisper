@@ -26,7 +26,7 @@ class MessageController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    userAuthId = StorageUtil.getData(StorageUtil.userAuthId) ?? "";
+    userAuthId = StorageUtil.getData(StorageUtil.userId) ?? "";
   }
 
   void setupChat({required String? chatId}) {

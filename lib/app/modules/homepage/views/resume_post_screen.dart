@@ -12,6 +12,7 @@ import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/details_card.dart';
 import 'package:wisper/app/modules/homepage/controller/create_resume_controller.dart';
 import 'package:wisper/app/modules/homepage/controller/my_resume_controller.dart';
+import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
 import 'package:wisper/gen/assets.gen.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -26,6 +27,7 @@ class _ResumePostScreenState extends State<ResumePostScreen> {
   final List<File> _selectedFiles = [];
   final FilePickerHelper _filePickerHelper = FilePickerHelper();
   final CreateResumeController createPostController = CreateResumeController();
+  final ProfileController profileController = Get.find<ProfileController>();
 
   void _addFile(File file) {
     setState(() {
@@ -56,7 +58,7 @@ class _ResumePostScreenState extends State<ResumePostScreen> {
         final MyResumeController myResumeController =
             Get.find<MyResumeController>();
         await myResumeController.getAllResume(
-          StorageUtil.getData(StorageUtil.userAuthId),
+          StorageUtil.getData(StorageUtil.userId),
         );
         Navigator.pop(context);
         showSnackBarMessage(context, "Post created successfully!", false);
@@ -64,6 +66,12 @@ class _ResumePostScreenState extends State<ResumePostScreen> {
     } else {
       showSnackBarMessage(context, createPostController.errorMessage, true);
     }
+  }
+
+  @override
+  void initState() {
+    profileController.getMyProfile();
+    super.initState();
   }
 
   @override
@@ -114,36 +122,59 @@ class _ResumePostScreenState extends State<ResumePostScreen> {
                   ],
                 ),
                 heightBox16,
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 18.r,
-                      backgroundImage: AssetImage(Assets.images.image.keyName),
-                    ),
-                    widthBox8,
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                Obx(() {
+                  if (profileController.inProgress) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else {
+                    var name =
+                        profileController.profileData?.auth?.person != null
+                        ? profileController.profileData!.auth?.person!.name
+                        : profileController.profileData!.auth?.business!.name;
+
+                    var title =
+                        profileController.profileData?.auth?.person != null
+                        ? profileController.profileData!.auth?.person!.title
+                        : profileController
+                              .profileData!
+                              .auth
+                              ?.business!
+                              .industry;
+                    var imageUrl =
+                        profileController.profileData?.auth?.person != null
+                        ? profileController.profileData!.auth!.person!.image
+                        : profileController.profileData!.auth!.business!.image;
+                    return Row(
                       children: [
-                        Text(
-                          'Aminul Islam',
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white,
-                          ),
+                        CircleAvatar(
+                          backgroundColor: Colors.grey,
+                          radius: 18.r,
+                          backgroundImage: NetworkImage(imageUrl ?? ''),
                         ),
-                        Text(
-                          'Flutter Developer',
-                          style: TextStyle(
-                            fontSize: 10.sp,
-                            fontWeight: FontWeight.w400,
-                            color: LightThemeColors.themeGreyColor,
-                          ),
+                        widthBox8,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              name ?? 'User Name',
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Text(
+                              title ?? 'User Title',
+                              style: TextStyle(
+                                fontSize: 10.sp,
+                                color: LightThemeColors.themeGreyColor,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
-                    ),
-                  ],
-                ),
+                    );
+                  }
+                }),
                 // heightBox20,
                 // SizedBox(
                 //   height: 150.h,

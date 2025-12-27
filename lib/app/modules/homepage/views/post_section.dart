@@ -11,7 +11,7 @@ class PostSection extends StatefulWidget {
   const PostSection({super.key});
 
   @override
-  State<PostSection> createState() => _PostSectionState();
+  State<PostSection> createState() => _PostSectionState(); 
 }
 
 class _PostSectionState extends State<PostSection> {
@@ -86,7 +86,7 @@ class _PostSectionState extends State<PostSection> {
                     StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
                     ? post.author?.person?.title ?? 'Professional'
                     : post.author?.business?.name ?? 'Business',
-                postImage: post.images.isNotEmpty ? post.images.first : null,
+                postImage: post.images.isNotEmpty ? post.images.first : null ,
                 postDescription: post.caption ?? '',
                 postTime: formattedTime,
                 views: post.views.toString(),

@@ -26,7 +26,7 @@ class SocketService extends GetxController {
     print('🔌 Initializing socket service. Connecting...');
 
     final token = StorageUtil.getData(StorageUtil.userAccessToken);
-    final userId = StorageUtil.getData(StorageUtil.userAuthId);
+    final userId = StorageUtil.getData(StorageUtil.userId);
 
     print('Token: $token');
     print('User ID: $userId');

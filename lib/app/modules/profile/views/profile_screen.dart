@@ -41,7 +41,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   int selectedIndex = 0;
 
-  final ProfileController personController = Get.find<ProfileController>();
+  final ProfileController personController = Get.put(ProfileController());
   final BusinessController businessController = Get.put(BusinessController());
   final ProfilePhotoController photoController =
       Get.find<ProfilePhotoController>();
@@ -54,20 +54,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final RxString currentImagePath = ''.obs;
 
   @override
-  void initState() { 
+  void initState() {
     super.initState();
     selectedIndex = 0;
     userRole = StorageUtil.getData(StorageUtil.userRole) ?? 'PERSON';
     _updateProfileImage();
     _getProfileImage();
+    print('User id in ProfileScreen: ${StorageUtil.getData(StorageUtil.userId)}');
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       recommendationController.getAllRecommendations(
-        StorageUtil.getData(StorageUtil.userAuthId),
+        StorageUtil.getData(StorageUtil.userId),
       );
     });
   }
-  
+
   Future<void> _getProfileImage() async {
     print('Called get image');
     await personController.getMyProfile();
@@ -269,36 +270,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
 
               SizedBox(height: 10.h),
+
+              // Fixed Recommendation Widget - Safe null handling
               SizedBox(
                 height: 30.h,
                 child: Obx(() {
+                  // Safely get the list, default to empty if null
+                  final List<RecommendationItemModel> recList =
+                      recommendationController.recommendationData ?? [];
+
                   if (recommendationController.inProgress) {
                     return const Center(child: CircularProgressIndicator());
-                  } else if (recommendationController
-                      .recommendationData!
-                      .isEmpty) {
-                    return Recommendation(
-                      onTap: () {
-                        _showCreateGroup(
-                          recommendationController.recommendationData ?? [],
-                        );
-                      },
-                      count: 0,
-                    );
-                  } else {
-                    return Recommendation(
-                      onTap: () {
-                        _showCreateGroup(
-                          recommendationController.recommendationData ?? [],
-                        );
-                      },
-                      count:
-                          recommendationController.recommendationData?.length ??
-                          0,
-                    );
                   }
+
+                  return Recommendation(
+                    onTap: () {
+                      _showCreateGroup(recList);
+                    },
+                    count: recList.length,
+                  );
                 }),
               ),
+
               SizedBox(height: 10.h),
 
               LocationInfo(

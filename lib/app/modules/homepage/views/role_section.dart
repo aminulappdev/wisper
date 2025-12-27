@@ -24,7 +24,7 @@ class _RoleSectionState extends State<RoleSection> {
   final AllRoleController allRoleController = Get.find<AllRoleController>();
   final AddRequestController addRequestController = Get.put(
     AddRequestController(),
-  );
+  ); 
   final CreateChatController createChatController = Get.put(
     CreateChatController(),
   );
@@ -115,9 +115,11 @@ class _RoleSectionState extends State<RoleSection> {
               print(
                 'id ${data[index].id} and my id ${StorageUtil.getData(StorageUtil.userId)}',
               );
+              print('status $status for ${data[index].person?.name}');
               var id =
                   data[index].id == StorageUtil.getData(StorageUtil.userId);
               return status == 'ACCEPTED' || status == 'PENDING'
+                  ? Container() : status == 'REJECTED' || status == 'REQUEST_RECEIVED'
                   ? Container()
                   : id == true
                   ? Container()

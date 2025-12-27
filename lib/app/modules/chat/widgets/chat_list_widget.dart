@@ -8,15 +8,22 @@ import 'package:wisper/app/modules/chat/views/create_group_class_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class ChatListHeader extends StatelessWidget {
-  const ChatListHeader({super.key});
+  final TextEditingController searchController; 
+  final VoidCallback onSearchChanged;
 
-  @override 
+  const ChatListHeader({
+    super.key,
+    required this.searchController,
+    required this.onSearchChanged,
+  });
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       height: 160,
       width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.only(
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(40),
           bottomRight: Radius.circular(40),
         ),
@@ -31,40 +38,39 @@ class ChatListHeader extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Row(
-                  children: [
-                    Text(
-                      'Chats',
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
+                Text(
+                  'Chats',
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
                 ),
                 CircleIconWidget(
-
                   radius: 18,
                   iconRadius: 15,
-                  color: Color(0xffFFFFFF).withValues(alpha: 0.05),
+                  color: const Color(0xffFFFFFF).withValues(alpha: 0.05),
                   imagePath: Assets.images.plus.path,
                   iconColor: Colors.white,
                   onTap: () {
-                    Get.to(()=> CreateGroupClassScreen());
+                    Get.to(() => const CreateGroupClassScreen());
                   },
                 ),
               ],
             ),
             heightBox16,
             CustomTextField(
+              controller: searchController, // controller যোগ করা হয়েছে
               prefixIcon: Icons.search_outlined,
-              pprefixIconColor: Color(0xff7A7A7A),
+              pprefixIconColor: const Color(0xff7A7A7A),
               hintText: 'Search',
-              contentPadding: EdgeInsets.symmetric(
+              contentPadding: const EdgeInsets.symmetric(
                 horizontal: 16,
                 vertical: 2,
               ),
+              onChanged: (value) {
+                onSearchChanged(); // প্রতিবার টেক্সট চেঞ্জ হলে কল করা হবে
+              },
             ),
           ],
         ),

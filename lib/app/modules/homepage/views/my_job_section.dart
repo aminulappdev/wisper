@@ -33,7 +33,7 @@ class _MyJobSectionState extends State<MyJobSection> {
   @override
   void initState() {
     super.initState();
-    final userId = StorageUtil.getData(StorageUtil.userAuthId);
+    final userId = StorageUtil.getData(StorageUtil.userId);
     if (userId != null) {
       controller.getJobs(authorId: userId);
     }

@@ -116,11 +116,11 @@ class _CreateGroupButtomSheetState extends State<CreateGroupButtomSheet> {
                   heightBox10,
                   const StraightLiner(height: 0.5),
                   heightBox10,
-                  const Label(label: 'Class Name'),
+                  const Label(label: 'Group Name'),
                   heightBox10,
                   CustomTextField(
                     controller: _groupNameC,
-                    hintText: 'Enter class name',
+                    hintText: 'Enter group name',
                     keyboardType: TextInputType.name,
                     validator: ValidatorService.validateSimpleField,
                   ),

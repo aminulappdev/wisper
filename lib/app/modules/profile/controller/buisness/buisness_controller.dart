@@ -39,7 +39,7 @@ class BusinessController extends GetxController {
         );
 
         StorageUtil.saveData(
-          StorageUtil.userAuthId,
+          StorageUtil.userId,
           response.responseData['data']['auth']['id'],
         );
 

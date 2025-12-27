@@ -15,12 +15,14 @@ class AllRecommendationController extends GetxController {
 
   final Rx<RecommendationModel?> _recommendationModel =
       Rx<RecommendationModel?>(null);
-
+ 
   List<RecommendationItemModel>? get recommendationData => 
       _recommendationModel.value!.data;
 
   Future<bool> getAllRecommendations(String? id) async {
     _inProgress.value = true;
+
+    print('Fetching recommendations for ID: $id');
 
     try {
       final NetworkResponse response = await Get.find<NetworkCaller>()

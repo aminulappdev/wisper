@@ -21,7 +21,7 @@ class AllChatsController extends GetxController {
   List<AllChatsItemModel> get allChatsData =>
       _allChatsModel.value?.data?.chats ?? [];
 
-  final String myAuthId = StorageUtil.getData(StorageUtil.userAuthId) ?? '';
+  final String myAuthId = StorageUtil.getData(StorageUtil.userId) ?? '';
 
   @override
   void onInit() {
