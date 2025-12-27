@@ -1,3 +1,4 @@
+// ChatScreen (unchanged)
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -7,10 +8,8 @@ import 'package:wisper/app/modules/chat/model/message_keys.dart';
 import 'package:wisper/app/modules/chat/views/person/message_input_bar.dart';
 import 'package:wisper/app/modules/chat/widgets/chatting_header.dart';
 import 'package:wisper/app/modules/chat/widgets/message_bubble.dart';
-import 'package:wisper/app/modules/chat/widgets/option.dart';
-import 'package:wisper/gen/assets.gen.dart';
 
-class ChatScreen extends StatelessWidget {
+class ChatScreen extends StatefulWidget {
   final String? receiverId;
   final String? receiverName;
   final String? receiverImage;
@@ -25,21 +24,34 @@ class ChatScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final MessageController ctrl = Get.put(MessageController());
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  final MessageController ctrl = Get.put(MessageController());
+
+  @override
+  void initState() {
+    print(
+      'Chat ID: ${widget.chatId} Receiver ID: ${widget.receiverId} Receiver Name: ${widget.receiverName} Receiver Image: ${widget.receiverImage}',
+    );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ctrl.setupChat(chatId: chatId);
+      ctrl.setupChat(chatId: widget.chatId);
     });
+    super.initState();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
           ChatHeader(
-            chatId: chatId,
-            name: receiverName,
-            image: receiverImage,
-            memberId: receiverId,
+            chatId: widget.chatId,
+            name: widget.receiverName,
+            image: widget.receiverImage,
+            memberId: widget.receiverId,
             status: 'online',
           ),
 
@@ -72,7 +84,9 @@ class ChatScreen extends StatelessWidget {
                   return MessageBubble(
                     message: msg,
                     isMe: isMe,
-                    imageUrl: imageUrl,
+                    fileUrl:
+                        imageUrl, // পুরানো নাম রেখেছি, কিন্তু এটা এখন সব file-এর URL
+                    fileType: msg[SocketMessageKeys.fileType] ?? '',
                     senderImage: msg[SocketMessageKeys.senderImage],
                     senderName: msg[SocketMessageKeys.senderName],
                     time: DateFormatter(
@@ -87,56 +101,7 @@ class ChatScreen extends StatelessWidget {
 
           MessageInputBar(
             controller: ctrl.textController,
-            onSend: () => ctrl.sendMessage(chatId ?? ''),
-            onAttachment: () {
-              showModalBottomSheet(
-                context: context,
-                backgroundColor: Colors.transparent,
-                builder: (_) => const AttachmentBottomSheet(),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ====== MessageBubble & AttachmentBottomSheet (অপরিবর্তিত) ======
-
-class AttachmentBottomSheet extends StatelessWidget {
-  const AttachmentBottomSheet({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.black,
-      height: Get.height * 0.15,
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Option(
-                onTap: () {},
-                imagePath: Assets.images.gallery.keyName,
-                iconColor: const Color(0xff6192FD),
-                title: 'Image',
-              ),
-              Option(
-                onTap: () {},
-                imagePath: Assets.images.video.keyName,
-                iconColor: const Color(0xffB95BFC),
-                title: 'Video',
-              ),
-              Option(
-                onTap: () {},
-                imagePath: Assets.images.file.keyName,
-                iconColor: const Color(0xff00F359),
-                title: 'Document',
-              ),
-            ],
+            onSend: () => ctrl.sendMessage(widget.chatId ?? ''),
           ),
         ],
       ),

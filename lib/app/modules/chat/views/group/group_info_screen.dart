@@ -29,8 +29,9 @@ import 'package:wisper/app/modules/profile/widget/info_card.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class GroupInfoScreen extends StatefulWidget {
-  const GroupInfoScreen({super.key, this.groupId});
+  const GroupInfoScreen({super.key, this.groupId, required this.chatId});
   final String? groupId;
+  final String chatId;
 
   @override
   State<GroupInfoScreen> createState() => _GroupInfoScreenState();
@@ -93,7 +94,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
       showSnackBarMessage(context, addMemberController.errorMessage, true);
     }
   }
- 
+
   Future<void> _getProfileImage() async {
     print('Called get image');
     await groupInfoController.getGroupInfo(widget.groupId);
@@ -258,6 +259,8 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                       ),
                     ),
                     widthBox50,
+                    widthBox50,
+                    
                     GestureDetector(
                       onTap: () {
                         setState(() {
@@ -266,20 +269,6 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                       },
                       child: SelectOptionWidget(
                         currentIndex: 1,
-                        selectedIndex: selectedIndex,
-                        title: 'Links',
-                        lineColor: const Color.fromARGB(255, 255, 255, 255),
-                      ),
-                    ),
-                    widthBox50,
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedIndex = 2;
-                        });
-                      },
-                      child: SelectOptionWidget(
-                        currentIndex: 2,
                         selectedIndex: selectedIndex,
                         title: 'Docs',
                         lineColor: const Color.fromARGB(255, 255, 255, 255),
@@ -290,16 +279,9 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                 const StraightLiner(height: 0.4, color: Color(0xff454545)),
                 heightBox10,
 
-                if (selectedIndex == 0) const MediaInfo(),
-                if (selectedIndex == 1) const LinkInfo(),
-                if (selectedIndex == 2)
-                  DocInfo(
-                    isMyResume: false,
-                    onDelete: () {},
-                    title: 'job_description.pdf',
-                    isDownloaded: false,
-                    onTap: () {},
-                  ),
+                if (selectedIndex == 0) MediaInfo(chatId: widget.chatId),
+                if (selectedIndex == 1)  DocInfoSection(chatId: widget.chatId,),
+                
               ],
             ),
           );

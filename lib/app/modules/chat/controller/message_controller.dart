@@ -5,12 +5,15 @@ import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/services/network_caller/network_caller.dart';
 import 'package:wisper/app/core/services/socket/socket_service.dart';
 import 'package:wisper/app/modules/chat/controller/all_chats_controller.dart';
+import 'package:wisper/app/modules/chat/controller/image_decode_controller.dart'; // Added for image handling
 import 'package:wisper/app/modules/chat/model/message_keys.dart';
 import 'package:wisper/app/modules/chat/model/message_model.dart';
 import 'package:wisper/app/urls.dart';
 
 class MessageController extends GetxController {
   final SocketService socketService = Get.find<SocketService>();
+  final FileDecodeController imageDecodeController =
+      Get.find<FileDecodeController>(); // Added
 
   var isLoading = false.obs;
   var messages = <Map<String, dynamic>>[].obs; // newest first
@@ -77,6 +80,7 @@ class MessageController extends GetxController {
         SocketMessageKeys.createdAt: (data['createdAt'] ?? DateTime.now())
             .toString(),
         SocketMessageKeys.seen: data['isRead'] ?? false,
+        SocketMessageKeys.fileType: data['fileType'] ?? '',
       };
 
       messages.insert(0, msg);
@@ -104,12 +108,27 @@ class MessageController extends GetxController {
 
   void sendMessage(String chatId) {
     final text = textController.text.trim();
-    if (text.isEmpty) {
-      Get.snackbar('Error', 'Message cannot be empty');
+    final fileUrl = imageDecodeController.imageUrl.trim();
+    final fileType = imageDecodeController.currentFileType; // নতুন
+
+    if (text.isEmpty && fileUrl.isEmpty) {
+      Get.snackbar('Error', 'Message or attachment required');
       return;
     }
-    socketService.socket.emit('sendMessage', {"chatId": chatId, "text": text});
+
+    final messageData = {
+      "chatId": chatId,
+      if (text.isNotEmpty) "text": text,
+      if (fileUrl.isNotEmpty) "file": fileUrl,
+      if (fileUrl.isNotEmpty) "fileType": fileType, // সঠিক টাইপ যাবে
+    };
+
+    socketService.socket.emit('sendMessage', messageData);
+    print('File type********************************** : $fileType');
+
+    // Clear everything
     textController.clear();
+    imageDecodeController.clearAll();
   }
 
   Future<void> getMessages({required String chatId}) async {
@@ -145,6 +164,7 @@ class MessageController extends GetxController {
               SocketMessageKeys.id: msg.id ?? "",
               SocketMessageKeys.text: msg.text ?? "",
               SocketMessageKeys.imageUrl: _safeImageUrl(msg.file),
+              SocketMessageKeys.fileType: msg.fileType ?? "",
               SocketMessageKeys.seen: msg.isRead ?? false,
               SocketMessageKeys.senderId: msg.sender?.id ?? "",
               SocketMessageKeys.senderName: senderName,

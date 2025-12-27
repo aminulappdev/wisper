@@ -26,7 +26,7 @@ import 'package:wisper/gen/assets.gen.dart';
 class GroupChatHeader extends StatefulWidget {
   final String groupName;
   final String groupImage;
-  final String groupId; 
+  final String groupId;
   final String chatId;
 
   const GroupChatHeader({
@@ -172,7 +172,10 @@ class _GroupChatHeaderState extends State<GroupChatHeader> {
       ],
       optionActions: {
         '0': () {
-          Get.to(() => GroupInfoScreen(groupId: widget.groupId));
+          Get.to(
+            () =>
+                GroupInfoScreen(groupId: widget.groupId, chatId: widget.chatId),
+          );
         },
         '1': () {
           _showMutePopup();
@@ -517,7 +520,7 @@ class _GroupChatHeaderState extends State<GroupChatHeader> {
   void _shoBlockUser() {
     showModalBottomSheet(
       context: context,
-      builder: (BuildContext context) { 
+      builder: (BuildContext context) {
         return Container(
           color: Colors.black,
           height: 250,

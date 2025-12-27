@@ -173,7 +173,10 @@ class _ClassChatHeaderState extends State<ClassChatHeader> {
       ],
       optionActions: {
         '0': () {
-          Get.to(() => ClassInfoScreen(classId: widget.classId));
+          Get.to(
+            () =>
+                ClassInfoScreen(classId: widget.classId, chatId: widget.chatId),
+          );
         },
         '1': () {
           _showMutePopup();

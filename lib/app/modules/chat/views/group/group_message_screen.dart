@@ -13,10 +13,10 @@ import 'package:wisper/app/modules/chat/widgets/message_bubble.dart';
 import 'package:wisper/app/modules/chat/widgets/option.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
-class GroupChatScreen extends StatelessWidget {
+class GroupChatScreen extends StatefulWidget {
   final String? groupName;
   final String? groupImage;
-  final String? chatId; 
+  final String? chatId;
   final String? groupId;
 
   const GroupChatScreen({
@@ -28,22 +28,30 @@ class GroupChatScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final MessageController ctrl = Get.put(MessageController());
+  State<GroupChatScreen> createState() => _GroupChatScreenState();
+}
 
-    // Chat setup একবারই (group এর জন্য chatId ব্যবহার করছি)
+class _GroupChatScreenState extends State<GroupChatScreen> {
+  final MessageController ctrl = Get.put(MessageController());
+
+  @override
+  void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ctrl.setupChat(chatId: chatId);
+      ctrl.setupChat(chatId: widget.chatId);
     });
+    super.initState();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
           GroupChatHeader(
-            chatId: chatId ?? '',
-            groupName: groupName ?? '',
-            groupImage: groupImage ?? '',
-            groupId: groupId ?? '',
+            chatId: widget.chatId ?? '',
+            groupName: widget.groupName ?? '',
+            groupImage: widget.groupImage ?? '',
+            groupId: widget.groupId ?? '',
           ),
 
           Expanded(
@@ -56,7 +64,7 @@ class GroupChatScreen extends StatelessWidget {
                 return Center(
                   child: EmptyGroupInfoCard(
                     isGroup: true,
-                    name: groupName ?? '',
+                    name: widget.groupName ?? '',
                     member: '5',
                   ),
                 );
@@ -85,11 +93,15 @@ class GroupChatScreen extends StatelessWidget {
                   return MessageBubble(
                     message: msg,
                     isMe: isMe,
-                    imageUrl: imageUrl,
-                    time: time,
-                    senderName: senderName,
-                    senderImage: senderImage,
-                    isGroupChat: true,
+                    fileUrl:
+                        imageUrl, // পুরানো নাম রেখেছি, কিন্তু এটা এখন সব file-এর URL
+                    fileType: msg[SocketMessageKeys.fileType] ?? '',
+                    senderImage: msg[SocketMessageKeys.senderImage],
+                    senderName: msg[SocketMessageKeys.senderName],
+                    time: DateFormatter(
+                      msg[SocketMessageKeys.createdAt],
+                    ).getRelativeTimeFormat(),
+                    isGroupChat: false,
                   );
                 },
               );
@@ -98,56 +110,7 @@ class GroupChatScreen extends StatelessWidget {
 
           MessageInputBar(
             controller: ctrl.textController,
-            onSend: () => ctrl.sendMessage(chatId ?? ''),
-            onAttachment: () {
-              showModalBottomSheet(
-                context: context,
-                backgroundColor: Colors.transparent,
-                builder: (_) => const AttachmentBottomSheet(),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ====== MessageBubble & AttachmentBottomSheet (অপরিবর্তিত) ======
-
-class AttachmentBottomSheet extends StatelessWidget {
-  const AttachmentBottomSheet({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.black,
-      height: Get.height * 0.15,
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Option(
-                onTap: () {},
-                imagePath: Assets.images.gallery.keyName,
-                iconColor: const Color(0xff6192FD),
-                title: 'Image',
-              ),
-              Option(
-                onTap: () {},
-                imagePath: Assets.images.video.keyName,
-                iconColor: const Color(0xffB95BFC),
-                title: 'Video',
-              ),
-              Option(
-                onTap: () {},
-                imagePath: Assets.images.file.keyName,
-                iconColor: const Color(0xff00F359),
-                title: 'Document',
-              ),
-            ],
+            onSend: () => ctrl.sendMessage(widget.chatId ?? ''),
           ),
         ],
       ),

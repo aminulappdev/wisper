@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
-import 'package:wisper/app/core/utils/validator_service.dart'; 
+import 'package:wisper/app/core/utils/validator_service.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/custom_text_filed.dart';
 import 'package:wisper/app/core/widgets/label.dart';
@@ -14,7 +14,6 @@ import 'package:wisper/app/modules/authentication/widget/auth_header.dart';
 import 'package:wisper/app/modules/chat/controller/group/edit_group_controller.dart';
 import 'package:wisper/app/modules/chat/controller/group/group_info_controller.dart';
 import 'package:wisper/app/modules/chat/widgets/toggle_option.dart';
-
 
 class EditGroupScreen extends StatefulWidget {
   final String groupId;

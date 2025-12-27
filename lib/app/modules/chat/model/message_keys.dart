@@ -10,6 +10,8 @@ class SocketMessageKeys {
   static const String senderImage = "senderImage";
   static const String chat = "chat";
   static const String createdAt = "createdAt";
+  static const String fileType = "fileType";
+
   
 
   // যদি আরও key লাগে পরে যোগ করবেন

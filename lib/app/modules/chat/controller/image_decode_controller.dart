@@ -11,14 +11,25 @@ class FileDecodeController extends GetxController {
   bool get inProgress => _inProgress.value;
 
   final RxString _errorMessage = ''.obs;
-  String get errorMessage => _errorMessage.value; 
+  String get errorMessage => _errorMessage.value;
 
   final RxString _url = ''.obs;
   String get imageUrl => _url.value;
-  set imageUrl(String value) => _url.value = value; 
+  set imageUrl(String value) => _url.value = value;
+
+  // নতুন: current file type ট্র্যাক করার জন্য
+  final RxString _currentFileType = ''.obs;
+  String get  currentFileType => _currentFileType.value;
+
+  // Clear everything
+  void clearAll() {
+    _url.value = '';
+    _currentFileType.value = '';
+  }
 
   Future<bool> imageDecode({File? image}) async {
-    _inProgress.value = true; // ✅ LOADER START
+    _currentFileType.value = "IMAGE"; // টাইপ সেট
+    _inProgress.value = true;
 
     try {
       final NetworkResponse response = await Get.find<NetworkCaller>().postRequest(
@@ -31,18 +42,80 @@ class FileDecodeController extends GetxController {
       if (response.isSuccess && response.responseData != null) {
         _errorMessage.value = '';
         _url.value = response.responseData['data']['url'];
-        _inProgress.value = false; // ✅ LOADER STOP (SUCCESS)
+        _inProgress.value = false;
         return true;
       } else {
         _errorMessage.value = response.errorMessage;
-        _errorMessage.value.contains('expired') ? Get.to(SignInScreen()) : null;
-        _inProgress.value = false; // ✅ LOADER STOP (ERROR)
+        if (_errorMessage.value.contains('expired')) Get.to(() => SignInScreen());
+        _inProgress.value = false;
         return false;
       }
     } catch (e) {
       _errorMessage.value = 'Failed to decode image: ${e.toString()}';
       print('Error decoding image: $e');
-      _inProgress.value = false; // ✅ LOADER STOP (EXCEPTION)
+      _inProgress.value = false;
+      return false;
+    }
+  }
+
+  Future<bool> videoDecode({File? image}) async {
+    _currentFileType.value = "VIDEO"; // টাইপ সেট
+    _inProgress.value = true;
+
+    try {
+      final NetworkResponse response = await Get.find<NetworkCaller>().postRequest(
+        image: image,
+        keyNameImage: 'file',
+        Urls.fileDecodeUrl,
+        accessToken: StorageUtil.getData(StorageUtil.userAccessToken),
+      );
+
+      if (response.isSuccess && response.responseData != null) {
+        _errorMessage.value = '';
+        _url.value = response.responseData['data']['url'];
+        _inProgress.value = false;
+        return true;
+      } else {
+        _errorMessage.value = response.errorMessage;
+        if (_errorMessage.value.contains('expired')) Get.to(() => SignInScreen());
+        _inProgress.value = false;
+        return false;
+      }
+    } catch (e) {
+      _errorMessage.value = 'Failed to decode video: ${e.toString()}';
+      print('Error decoding video: $e');
+      _inProgress.value = false;
+      return false;
+    }
+  }
+
+  Future<bool> fileDecode({File? image}) async {
+    _currentFileType.value = "DOC"; // টাইপ সেট
+    _inProgress.value = true;
+
+    try {
+      final NetworkResponse response = await Get.find<NetworkCaller>().postRequest(
+        image: image,
+        keyNameImage: 'file',
+        Urls.fileDecodeUrl,
+        accessToken: StorageUtil.getData(StorageUtil.userAccessToken),
+      );
+
+      if (response.isSuccess && response.responseData != null) {
+        _errorMessage.value = '';
+        _url.value = response.responseData['data']['url'];
+        _inProgress.value = false;
+        return true;
+      } else {
+        _errorMessage.value = response.errorMessage;
+        if (_errorMessage.value.contains('expired')) Get.to(() => SignInScreen());
+        _inProgress.value = false;
+        return false;
+      }
+    } catch (e) {
+      _errorMessage.value = 'Failed to decode file: ${e.toString()}';
+      print('Error decoding file: $e');
+      _inProgress.value = false;
       return false;
     }
   }

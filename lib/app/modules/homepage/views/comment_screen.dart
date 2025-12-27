@@ -160,13 +160,15 @@ class _CommentScreenState extends State<CommentScreen> {
                         title: Text(
                           comment.author?.person?.name ?? '',
                           style: TextStyle(
-                            fontSize: 14.sp,
+                            fontSize: 12.sp,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
                           ),
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(
                               comment.text ?? '',

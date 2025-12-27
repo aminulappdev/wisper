@@ -13,14 +13,14 @@ import 'package:wisper/app/modules/homepage/controller/my_resume_controller.dart
 import 'package:wisper/app/modules/profile/controller/upload_photo_controller.dart';
 
 class ControllerBinder extends Bindings {
-  @override 
+  @override
   void dependencies() {
-    Get.put(NetworkCaller());  
+    Get.put(NetworkCaller());
     // Get.put(ProfileController());
-    // Get.put(BusinessController()); 
-    Get.put(AllFeedPostController()); 
+    // Get.put(BusinessController());
+    Get.put(AllFeedPostController());
     Get.put(AllFeedJobController());
-    Get.put(CreatePostController()); 
+    Get.put(CreatePostController());
     Get.put(MyFeedPostController());
     Get.put(MyFeedJobController());
     // Get.put(AllChatsController());
@@ -29,7 +29,6 @@ class ControllerBinder extends Bindings {
     Get.put(GroupMembersController());
     Get.put(AllRoleController());
     Get.put(MyResumeController());
-
-
+    Get.put(FileDecodeController());
   }
 }

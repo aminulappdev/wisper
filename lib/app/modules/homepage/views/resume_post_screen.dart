@@ -162,7 +162,7 @@ class _ResumePostScreenState extends State<ResumePostScreen> {
                 heightBox10,
                 GestureDetector(
                   onTap: () {
-                    _filePickerHelper.showAlertDialog(context, _addFile);
+                    // _filePickerHelper.showAlertDialog(context, _addFile);
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -353,3 +353,5 @@ class FilePickerHelper {
     );
   }
 }
+
+// তোমার অন্যান্য import যদি থাকে (যেমন screen util এর .h, .sp)

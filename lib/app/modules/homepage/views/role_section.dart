@@ -5,6 +5,9 @@ import 'package:get/get.dart';
 import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
+import 'package:wisper/app/modules/chat/controller/create_chat_controller.dart'
+    show CreateChatController;
+import 'package:wisper/app/modules/chat/views/person/message_screen.dart';
 import 'package:wisper/app/modules/homepage/controller/add_request_controller.dart';
 import 'package:wisper/app/modules/homepage/controller/all_role_controller.dart';
 import 'package:wisper/app/modules/homepage/widget/role_card.dart';
@@ -21,6 +24,9 @@ class _RoleSectionState extends State<RoleSection> {
   final AllRoleController allRoleController = Get.find<AllRoleController>();
   final AddRequestController addRequestController = Get.put(
     AddRequestController(),
+  );
+  final CreateChatController createChatController = Get.put(
+    CreateChatController(),
   );
 
   @override
@@ -56,6 +62,39 @@ class _RoleSectionState extends State<RoleSection> {
     }
   }
 
+  void createChat(String? memberId, String? memberName, String? memberImage) {
+    showLoadingOverLay(
+      asyncFunction: () async =>
+          await performCreateChat(context, memberId, memberName, memberImage),
+      msg: 'Please wait...',
+    );
+  }
+
+  Future<void> performCreateChat(
+    BuildContext context,
+    String? memberId,
+    String? memberName ,
+    String? memberImage,
+  ) async {
+    final bool isSuccess = await createChatController.createChat(
+      memberId: memberId,
+    );
+
+    if (isSuccess) {
+      var chatId = createChatController.chatId;
+      Get.to(
+        ChatScreen(
+          chatId: chatId ,
+          receiverId: memberId ?? '',
+          receiverImage: memberImage ?? '',
+          receiverName: memberName ?? '',
+        ),
+      );
+    } else {
+      showSnackBarMessage(context, addRequestController.errorMessage, true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -78,7 +117,7 @@ class _RoleSectionState extends State<RoleSection> {
               );
               var id =
                   data[index].id == StorageUtil.getData(StorageUtil.userId);
-              return status == 'ACCEPTED'
+              return status == 'ACCEPTED' || status == 'PENDING'
                   ? Container()
                   : id == true
                   ? Container()
@@ -95,7 +134,13 @@ class _RoleSectionState extends State<RoleSection> {
                         post: data[index].count?.posts ?? 0,
                         recommendations:
                             data[index].count?.receivedRecommendations ?? 0,
-                        messagesOnTap: () {},
+                        messagesOnTap: () {
+                          createChat(
+                            data[index].id,
+                            data[index].person?.name,
+                            data[index].person?.image,
+                          );
+                        },
                         addOnTap: () {
                           status == 'NOT_CONNECTED'
                               ? addRequest(data[index].id)
