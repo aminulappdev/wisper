@@ -123,7 +123,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         fontWeight: FontWeight.w400,
                         color: Color(0xff999999),
                       ),
-                    ),
+                    ), 
                     heightBox20,
                     ToggleOption(
                       isToggled: false,

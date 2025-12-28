@@ -12,6 +12,7 @@ import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart'
     show CustomElevatedButton;
 import 'package:wisper/app/core/widgets/custom_popup.dart';
+import 'package:wisper/app/core/widgets/shimmer/gallery_post_shimmer.dart';
 import 'package:wisper/app/modules/homepage/controller/delete_job_controller.dart';
 import 'package:wisper/app/modules/homepage/controller/feed_job_controller.dart';
 import 'package:wisper/app/modules/homepage/controller/my_job_controller.dart';
@@ -75,7 +76,7 @@ class _MyJobSectionState extends State<MyJobSection> {
           child: Obx(() {
             // Loading State
             if (controller.inProgress) {
-              return const Center(child: CircularProgressIndicator());
+              return PostShimmerEffectWidget();
             }
 
             // Empty State

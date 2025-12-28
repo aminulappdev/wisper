@@ -10,6 +10,7 @@ import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/custom_popup.dart';
+import 'package:wisper/app/core/widgets/shimmer/gallery_post_shimmer.dart';
 import 'package:wisper/app/modules/homepage/controller/delete_gallery_post_controlller.dart';
 import 'package:wisper/app/modules/homepage/controller/feed_post_controller.dart';
 import 'package:wisper/app/modules/homepage/controller/my_post_controller.dart';
@@ -69,9 +70,7 @@ class _MyPostSectionState extends State<MyPostSection> {
   Widget build(BuildContext context) {
     return Obx(() {
       if (controller.inProgress) {
-        return const Center(
-          child: CircularProgressIndicator(color: Colors.white),
-        );
+        return PostShimmerEffectWidget();
       }
 
       if (controller.allPostData.isEmpty) {
@@ -164,7 +163,7 @@ class _MyPostSectionState extends State<MyPostSection> {
                   StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
                   ? post.author?.person?.title ?? 'Professional'
                   : post.author?.business?.name ?? 'Business',
-              postImage: post.images.isNotEmpty ? post.images.first : null ,
+              postImage: post.images.isNotEmpty ? post.images.first : null,
               postDescription: post.caption ?? '',
               postTime: formattedTime.getRelativeTimeFormat(),
               views: post.views?.toString() ?? '0',

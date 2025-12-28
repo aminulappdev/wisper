@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
+import 'package:wisper/app/core/widgets/shimmer/gallery_post_shimmer.dart';
 import 'package:wisper/app/modules/homepage/controller/feed_post_controller.dart';
 import 'package:wisper/app/modules/homepage/views/comment_screen.dart';
 import 'package:wisper/app/modules/homepage/widget/post_card.dart';
@@ -11,7 +12,7 @@ class PostSection extends StatefulWidget {
   const PostSection({super.key});
 
   @override
-  State<PostSection> createState() => _PostSectionState(); 
+  State<PostSection> createState() => _PostSectionState();
 }
 
 class _PostSectionState extends State<PostSection> {
@@ -34,9 +35,7 @@ class _PostSectionState extends State<PostSection> {
       child: Obx(() {
         // লোডিং স্টেট
         if (controller.inProgress) {
-          return const Center(
-            child: CircularProgressIndicator(color: Colors.white),
-          );
+          return const Center(child: PostShimmerEffectWidget());
         }
 
         // খালি লিস্ট
@@ -86,7 +85,7 @@ class _PostSectionState extends State<PostSection> {
                     StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
                     ? post.author?.person?.title ?? 'Professional'
                     : post.author?.business?.name ?? 'Business',
-                postImage: post.images.isNotEmpty ? post.images.first : null ,
+                postImage: post.images.isNotEmpty ? post.images.first : null,
                 postDescription: post.caption ?? '',
                 postTime: formattedTime,
                 views: post.views.toString(),

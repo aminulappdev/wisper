@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
+import 'package:wisper/app/core/widgets/shimmer/gallery_post_shimmer.dart';
 import 'package:wisper/app/modules/homepage/controller/others_post_controller.dart';
 import 'package:wisper/app/modules/homepage/widget/post_card.dart';
 
@@ -14,7 +15,7 @@ class OthersPostSection extends StatefulWidget {
 }
 
 class _OthersPostSectionState extends State<OthersPostSection> {
-  final OthersFeedPostController controller = Get.put( 
+  final OthersFeedPostController controller = Get.put(
     OthersFeedPostController(),
   );
 
@@ -22,7 +23,7 @@ class _OthersPostSectionState extends State<OthersPostSection> {
   void initState() {
     super.initState();
     print('User ID: ${widget.userId}');
-    WidgetsBinding.instance.addPostFrameCallback((_) { 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.resetPagination();
       print('User ID avobe callback: ${widget.userId}');
       controller.getAllPost(userId: widget.userId);
@@ -35,9 +36,7 @@ class _OthersPostSectionState extends State<OthersPostSection> {
       // Expanded Obx এর বাইরে → সমস্যা সমাধান!
       child: Obx(() {
         if (controller.inProgress) {
-          return const Center(
-            child: CircularProgressIndicator(color: Colors.white),
-          );
+          return PostShimmerEffectWidget();
         }
 
         if (controller.allPostData.isEmpty) {
@@ -58,7 +57,7 @@ class _OthersPostSectionState extends State<OthersPostSection> {
               post.createdAt!,
             ).getRelativeTimeFormat();
 
-            return Padding( 
+            return Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: PostCard(
                 isComment: true,

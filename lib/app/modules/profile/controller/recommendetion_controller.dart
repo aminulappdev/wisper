@@ -31,7 +31,7 @@ class AllRecommendationController extends GetxController {
 
             accessToken: StorageUtil.getData(StorageUtil.userAccessToken),
           );
-
+ 
       if (response.isSuccess && response.responseData != null) {
         _errorMessage.value = '';
 

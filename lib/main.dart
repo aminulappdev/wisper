@@ -13,12 +13,6 @@ import 'package:wisper/app/modules/onboarding/views/splash_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // try {
-  //   await dotenv.load(fileName: ".env");
-  // } catch (e) {
-  //   debugPrint("⚠️ Could not load .env file: $e");
-  // }
-
   final SocketService socketService = Get.put(SocketService());
   await socketService.init();
   await StorageUtil.init();
@@ -56,12 +50,16 @@ Future<void> main() async {
                   child: widget!,
                 );
               },
-
               home: StorageUtil.getData(StorageUtil.userAccessToken) != null
                   ? const MainButtonNavbarScreen()
                   : const SplashScreen(),
               locale: StorageUtil.getLocale(),
               translations: LocalizationService.getInstance(),
+
+              // 🔥 এখানে নতুন যোগ করা অংশ 🔥
+              defaultTransition: GetPlatform.isAndroid
+                  ? Transition.rightToLeft
+                  : Transition.cupertino,
             ),
           );
         },
@@ -69,14 +67,3 @@ Future<void> main() async {
     );
   });
 }
-
-
-/*
-
-fositak321@moondyal.com  
-Aminul@123
-
-monic60274@okcdeals.com
-Aminul@123
-
-*/

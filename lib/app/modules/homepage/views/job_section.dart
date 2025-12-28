@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
+import 'package:wisper/app/core/widgets/shimmer/gallery_post_shimmer.dart';
 import 'package:wisper/app/modules/homepage/controller/feed_job_controller.dart';
 import 'package:wisper/app/modules/homepage/widget/job_card.dart';
 
@@ -9,7 +10,7 @@ class JobSection extends StatefulWidget {
   const JobSection({super.key, this.searchQuery});
 
   @override
-  State<JobSection> createState() => _JobSectionState();
+  State<JobSection> createState() => _JobSectionState(); 
 }
 
 class _JobSectionState extends State<JobSection> {
@@ -30,10 +31,7 @@ class _JobSectionState extends State<JobSection> {
   Widget build(BuildContext context) {
     return Obx(() {
       if (controller.inProgress) {
-        return SizedBox(
-          height: 500,
-          child: const Center(child: CircularProgressIndicator()),
-        );
+        return const Center(child: PostShimmerEffectWidget());
       } else if (controller.allJobData.isEmpty) {
         return SizedBox(
           height: 500,

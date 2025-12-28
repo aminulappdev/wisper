@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
+import 'package:wisper/app/core/widgets/shimmer/gallery_post_shimmer.dart';
 import 'package:wisper/app/modules/homepage/controller/favorite_job_controller.dart';
 import 'package:wisper/app/modules/homepage/widget/job_card.dart';
 
@@ -33,10 +34,7 @@ class _FavoriteJobScreenState extends State<FavoriteJobScreen> {
         child: Container(
           child: Obx(() {
             if (favoriteController.inProgress) {
-              return SizedBox(
-                height: 500,
-                child: const Center(child: CircularProgressIndicator()),
-              );
+              return PostShimmerEffectWidget();
             } else if (favoriteController.favoriteJobData!.isEmpty) {
               return SizedBox(
                 height: 500,

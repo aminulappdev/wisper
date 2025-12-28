@@ -3,13 +3,16 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/services/network_caller/network_caller.dart';
 import 'package:wisper/app/core/services/network_caller/network_response.dart';
+
 import 'package:wisper/app/urls.dart';
 
 class SignInController extends GetxController {
+
+
   final RxBool _inProgress = false.obs;
   bool get inProgress => _inProgress.value;
 
-  final RxString _errorMessage = ''.obs;
+  final RxString _errorMessage = ''.obs; 
   String get errorMessage => _errorMessage.value;
 
   Future<bool> signIn({String? email, String? password}) async {
@@ -23,6 +26,7 @@ class SignInController extends GetxController {
       if (response.isSuccess && response.responseData != null) {
         _errorMessage.value = '';
 
+
         print('Response roken');
         print(response.responseData['data']['accessToken']);
 
@@ -30,7 +34,7 @@ class SignInController extends GetxController {
         Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
         print(decodedToken);
         var role = decodedToken['role'];
-        StorageUtil.saveData(StorageUtil.userRole, role); 
+        StorageUtil.saveData(StorageUtil.userRole, role);
 
         StorageUtil.saveData(
           StorageUtil.userAccessToken,

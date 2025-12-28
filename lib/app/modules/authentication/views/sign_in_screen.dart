@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/utils/validator_service.dart';
@@ -13,8 +14,9 @@ import 'package:wisper/app/core/widgets/label.dart';
 import 'package:wisper/app/modules/authentication/controller/sign_in_controller.dart';
 import 'package:wisper/app/modules/authentication/views/auth_screen.dart';
 import 'package:wisper/app/modules/authentication/views/forgot_password.dart';
-import 'package:wisper/app/modules/authentication/views/person/user_sign_up_screen.dart';
 import 'package:wisper/app/modules/dashboard/views/dashboard_screen.dart';
+import 'package:wisper/app/modules/profile/controller/buisness/buisness_controller.dart';
+import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -26,6 +28,9 @@ class SignInScreen extends StatefulWidget {
 
 class _SignInScreenState extends State<SignInScreen> {
   final SignInController signInController = Get.put(SignInController());
+  final ProfileController profileController = Get.put(ProfileController());
+  final BusinessController businessController = Get.put(BusinessController());
+
   final formKey = GlobalKey<FormState>();
   final emailController = TextEditingController(
     text: 'fositak321@moondyal.com',
@@ -45,7 +50,14 @@ class _SignInScreenState extends State<SignInScreen> {
     );
 
     if (isSuccess) {
-      Get.offAll(() => MainButtonNavbarScreen());
+      await profileController.getMyProfile();
+      await businessController.getMyProfile();
+      if (StorageUtil.getData(StorageUtil.userId) == null) {
+        await profileController.getMyProfile();
+        await businessController.getMyProfile();
+      } else {
+        Get.offAll(() => MainButtonNavbarScreen());
+      }
     } else {
       showSnackBarMessage(context, signInController.errorMessage, true);
     }

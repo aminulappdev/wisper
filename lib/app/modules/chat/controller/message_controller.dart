@@ -39,6 +39,8 @@ class MessageController extends GetxController {
     socketService.socket.off('newMessage');
     socketService.socket.on('newMessage', _handleIncomingMessage);
     socketService.socket.on('chatList', _updateData);
+    socketService.socket.on('typingStatus', _handleTypingStatus);
+
   }
 
   void _updateData(dynamic data) {
@@ -46,6 +48,11 @@ class MessageController extends GetxController {
     final AllChatsController _allChatsController =
         Get.find<AllChatsController>();
     _allChatsController.getAllChats();
+  }
+
+  void _handleTypingStatus(dynamic data) {
+    print('typingStatus called');
+    print(data);
   }
 
   void _handleIncomingMessage(dynamic data) {

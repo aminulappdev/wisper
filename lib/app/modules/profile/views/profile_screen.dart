@@ -60,7 +60,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     userRole = StorageUtil.getData(StorageUtil.userRole) ?? 'PERSON';
     _updateProfileImage();
     _getProfileImage();
-    print('User id in ProfileScreen: ${StorageUtil.getData(StorageUtil.userId)}');
+    print(
+      'User id in ProfileScreen: ${StorageUtil.getData(StorageUtil.userId)}',
+    );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       recommendationController.getAllRecommendations(

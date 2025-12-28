@@ -24,7 +24,7 @@ class InfoCard extends StatelessWidget {
     required this.title,
     required this.memberInfo,
     required this.child,
-    this.isTrailing = false,
+    this.isTrailing = true,
     this.trailingOnTap,
     this.trailingKey,
     this.showMember,
@@ -38,7 +38,9 @@ class InfoCard extends StatelessWidget {
     }
 
     // Local file path (from image picker)
-    if (path.startsWith('/') || path.contains('/storage/') || path.contains('/data/')) {
+    if (path.startsWith('/') ||
+        path.contains('/storage/') ||
+        path.contains('/data/')) {
       final file = File(path);
       if (file.existsSync()) {
         return FileImage(file);
@@ -84,7 +86,10 @@ class InfoCard extends StatelessWidget {
                       CircleAvatar(
                         radius: 40.r,
                         backgroundColor: Colors.grey.shade800,
-                        backgroundImage: _getImageProvider(imagePath, defaultAsset),
+                        backgroundImage: _getImageProvider(
+                          imagePath,
+                          defaultAsset,
+                        ),
                       ),
                       if (isEditImage == true)
                         Positioned(
@@ -127,13 +132,15 @@ class InfoCard extends StatelessWidget {
                 ],
               ),
               // Use the passed trailingKey and trailingOnTap
-              CircleIconWidget(
-                key: trailingKey, // ← Critical fix: use the parent's key
-                radius: 14,
-                iconRadius: 18,
-                imagePath: Assets.images.moreHor.keyName,
-                onTap: trailingOnTap ?? () {}, // Use passed callback
-              ),
+              isTrailing == true
+                  ? CircleIconWidget(
+                      key: trailingKey, // ← Critical fix: use the parent's key
+                      radius: 14,
+                      iconRadius: 18,
+                      imagePath: Assets.images.moreHor.keyName,
+                      onTap: trailingOnTap ?? () {}, // Use passed callback
+                    )
+                  : Container(),
             ],
           ),
         ),

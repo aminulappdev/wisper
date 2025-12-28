@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
+import 'package:wisper/app/core/widgets/shimmer/member_list_shimmer.dart';
 import 'package:wisper/app/modules/chat/controller/all_connection_controller.dart';
 import 'package:wisper/app/modules/chat/controller/update_connection_controller.dart';
 
@@ -16,7 +17,7 @@ class ConnectionScreen extends StatefulWidget {
   State<ConnectionScreen> createState() => _ConnectionScreenState();
 }
 
-class _ConnectionScreenState extends State<ConnectionScreen> {
+ class _ConnectionScreenState extends State<ConnectionScreen> {
   AllConnectionController allConnectionController =
       Get.find<AllConnectionController>();
   UpdateConnectionController updateConnectionController =
@@ -88,7 +89,7 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
             Expanded(
               child: Obx(() {
                 if (allConnectionController.inProgress) {
-                  return const Center(child: CircularProgressIndicator());
+                  return MemberShimmerEffectWidget();
                 }
 
                 if (allConnectionController.allConnectionData == null ||

@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
+import 'package:wisper/app/core/widgets/shimmer/member_list_shimmer.dart';
 import 'package:wisper/app/modules/chat/controller/create_chat_controller.dart'
     show CreateChatController;
 import 'package:wisper/app/modules/chat/views/person/message_screen.dart';
@@ -24,7 +25,7 @@ class _RoleSectionState extends State<RoleSection> {
   final AllRoleController allRoleController = Get.find<AllRoleController>();
   final AddRequestController addRequestController = Get.put(
     AddRequestController(),
-  ); 
+  );
   final CreateChatController createChatController = Get.put(
     CreateChatController(),
   );
@@ -73,7 +74,7 @@ class _RoleSectionState extends State<RoleSection> {
   Future<void> performCreateChat(
     BuildContext context,
     String? memberId,
-    String? memberName ,
+    String? memberName,
     String? memberImage,
   ) async {
     final bool isSuccess = await createChatController.createChat(
@@ -84,14 +85,14 @@ class _RoleSectionState extends State<RoleSection> {
       var chatId = createChatController.chatId;
       Get.to(
         ChatScreen(
-          chatId: chatId ,
+          chatId: chatId,
           receiverId: memberId ?? '',
           receiverImage: memberImage ?? '',
           receiverName: memberName ?? '',
         ),
       );
     } else {
-      showSnackBarMessage(context, addRequestController.errorMessage, true);
+      showSnackBarMessage(context, createChatController.errorMessage, true);
     }
   }
 
@@ -100,7 +101,7 @@ class _RoleSectionState extends State<RoleSection> {
     return Expanded(
       child: Obx(() {
         if (allRoleController.inProgress) {
-          return const Center(child: CircularProgressIndicator());
+          return MemberShimmerEffectWidget();
         } else if (allRoleController.allRoleData!.isEmpty) {
           return const Center(
             child: Text('No role found', style: TextStyle(fontSize: 12)),
@@ -119,7 +120,8 @@ class _RoleSectionState extends State<RoleSection> {
               var id =
                   data[index].id == StorageUtil.getData(StorageUtil.userId);
               return status == 'ACCEPTED' || status == 'PENDING'
-                  ? Container() : status == 'REJECTED' || status == 'REQUEST_RECEIVED'
+                  ? Container()
+                  : status == 'REJECTED' || status == 'REQUEST_RECEIVED'
                   ? Container()
                   : id == true
                   ? Container()

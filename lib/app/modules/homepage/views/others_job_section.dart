@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
+import 'package:wisper/app/core/widgets/shimmer/gallery_post_shimmer.dart';
 import 'package:wisper/app/modules/homepage/controller/others_job_post_controller.dart';
 import 'package:wisper/app/modules/homepage/widget/job_card.dart';
 
@@ -33,9 +34,7 @@ class _OthersJobSectionState extends State<OthersJobSection> {
       // Expanded Obx এর বাইরে → সমস্যা সমাধান!
       child: Obx(() {
         if (controller.inProgress) {
-          return const Center(
-            child: CircularProgressIndicator(color: Colors.white),
-          );
+          return PostShimmerEffectWidget();
         }
 
         if (controller.allJobData.isEmpty) {
