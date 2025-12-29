@@ -131,7 +131,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                     ? 'Reset Password'
                     : 'Verify Your Email Address',
                 subtitle:
-                    'Please enter the OTP sent to Contact@chowdeck.com to verify your account:',
+                    'Please enter the OTP sent to ${widget.email} to verify your account:',
               ),
               heightBox30,
               PinCodeTextField(

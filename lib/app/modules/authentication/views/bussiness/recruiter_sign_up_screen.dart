@@ -178,8 +178,8 @@ class _RecruiterSignUpScreenState extends State<RecruiterSignUpScreen> {
                     if (formKey.currentState!.validate()) {
                       Get.to(
                         JobInterestScreen(
-                          bussinessName: nameController.text,
-                          email: emailController.text,
+                          bussinessName: nameController.text.trim(),
+                          email: emailController.text.trim(),
                           password: passwordController.text,
                         ),
                       );

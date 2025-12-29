@@ -12,7 +12,7 @@ class SignUpController extends GetxController {
   String get errorMessage => _errorMessage.value;
 
   /// 🔁 Sign Up Function
-  Future<bool> signUp({
+  Future<bool> signUp({ 
     String? title,
     String? bussinessName,
     String? industry,

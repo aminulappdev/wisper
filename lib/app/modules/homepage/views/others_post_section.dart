@@ -4,6 +4,7 @@ import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
 import 'package:wisper/app/core/widgets/shimmer/gallery_post_shimmer.dart';
 import 'package:wisper/app/modules/homepage/controller/others_post_controller.dart';
+import 'package:wisper/app/modules/homepage/views/comment_screen.dart';
 import 'package:wisper/app/modules/homepage/widget/post_card.dart';
 
 class OthersPostSection extends StatefulWidget {
@@ -60,8 +61,10 @@ class _OthersPostSectionState extends State<OthersPostSection> {
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: PostCard(
-                isComment: true,
-                onTapComment: () {},
+                isComment: false,
+                onTapComment: () {
+                   Get.to(CommentScreen(postId: post.id ?? ''));
+                },
                 ownerId: post.author?.id ?? '',
                 trailing: const Text(
                   'Sponsor',

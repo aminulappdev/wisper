@@ -59,7 +59,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
     _getProfileImage();
     groupInfoController.getGroupInfo(widget.groupId);
     groupMembersController.getGroupMembers(widget.groupId);
-    allConnectionController.getAllConnection('ACCEPTED');
+    allConnectionController.getAllConnection('ACCEPTED', '');
     super.initState();
   }
 
@@ -87,7 +87,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
       final AllConnectionController allConnectionController = Get.put(
         AllConnectionController(),
       );
-      await allConnectionController.getAllConnection('ACCEPTED');
+      await allConnectionController.getAllConnection('ACCEPTED', '');
       setState(() {});
       showSnackBarMessage(context, 'Added successfully', false);
     } else {

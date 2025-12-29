@@ -76,7 +76,7 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
     String? memberImage,
   ) async {
     final bool isSuccess = await createChatController.createChat(
-      memberId: memberId,
+      memberId: widget.userId,
     );
 
     if (isSuccess) {
@@ -119,13 +119,7 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
                     children: [
                       CircleIconWidget(
                         imagePath: Assets.images.call.keyName,
-                        onTap: () {
-                          createChat(
-                            controller.profileData?.auth?.person?.id ?? '',
-                            controller.profileData?.auth?.person?.name ?? '',
-                            controller.profileData?.auth?.person?.image ?? '',
-                          );
-                        },
+                        onTap: () {},
                         radius: 15,
                         color: LightThemeColors.blueColor,
                         iconColor: Colors.white,
@@ -133,7 +127,14 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
                       SizedBox(width: 10.w),
                       CircleIconWidget(
                         imagePath: Assets.images.unselectedChat.keyName,
-                        onTap: () {},
+                        onTap: () {
+                          print('call');
+                          createChat(
+                            controller.profileData?.auth?.person?.id ?? '',
+                            controller.profileData?.auth?.person?.name ?? '',
+                            controller.profileData?.auth?.person?.image ?? '',
+                          );
+                        },
                         radius: 15,
                         color: LightThemeColors.blueColor,
                         iconColor: Colors.white,

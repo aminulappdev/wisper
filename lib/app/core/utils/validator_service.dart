@@ -61,13 +61,26 @@ class ValidatorService {
       return 'Password is required';
     }
 
-    if (password.length < 3) {
-      return 'Password must be at least 3 characters long';
+    if (password.length < 7) {
+      return 'Password must be at least 7 characters long';
     }
 
-    // You can add additional password validation rules here if needed
+    // At least 1 uppercase letter
+    if (!RegExp(r'[A-Z]').hasMatch(password)) {
+      return 'Password must contain at least 1 capital letter';
+    }
 
-    // Validation passed, return null (no error)
+    // At least 1 number
+    if (!RegExp(r'[0-9]').hasMatch(password)) {
+      return 'Password must contain at least 1 number';
+    }
+
+    // At least 1 special character
+    if (!RegExp(r'[!@#\$%^&*(),.?":{}|<>]').hasMatch(password)) {
+      return 'Password must contain at least 1 special character';
+    }
+
+    // All validations passed
     return null;
   }
 

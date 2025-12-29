@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:crash_safe_image/crash_safe_image.dart';
 import 'package:flutter/material.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
-
+ 
 class CircleIconWidget extends StatelessWidget {
   final String imagePath;
   final double radius; 

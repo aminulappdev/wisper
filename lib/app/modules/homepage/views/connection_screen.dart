@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
@@ -17,7 +18,7 @@ class ConnectionScreen extends StatefulWidget {
   State<ConnectionScreen> createState() => _ConnectionScreenState();
 }
 
- class _ConnectionScreenState extends State<ConnectionScreen> {
+class _ConnectionScreenState extends State<ConnectionScreen> {
   AllConnectionController allConnectionController =
       Get.find<AllConnectionController>();
   UpdateConnectionController updateConnectionController =
@@ -28,7 +29,10 @@ class ConnectionScreen extends StatefulWidget {
 
   @override
   void initState() {
-    allConnectionController.getAllConnection('PENDING');
+    allConnectionController.getAllConnection(
+      'PENDING',
+      StorageUtil.getData(StorageUtil.userId),
+    );
     super.initState();
   }
 
@@ -57,7 +61,10 @@ class ConnectionScreen extends StatefulWidget {
       final AllConnectionController allConnectionController =
           Get.find<AllConnectionController>();
 
-      await allConnectionController.getAllConnection('PENDING');
+      await allConnectionController.getAllConnection(
+        'PENDING',
+        StorageUtil.getData(StorageUtil.userId),
+      );
     } else {
       showSnackBarMessage(
         context,
@@ -94,7 +101,7 @@ class ConnectionScreen extends StatefulWidget {
 
                 if (allConnectionController.allConnectionData == null ||
                     allConnectionController.allConnectionData!.isEmpty) {
-                  return const Center(child: Text('No comment found'));
+                  return const Center(child: Text('No Connection found'));
                 }
 
                 return ListView.builder(
@@ -103,73 +110,76 @@ class ConnectionScreen extends StatefulWidget {
                   itemBuilder: (context, index) {
                     final data =
                         allConnectionController.allConnectionData![index];
-                    return SizedBox(
-                      height: 70.h,
-                      child: ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        trailing: SizedBox(
-                          width: 140.w,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: SizedBox(
-                                  height: 30.h,
-                                  child: CustomElevatedButton(
-                                    title: 'Accept',
-                                    textSize: 10.sp,
-                                    onPress: () {
-                                      changeStatus(
-                                        data.id ?? '',
-                                        'ACCEPTED',
-                                      );
-                                    },
-                                  ),
+                    var status = data.status;
+                    return status != 'PENDING'
+                        ? Container()
+                        : SizedBox(
+                            height: 70.h,
+                            child: ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              trailing: SizedBox(
+                                width: 140.w,
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: SizedBox(
+                                        height: 30.h,
+                                        child: CustomElevatedButton(
+                                          title: 'Accept',
+                                          textSize: 10.sp,
+                                          onPress: () {
+                                            changeStatus(
+                                              data.id ?? '',
+                                              'ACCEPTED',
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: 8.w),
+                                    Expanded(
+                                      child: SizedBox(
+                                        height: 30.h,
+                                        child: CustomElevatedButton(
+                                          title: 'Reject',
+                                          textSize: 10.sp,
+                                          color: Colors.red,
+                                          onPress: () {
+                                            changeStatus(
+                                              data.id ?? '',
+                                              'REJECTED',
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              SizedBox(width: 8.w),
-                              Expanded(
-                                child: SizedBox(
-                                  height: 30.h,
-                                  child: CustomElevatedButton(
-                                    title: 'Reject',
-                                    textSize: 10.sp,
-                                    color: Colors.red,
-                                    onPress: () {
-                                      changeStatus(
-                                        data.id ?? '',
-                                        'REJECTED',
-                                      );
-                                    },
-                                  ),
+                              leading: CircleAvatar(
+                                backgroundImage: NetworkImage(
+                                  data.partner?.person?.image ?? '',
+                                ),
+                                radius: 20.r,
+                              ),
+                              title: Text(
+                                data.partner?.person?.name ?? '',
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                        leading: CircleAvatar(
-                          backgroundImage: NetworkImage(
-                            data.partner?.person?.image ?? '',
-                          ),
-                          radius: 20.r,
-                        ),
-                        title: Text(
-                          data.partner?.person?.name ?? '',
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                        subtitle: Text(
-                          data.partner?.person?.title ?? '',
+                              subtitle: Text(
+                                data.partner?.person?.title ?? '',
 
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    );
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          );
                   },
                 );
               }),

@@ -9,8 +9,8 @@ import 'package:wisper/app/core/widgets/custom_text_filed.dart';
 import 'package:wisper/app/modules/authentication/controller/sign_up_controller.dart';
 import 'package:wisper/app/modules/authentication/views/otp_verification_screen.dart';
 
-// Global variable to store selected interests
-List<String> selectedInterests = [];
+// Single selected interest only
+String? selectedInterest;
 
 class JobInterestScreen extends StatefulWidget {
   final String? firstName;
@@ -37,6 +37,7 @@ class JobInterestScreen extends StatefulWidget {
 
 class _JobInterestScreenState extends State<JobInterestScreen> {
   final SignUpController signUpController = Get.put(SignUpController());
+
   final List<String> jobInterests = [
     'AgriTech',
     'Agriculture and Agribusiness',
@@ -73,7 +74,7 @@ class _JobInterestScreenState extends State<JobInterestScreen> {
       password: widget.password,
       confirmPassword: widget.password,
       title: widget.title,
-      industry: selectedInterests.join(','),
+      industry: selectedInterest ?? '', // single string
     );
 
     if (isSuccess) {
@@ -94,7 +95,7 @@ class _JobInterestScreenState extends State<JobInterestScreen> {
       password: widget.password,
       confirmPassword: widget.password,
       title: widget.title,
-      industry: selectedInterests.join(','),
+      industry: selectedInterest ?? '',
     );
 
     if (isSuccess) {
@@ -103,6 +104,12 @@ class _JobInterestScreenState extends State<JobInterestScreen> {
     } else {
       showSnackBarMessage(context, signUpController.errorMessage, true);
     }
+  }
+  
+  @override
+  dispose() {
+    selectedInterest = null;
+    super.dispose();
   }
 
   @override
@@ -133,18 +140,15 @@ class _JobInterestScreenState extends State<JobInterestScreen> {
                   ),
                 ),
               ),
-              // SizedBox(height: 24.h),
               Text(
-                'Which positions are you interested in?',
+                'Which position are you interested in?', // changed question slightly for single
                 style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w800),
               ),
               heightBox12,
               CustomTextField(
                 controller: TextEditingController(),
                 hintText: 'Search job title',
-                validator: (value) {
-                  return null;
-                },
+                validator: (value) => null,
               ),
               heightBox12,
               Expanded(
@@ -153,10 +157,10 @@ class _JobInterestScreenState extends State<JobInterestScreen> {
                   itemBuilder: (context, index) => GestureDetector(
                     onTap: () {
                       setState(() {
-                        if (selectedInterests.contains(jobInterests[index])) {
-                          selectedInterests.remove(jobInterests[index]);
+                        if (selectedInterest == jobInterests[index]) {
+                          selectedInterest = null; // deselect if tapped again
                         } else {
-                          selectedInterests.add(jobInterests[index]);
+                          selectedInterest = jobInterests[index]; // select this one only
                         }
                       });
                     },
@@ -166,8 +170,8 @@ class _JobInterestScreenState extends State<JobInterestScreen> {
                         jobInterests[index],
                         style: TextStyle(
                           fontSize: 14.sp,
-                          color: selectedInterests.contains(jobInterests[index])
-                              ? Colors.blue
+                          color: selectedInterest == jobInterests[index]
+                              ? Colors.blue // or LightThemeColors.blueColor
                               : Colors.white,
                         ),
                       ),

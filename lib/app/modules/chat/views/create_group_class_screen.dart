@@ -30,7 +30,7 @@ class _CreateGroupClassScreenState extends State<CreateGroupClassScreen> {
   @override
   void initState() {
     super.initState();
-    allConnectionController.getAllConnection('ACCEPTED');
+    allConnectionController.getAllConnection('ACCEPTED', '');
 
     // Listen to search input changes
     _searchController.addListener(() {

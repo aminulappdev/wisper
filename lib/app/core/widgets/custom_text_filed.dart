@@ -4,16 +4,16 @@ import 'package:flutter/material.dart';
 class CustomTextField extends StatefulWidget {
   const CustomTextField({
     super.key,
-    this.controller, 
+    this.controller,
     this.initialValue,
     this.focusNode,
-    this.decoration, 
+    this.decoration,
     this.keyboardType,
     this.style = const TextStyle(color: Color(0xff8C8C8C)),
     this.textDirection,
     this.maxLines = 1,
     this.minLines,
-    this.expands = false, 
+    this.expands = false,
     this.maxLength,
     this.onChanged,
     this.onTap,
@@ -29,7 +29,10 @@ class CustomTextField extends StatefulWidget {
     ),
     this.hintText,
     this.enabled = true,
-    this.contentPadding = const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+    this.contentPadding = const EdgeInsets.symmetric(
+      horizontal: 10,
+      vertical: 8,
+    ),
     this.borderColor = const Color(0xff3A3A3A),
     this.focusedBorderColor = const Color(0xff3A3A3A),
     this.errorBorderColor = Colors.red,
@@ -39,8 +42,9 @@ class CustomTextField extends StatefulWidget {
     this.pprefixIconColor,
     this.items,
     this.value,
+    this.autovalidateMode = AutovalidateMode.onUserInteraction,
   });
-
+  final AutovalidateMode? autovalidateMode;
   final TextEditingController? controller;
   final String? initialValue;
   final FocusNode? focusNode;
@@ -104,14 +108,19 @@ class _CustomTextFieldState extends State<CustomTextField> {
     return InputDecoration(
       suffixIcon: widget.suffixIcon != null
           ? (widget.obscureText
-              ? IconButton(
-                  icon: Icon(_obscureText ? widget.suffixIcon : Icons.visibility_off),
-                  onPressed: _toggleVisibility,
-                )
-              : Icon(widget.suffixIcon, color: const Color(0xff8C8C8C)))
+                ? IconButton(
+                    icon: Icon(
+                      _obscureText ? widget.suffixIcon : Icons.visibility_off,
+                    ),
+                    onPressed: _toggleVisibility,
+                  )
+                : Icon(widget.suffixIcon, color: const Color(0xff8C8C8C)))
           : (widget.items != null
-              ? const Icon(Icons.keyboard_arrow_down, color: Color(0xff8C8C8C))
-              : null),
+                ? const Icon(
+                    Icons.keyboard_arrow_down,
+                    color: Color(0xff8C8C8C),
+                  )
+                : null),
       prefixIcon: widget.prefixIcon != null ? Icon(widget.prefixIcon) : null,
       prefixIconColor: widget.pprefixIconColor ?? Colors.white,
       hintText: widget.hintText,
@@ -119,10 +128,23 @@ class _CustomTextFieldState extends State<CustomTextField> {
       filled: true,
       fillColor: widget.fillColor,
       contentPadding: widget.contentPadding,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(widget.borderRadius), borderSide: BorderSide(color: widget.borderColor)),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(widget.borderRadius), borderSide: BorderSide(color: widget.borderColor)),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(widget.borderRadius), borderSide: BorderSide(color: widget.focusedBorderColor, width: 2)),
-      errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(widget.borderRadius), borderSide: const BorderSide(color: Colors.red)),
+
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(widget.borderRadius),
+        borderSide: BorderSide(color: widget.borderColor),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(widget.borderRadius),
+        borderSide: BorderSide(color: widget.borderColor),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(widget.borderRadius),
+        borderSide: BorderSide(color: widget.focusedBorderColor, width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(widget.borderRadius),
+        borderSide: const BorderSide(color: Colors.red),
+      ),
     );
   }
 
@@ -149,6 +171,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
     // Normal TextField
     return TextFormField(
+      autovalidateMode: widget.autovalidateMode,
       controller: widget.controller,
       initialValue: widget.initialValue,
       focusNode: widget.focusNode,

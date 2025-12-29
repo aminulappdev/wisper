@@ -58,7 +58,7 @@ class _ClassInfoScreenState extends State<ClassInfoScreen> {
     _getProfileImage();
     classInfoController.getClassInfo(widget.classId);
     classMembersController.getClassMembers(widget.classId);
-    allConnectionController.getAllConnection('ACCEPTED');
+    allConnectionController.getAllConnection('ACCEPTED', '');
     super.initState();
   }
 
@@ -86,7 +86,7 @@ class _ClassInfoScreenState extends State<ClassInfoScreen> {
       final AllConnectionController allConnectionController = Get.put(
         AllConnectionController(),
       );
-      await allConnectionController.getAllConnection('ACCEPTED');
+      await allConnectionController.getAllConnection('ACCEPTED', '');
       setState(() {});
       showSnackBarMessage(context, 'Added successfully', false);
     } else {

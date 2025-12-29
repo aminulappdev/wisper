@@ -33,7 +33,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      allConnectionController.getAllConnection('ACCEPTED');
+      allConnectionController.getAllConnection('ACCEPTED', '');
     });
 
     // রিয়েল-টাইম সার্চ লিসেনার

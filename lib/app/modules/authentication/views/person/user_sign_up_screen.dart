@@ -15,8 +15,7 @@ import 'package:wisper/app/modules/authentication/views/person/password_section.
 import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
-class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+class SignUpScreen extends StatefulWidget { 
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -101,12 +100,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (_formKey.currentState!.validate()) {
       Get.to(
         () => JobInterestScreen(
-          firstName: _firstNameController.text,
-          lastName: _lastNameController.text,
-          email: _emailController.text,
-          phone: _phoneController.text,
+          firstName: _firstNameController.text.trim(),
+          lastName: _lastNameController.text.trim(),
+          email: _emailController.text.trim(),
+          phone: _phoneController.text.trim(),
           password: _passwordController.text,
-          title: _titleController.text,
+          title: _titleController.text.trim(),
         ),
       );
     }

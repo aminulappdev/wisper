@@ -25,10 +25,10 @@ class AllConnectionController extends GetxController {
   //   getMyProfile();
   // }
 
-  Future<bool> getAllConnection(String? status) async {
+  Future<bool> getAllConnection(String? status, String? recieverId) async {
     _inProgress.value = true;
 
-    Map<String, dynamic> params = {"status": status};
+    Map<String, dynamic> params = {"status": status, "receiverId": recieverId};
     try {
       final NetworkResponse response = await Get.find<NetworkCaller>()
           .getRequest(
