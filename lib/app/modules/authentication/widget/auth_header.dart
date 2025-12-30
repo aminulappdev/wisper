@@ -8,30 +8,20 @@ import 'package:wisper/gen/assets.gen.dart';
 
 class AuthHeader extends StatelessWidget {
   final String title;
-  bool? isBack;
   String? subtitle;
-  AuthHeader({
-    super.key,
-    required this.title,
-    this.subtitle,
-    this.isBack = true,
-  });
+  AuthHeader({super.key, required this.title, this.subtitle});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        isBack! == false
-            ? heightBox4
-            : CircleIconWidget(
-                iconRadius: 18,
-                imagePath: Assets.images.arrowBack.keyName,
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-        isBack! == false ? heightBox4 : heightBox12,
+        CircleIconWidget(
+          iconRadius: 18,
+          imagePath: Assets.images.arrowBack.keyName,
+          onTap: () {},
+        ),
+        heightBox12,
         Text(
           title,
           style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w800),
