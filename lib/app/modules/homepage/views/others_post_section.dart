@@ -60,7 +60,9 @@ class _OthersPostSectionState extends State<OthersPostSection> {
 
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
+              
               child: PostCard(
+                isPerson: post.author?.person != null,
                 isComment: false,
                 onTapComment: () {
                    Get.to(CommentScreen(postId: post.id ?? ''));

@@ -13,7 +13,7 @@ class StorageUtil {
   /// KEYS
   static const String userAccessToken = 'user-access-token';
   static const String userId = 'user-id';
-  static const String userAuthId = 'user-auth-id';
+  static const String userAuthId = 'user-auth-id'; 
   static const String userRole = 'user-role';
   static const String otpToken = 'otp-token';
   static const String _fcmTokenKey = 'fcm_token';

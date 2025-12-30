@@ -36,7 +36,7 @@ class _JobSectionState extends State<JobSection> {
         return SizedBox(
           height: 500,
           child: const Center(
-            child: Text('No job found', style: TextStyle(fontSize: 12)),
+            child: Text('Not available', style: TextStyle(fontSize: 12)),
           ),
         );
       } else {

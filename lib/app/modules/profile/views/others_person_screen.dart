@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
+import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
@@ -162,7 +163,8 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
             Obx(() {
               if (recommendationController.inProgress) {
                 return SizedBox(height: 30, child: const Center());
-              } else if (recommendationController.recommendationData!.isEmpty) {
+              } else if (recommendationController.recommendationData?.isEmpty ??
+                  true) {
                 return Recommendation(
                   onTap: () {
                     _showCreateGroup(
@@ -175,7 +177,7 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
                 return Recommendation(
                   onTap: () {
                     _showCreateGroup(
-                      recommendationController.recommendationData!,
+                      recommendationController.recommendationData ?? [],
                     );
                   },
                   count:

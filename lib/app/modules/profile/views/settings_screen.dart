@@ -89,13 +89,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     heightBox20,
                     StraightLiner(height: 0.5),
-                    heightBox10,
-                    SettingsFeatureRow(
-                      title: 'Favorites',
-                      onTap: () {
-                        Get.to(() => const FavoriteJobScreen());
-                      },
-                    ),
+                    StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
+                        ? heightBox10
+                        : const SizedBox.shrink(),
+                    StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
+                        ? SettingsFeatureRow(
+                            title: 'Favorites',
+                            onTap: () {
+                              Get.to(() => const FavoriteJobScreen());
+                            },
+                          )
+                        : const SizedBox.shrink(),
                     heightBox20,
                     StraightLiner(height: 0.5),
                     heightBox10,
@@ -123,7 +127,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         fontWeight: FontWeight.w400,
                         color: Color(0xff999999),
                       ),
-                    ), 
+                    ),
                     heightBox20,
                     ToggleOption(
                       isToggled: false,

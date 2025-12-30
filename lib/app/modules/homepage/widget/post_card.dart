@@ -5,12 +5,14 @@ import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/widgets/image_container_widget.dart';
+import 'package:wisper/app/modules/profile/views/others_business_screen.dart';
 import 'package:wisper/app/modules/profile/views/others_person_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class PostCard extends StatelessWidget {
   final Widget trailing;
-  final String? ownerId;
+  final String? ownerId; 
+  final bool? isPerson;
   final String? ownerName;
   final String? ownerImage;
   final String? ownerProfession;
@@ -33,6 +35,7 @@ class PostCard extends StatelessWidget {
     this.ownerId,
     this.isComment = false,
     required this.onTapComment,
+    this.isPerson = true,
   });
 
   @override
@@ -43,7 +46,9 @@ class PostCard extends StatelessWidget {
       children: [
         GestureDetector(
           onTap: () {
-            Get.to(() => OthersPersonScreen(userId: ownerId ?? ''));
+            isPerson == true
+                ? Get.to(() => OthersPersonScreen(userId: ownerId ?? ''))
+                : Get.to(() => OthersBusinessScreen(userId: ownerId ?? ''));
           },
           child: CircleAvatar(
             backgroundColor: Colors.grey.shade800,
@@ -121,27 +126,25 @@ class PostCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CrashSafeImage(
-                        Assets.images.visibility.keyName,
-                        height: 12,
-                      ),
-                      widthBox4,
-                      Text(
-                        '$views views',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 10,
-                          color: LightThemeColors.themeGreyColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  isComment ?? true
-                      ? const SizedBox()
-                      : GestureDetector(
+                  // Row(
+                  //   crossAxisAlignment: CrossAxisAlignment.start,
+                  //   children: [
+                  //     CrashSafeImage(
+                  //       Assets.images.visibility.keyName,
+                  //       height: 12,
+                  //     ),
+                  //     widthBox4,
+                  //     Text(
+                  //       '$views views',
+                  //       style: TextStyle(
+                  //         fontWeight: FontWeight.w400,
+                  //         fontSize: 10,
+                  //         color: LightThemeColors.themeGreyColor,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                  GestureDetector(
                           onTap: onTapComment,
                           child: Text(
                             'Comments',

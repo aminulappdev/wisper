@@ -17,7 +17,7 @@ class AllRecommendationController extends GetxController {
       Rx<RecommendationModel?>(null);
  
   List<RecommendationItemModel>? get recommendationData => 
-      _recommendationModel.value!.data;
+      _recommendationModel.value?.data;
 
   Future<bool> getAllRecommendations(String? id) async {
     _inProgress.value = true;

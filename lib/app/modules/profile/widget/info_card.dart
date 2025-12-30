@@ -107,23 +107,33 @@ class InfoCard extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 20.h),
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                  SizedBox(
+                    width: 200.w,
+                    child: Center(
+                      child: Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                   SizedBox(height: 8.h),
                   GestureDetector(
                     onTap: showMember ?? () {},
-                    child: Text(
-                      memberInfo,
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w400,
-                        color: LightThemeColors.themeGreyColor,
+                    child: SizedBox(
+                      width: 200.w,
+                      child: Center(
+                        child: Text(
+                          memberInfo,
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w400,
+                            color: LightThemeColors.themeGreyColor,
+                          ),
+                        ),
                       ),
                     ),
                   ),

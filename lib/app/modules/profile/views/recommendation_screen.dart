@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/get_storage.dart';
+import 'package:wisper/app/core/utils/date_formatter.dart';
 import 'package:wisper/app/modules/profile/model/recommendation_model.dart';
 import 'package:wisper/app/modules/profile/views/create_review.dart';
 import 'package:wisper/app/modules/profile/widget/reviewCard.dart';
-import 'package:wisper/gen/assets.gen.dart';
 
 class RcommendationButtomSheet extends StatefulWidget {
   final String? recieverId;
@@ -53,9 +54,16 @@ class _RcommendationButtomSheetState extends State<RcommendationButtomSheet> {
                   shrinkWrap: true,
                   physics: const AlwaysScrollableScrollPhysics(),
                   itemCount: widget.recommendationItemModel.length,
+
                   itemBuilder: (context, index) {
                     return ReviewCard(
-                      image: Assets.images.image.keyName,
+                      image:
+                          widget
+                              .recommendationItemModel[index]
+                              .giver!
+                              .person!
+                              .image ??
+                          '',
                       name:
                           widget
                               .recommendationItemModel[index]
@@ -66,13 +74,13 @@ class _RcommendationButtomSheetState extends State<RcommendationButtomSheet> {
                       review: widget.recommendationItemModel[index].text ?? '',
                       rating: widget.recommendationItemModel[index].rating
                           .toString(),
-                      date: '1 min ago',
                     );
                   },
                 ),
               ),
               heightBox10,
-              widget.isCreateReview == false
+              widget.isCreateReview == false ||
+                      StorageUtil.getData(StorageUtil.userRole) != 'PERSON'
                   ? Container()
                   : Center(
                       child: GestureDetector(

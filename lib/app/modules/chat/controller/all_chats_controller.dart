@@ -11,7 +11,7 @@ import 'package:wisper/app/modules/chat/model/all_chats_model.dart';
 import 'package:wisper/app/urls.dart';
 
 class AllChatsController extends GetxController {
-  final SocketService socketService = Get.find<SocketService>();
+  final SocketService socketService = Get.find<SocketService>(); 
 
   final RxBool inProgress = false.obs;
   final RxString errorMessage = ''.obs;

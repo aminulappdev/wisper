@@ -28,6 +28,7 @@ class _JobPostScreenState extends State<JobPostScreen> {
       TextEditingController(); // নতুন: Location এর জন্য টেক্সট কন্ট্রোলার
   final _reqC = TextEditingController();
   final _resC = TextEditingController();
+  final _linkC = TextEditingController();
 
   // Selected values (enum strings)
   String? type = 'FULL_TIME';
@@ -36,6 +37,7 @@ class _JobPostScreenState extends State<JobPostScreen> {
   String? qualification = 'BSC';
   String? applicationType = 'CHAT';
   String? industry = 'Web Development';
+  String? locationType = 'ON_SITE';
 
   List<String> requirements = [];
   List<String> responsibilities = [];
@@ -67,6 +69,7 @@ class _JobPostScreenState extends State<JobPostScreen> {
 
   Future<void> performCreateJob(BuildContext context) async {
     final bool isSuccess = await createJobController.createJob(
+      applicationLink: _linkC.text.trim(),
       title: _titleC.text.trim(),
       description: _descC.text.trim(),
       type: type!,
@@ -78,6 +81,7 @@ class _JobPostScreenState extends State<JobPostScreen> {
           : _locationC.text.trim(), // টেক্সট থেকে নেয়া হবে
       qualification: qualification!,
       industry: industry!,
+      locationType: locationType!,
       requirements: requirements,
       responsibilities: responsibilities,
       applicationType: applicationType!,
@@ -107,6 +111,7 @@ class _JobPostScreenState extends State<JobPostScreen> {
     _locationC.dispose(); // ডিসপোজ করা হলো
     _reqC.dispose();
     _resC.dispose();
+    _linkC.dispose();
     super.dispose();
   }
 
@@ -252,6 +257,20 @@ class _JobPostScreenState extends State<JobPostScreen> {
               ),
               heightBox16,
 
+              // 8. Industry
+              const Label(label: 'Location Type'), heightBox6,
+              CustomTextField(
+                hintText: 'Select type',
+                value: locationType,
+                onChanged: (v) => setState(() => locationType = v),
+                items: const [
+                  DropdownMenuItem(value: 'ON_SITE', child: Text('On-site')),
+                  DropdownMenuItem(value: 'HYBRID', child: Text('Hybrid')),
+                  DropdownMenuItem(value: 'REMOTE', child: Text('Remote')),
+                ],
+              ),
+              heightBox16,
+
               // 7. Location → এখন টেক্সট ফিল্ড (ড্রপডাউন নয়)
               const Label(label: 'Location'), heightBox6,
               CustomTextField(
@@ -305,8 +324,6 @@ class _JobPostScreenState extends State<JobPostScreen> {
                     value: 'BSC',
                     child: Text("Bachelor's Degree (BSc)"),
                   ),
-                  DropdownMenuItem(value: 'HND', child: Text('HND')),
-                  DropdownMenuItem(value: 'OND', child: Text('OND')),
                   DropdownMenuItem(value: 'PHD', child: Text('PhD')),
                 ],
               ),
@@ -329,6 +346,14 @@ class _JobPostScreenState extends State<JobPostScreen> {
                     child: Text('External Link'),
                   ),
                 ],
+              ),
+              heightBox16,
+
+              // 7. Location → এখন টেক্সট ফিল্ড (ড্রপডাউন নয়)
+              const Label(label: 'External Link (URL)'), heightBox6,
+              CustomTextField(
+                controller: _linkC,
+                hintText: 'https://example.com',
               ),
               heightBox20,
 

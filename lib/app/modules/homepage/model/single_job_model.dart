@@ -28,6 +28,7 @@ class JobData {
     required this.experienceLevel,
     required this.compensationType,
     required this.salary,
+    required this.locationType,
     required this.location,
     required this.industry,
     required this.qualification,
@@ -49,7 +50,8 @@ class JobData {
   final String? experienceLevel;
   final String? compensationType;
   final int? salary;
-  final String? location;
+  final String? locationType;
+  final dynamic location;
   final String? industry;
   final String? qualification;
   final List<String> requirements;
@@ -71,6 +73,7 @@ class JobData {
       experienceLevel: json["experienceLevel"],
       compensationType: json["compensationType"],
       salary: json["salary"],
+      locationType: json["locationType"],
       location: json["location"],
       industry: json["industry"],
       qualification: json["qualification"],

@@ -9,7 +9,7 @@ class PaymentView extends StatefulWidget {
   static const String routeName = '/payment-webview-screen';
 
   const PaymentView({super.key, required this.paymentData});
-
+ 
   @override
   State<PaymentView> createState() => _PaymentViewState();
 }
@@ -62,7 +62,7 @@ class _PaymentViewState extends State<PaymentView> {
             Navigator.pop(context);
           },
         ),
-        title: Text('Payment'),
+        title: Text(widget.paymentData['title'] ?? '', style: const TextStyle(color: Colors.black)),
         centerTitle: true,
       ),
       body: WebViewWidget(controller: _controller),

@@ -7,11 +7,12 @@ import 'package:wisper/app/urls.dart';
 class CreateJobController extends GetxController {
   final RxBool _inProgress = false.obs;
   bool get inProgress => _inProgress.value;
- 
+
   final RxString _errorMessage = ''.obs;
   String get errorMessage => _errorMessage.value;
 
   Future<bool> createJob({
+    String? locationType,
     String? title,
     String? description,
     String? type, // FULL_TIME, PART_TIME, CONTRACT
@@ -36,20 +37,21 @@ class CreateJobController extends GetxController {
         "experienceLevel": experienceLevel,
         "compensationType": compensationType,
         "salary": salary,
-        "location": 'ON_SITE',
+        'locationType': locationType,
+        "location": location,
         "industry": industry,
         "qualification": qualification,
         "requirements": requirements,
         "responsibilities": responsibilities,
         "applicationType": applicationType,
+        "applicationLink": applicationLink,
       };
-      final NetworkResponse
-      response = await Get.find<NetworkCaller>().postRequest(
-        Urls.feedJobUrl,
-        body: body,
-        accessToken:
-            StorageUtil.getData(StorageUtil.userAccessToken),
-      );
+      final NetworkResponse response = await Get.find<NetworkCaller>()
+          .postRequest(
+            Urls.feedJobUrl,
+            body: body,
+            accessToken: StorageUtil.getData(StorageUtil.userAccessToken),
+          );
 
       if (response.isSuccess && response.responseData != null) {
         _errorMessage.value = '';

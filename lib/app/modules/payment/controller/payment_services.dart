@@ -22,6 +22,7 @@ class PaymentService {
     );
 
     Map<String, dynamic> paymentData = {
+      'title': 'Payment',
       'link': paymentController.paymentData!.data?.url ?? '',
       'reference': '',
     };

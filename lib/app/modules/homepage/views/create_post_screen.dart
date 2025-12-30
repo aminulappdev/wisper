@@ -46,7 +46,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               },
               imagePath: Assets.images.gallery02.keyName,
               color: Color(0xffD0DFFF),
-              title: "Gallery",
+              title: "Media",
               subtitle: "Share photos, videos, thoughts, or updates",
             ),
             StorageUtil.getData(StorageUtil.userRole) != "PERSON"
@@ -56,7 +56,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 ? PostOptionCard(
                     onTap: () {
                       Get.to(JobPostScreen());
-                    }, 
+                    },
                     imagePath: Assets.images.file.keyName,
                     color: Color(0xffDBFFE8),
                     title: "Job",
@@ -65,15 +65,18 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   )
                 : const SizedBox(),
             heightBox12,
-            PostOptionCard(
-              onTap: () {
-                Get.to(ResumePostScreen());
-              },
-              imagePath: Assets.images.file.keyName,
-              color: Color(0xffDBFFE8),
-              title: "Resume",
-              subtitle: "Share your work experience, skills, or achievements",
-            ),
+            StorageUtil.getData(StorageUtil.userRole) == "PERSON"
+                ? PostOptionCard(
+                    onTap: () {
+                      Get.to(ResumePostScreen());
+                    },
+                    imagePath: Assets.images.file.keyName,
+                    color: Color(0xffDBFFE8),
+                    title: "Resume",
+                    subtitle:
+                        "Share your work experience, skills, or achievements",
+                  )
+                : const SizedBox(),
           ],
         ),
       ),

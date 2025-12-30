@@ -1,17 +1,19 @@
+// ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/custom_text_filed.dart';
+import 'package:wisper/app/modules/profile/controller/buisness/buisness_controller.dart';
 import 'package:wisper/app/modules/profile/controller/create_recommandation.dart';
 import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
 import 'package:wisper/app/modules/profile/controller/recommendetion_controller.dart';
-import 'package:wisper/gen/assets.gen.dart';
 
-class CreateReviewSheet extends StatefulWidget {
+class CreateReviewSheet extends StatefulWidget { 
   final String recieverId;
   const CreateReviewSheet({super.key, required this.recieverId});
 
@@ -21,162 +23,89 @@ class CreateReviewSheet extends StatefulWidget {
 
 class _CreateReviewSheetState extends State<CreateReviewSheet> {
   final TextEditingController _reviewController = TextEditingController();
-  final ProfileController profileController = Get.find<ProfileController>();
-
   final CreateRecommendationController createRecommendationController =
       CreateRecommendationController();
-  int _rating = 0; // Current rating (0-5)
+
+  final ProfileController profileController = Get.find<ProfileController>();
+  final BusinessController businessController = Get.find<BusinessController>();
+
+  // Rating
+  int _rating = 0;
+
+  // User info observables (giver)
+  final RxBool isLoading = true.obs;
+  final RxString userName = ''.obs;
+  final RxString userImageUrl = ''.obs;
+
+  late final bool isPerson;
 
   @override
   void initState() {
-    profileController.getMyProfile();
     super.initState();
+    isPerson = StorageUtil.getData(StorageUtil.userRole) == 'PERSON';
+
+    // Fetch giver's profile based on role
+    if (isPerson) {
+      profileController.getMyProfile().then((_) {
+        if (mounted) _updateUserInfo();
+      });
+    } else {
+      businessController.getMyProfile().then((_) {
+        if (mounted) _updateUserInfo();
+      });
+    }
   }
 
+  void _updateUserInfo() {
+    if (isPerson) {
+      final person = profileController.profileData?.auth?.person;
+      userName.value = person?.name ?? 'Anonymous';
+      userImageUrl.value = person?.image ?? '';
+      isLoading.value = profileController.inProgress;
+    } else {
+      final business = businessController.buisnessData?.auth?.business;
+      userName.value = business?.name ?? 'Anonymous';
+      userImageUrl.value = business?.image ?? '';
+      isLoading.value = businessController.inProgress;
+    }
+  }
+ 
   void addRecommendation() {
+    if (_rating == 0) {
+      showSnackBarMessage(context, "Please give a rating", true);
+      return;
+    }
+
+    if (_reviewController.text.trim().isEmpty) {
+      showSnackBarMessage(context, "Please write a review", true);
+      return;
+    }
+
     showLoadingOverLay(
-      asyncFunction: () async =>
-          await performRecommendation(context, _reviewController.text),
-      msg: 'Please wait...',
+      asyncFunction: () async => await performRecommendation(),
+      msg: 'Posting review...',
     );
   }
 
-  Future<void> performRecommendation(BuildContext context, String text) async {
-    final bool isSuccess = await createRecommendationController
-        .addRecommendation(
-          text: text,
-          rating: _rating,
-          recieverId: widget.recieverId,
-        );
+  Future<void> performRecommendation() async {
+    final bool isSuccess = await createRecommendationController.addRecommendation(
+      text: _reviewController.text.trim(),
+      rating: _rating,
+      recieverId: widget.recieverId,
+    );
 
     if (isSuccess) {
       final AllRecommendationController allRecommendationController =
           Get.find<AllRecommendationController>();
+      await allRecommendationController.getAllRecommendations(widget.recieverId);
 
-      await allRecommendationController.getAllRecommendations(
-        widget.recieverId,
-      );
-      Navigator.pop(context);
+      if (mounted) {
+        Navigator.pop(context);
+        showSnackBarMessage(context, "Review posted successfully!", false);
+      }
     } else {
-      showSnackBarMessage(
-        context,
-        createRecommendationController.errorMessage,
-        true,
-      );
+      showSnackBarMessage(context, createRecommendationController.errorMessage, true);
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-        left: 20.0,
-        right: 20.0,
-        top: 20.0,
-      ),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.9,
-        ),
-        child: Container(
-          color: Color(0xff0D0D0D),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                heightBox10,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Cancel',
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 32.h,
-                      width: 66.w,
-                      child: CustomElevatedButton(
-                        title: 'Post',
-                        textSize: 12,
-                        borderRadius: 50,
-                        onPress: () {
-                          // Handle post action
-                          if (_rating == 0) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Please give a rating')),
-                            );
-                            return;
-                          }
-                          {
-                            addRecommendation();
-                          }
-                          // Proceed with posting review
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                heightBox10,
-                Obx(() {
-                  if (profileController.inProgress) {
-                    return Center(child: CircularProgressIndicator());
-                  } else {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 21.r,
-                              backgroundImage: AssetImage(
-                                Assets.images.image.keyName,
-                              ),
-                            ),
-                            widthBox10,
-                            Text(
-                              profileController
-                                      .profileData!
-                                      .auth!
-                                      .person
-                                      ?.name ??
-                                  '',
-                              style: TextStyle(fontSize: 14.sp),
-                            ),
-                          ],
-                        ),
-                        // Star rating widget
-                        _buildStarRating(),
-                      ],
-                    );
-                  }
-                }),
-                heightBox10,
-                SizedBox(
-                  height: 100.h,
-                  child: CustomTextField(
-                    controller: _reviewController,
-                    maxLines: 5,
-                    hintText: 'Write your review here',
-                    hintStyle: TextStyle(
-                      fontSize: 12.sp,
-                      color: Color(0xff8C8C8C),
-                    ),
-                  ),
-                ),
-                heightBox10,
-
-                // Optional: Show rating value
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   Widget _buildStarRating() {
@@ -191,15 +120,136 @@ class _CreateReviewSheetState extends State<CreateReviewSheet> {
             });
           },
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 2.w),
+            padding: EdgeInsets.symmetric(horizontal: 4.w),
             child: Icon(
               starIndex <= _rating ? Icons.star : Icons.star_border,
               color: Colors.amber,
-              size: 22.h,
+              size: 24.sp,
             ),
           ),
         );
       }),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+        left: 20.w,
+        right: 20.w,
+        top: 20.h,
+      ),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.85,
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xff0D0D0D),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                heightBox10,
+
+                // Header: Cancel + Post
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 36.h,
+                      width: 80.w,
+                      child: CustomElevatedButton(
+                        title: 'Post',
+                        textSize: 14,
+                        borderRadius: 50,
+                        onPress: addRecommendation,
+                      ),
+                    ),
+                  ],
+                ),
+
+                heightBox20,
+
+                // Giver Info + Rating
+                Obx(() {
+                  if (isLoading.value) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 20.r,
+                            backgroundColor: Colors.grey,
+                            backgroundImage: userImageUrl.value.isNotEmpty
+                                ? NetworkImage(userImageUrl.value)
+                                : null,
+                            child: userImageUrl.value.isEmpty
+                                ? Icon(Icons.person, size: 24.sp, color: Colors.white70)
+                                : null,
+                          ),
+                          widthBox12,
+                          SizedBox(
+                            width: 100.w,
+                            child: Text(
+                              userName.value,
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      _buildStarRating(),
+                    ],
+                  );
+                }),
+
+                heightBox20,
+
+                // Review Text Field
+                SizedBox(
+                  height: 120.h,
+                  child: CustomTextField(
+                    controller: _reviewController,
+                    maxLines: 6,
+                    hintText: 'Write your review here...',
+                    hintStyle: TextStyle(
+                      fontSize: 14.sp,
+                      color: const Color(0xff8C8C8C),
+                    ),
+                    contentPadding: EdgeInsets.all(12.w),
+                  ),
+                ),
+
+                heightBox100, // Keyboard safety
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

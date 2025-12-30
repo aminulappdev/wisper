@@ -3,11 +3,11 @@ class Urls {
   // static const String _baseUrl = 'http://10.10.10.17:5005/api/v1';
   // static const String socketUrl = 'http://10.10.10.17:4000/';
 
-  static const String _baseUrl = 'http://10.10.10.17:5000/api/v1';
+  // static const String _baseUrl = 'http://10.10.10.17:5000/api/v1';
   // static const String _baseUrl = 'https://wisper.up.railway.app/api/v1';
-  //static const String _baseUrl = 'https://c9f1d48ba47f.ngrok-free.app/api/v1';
-  //static const String socketUrl = 'https://c9f1d48ba47f.ngrok-free.app';
-   static const String socketUrl = 'http://10.10.10.17:5000';
+  static const String _baseUrl = 'https://c9f1d48ba47f.ngrok-free.app/api/v1';
+  static const String socketUrl = 'https://c9f1d48ba47f.ngrok-free.app';
+  // static const String socketUrl = 'http://10.10.10.17:5000';
   
 
   // =========================================== Common ============================================== //

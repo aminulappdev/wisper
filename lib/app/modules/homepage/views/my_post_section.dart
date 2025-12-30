@@ -125,8 +125,9 @@ class _MyPostSectionState extends State<MyPostSection> {
           return Padding(
             padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 4.w),
             child: PostCard(
+              isPerson: post.author?.person != null,
               onTapComment: () {
-                 Get.to(CommentScreen(postId: post.id ?? ''));
+                Get.to(CommentScreen(postId: post.id ?? ''));
               },
               isComment: false,
               ownerId: post.author?.id ?? '',

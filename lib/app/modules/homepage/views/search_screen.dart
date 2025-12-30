@@ -62,6 +62,24 @@ class _SearchScreenState extends State<SearchScreen> {
                     },
                   ),
                 ),
+                widthBox8,
+                CircleAvatar(
+                  backgroundColor: const Color.fromARGB(255, 104, 104, 104),
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        print('searchQuery: ${searchController.text}');
+                        selectedIndex == 0
+                            ? selectedIndex = 1
+                            : selectedIndex = 0;
+                      });
+                    },
+                    child: const Icon(
+                      Icons.swap_horiz,
+                      color: Color.fromARGB(255, 179, 177, 177),
+                    ),
+                  ),
+                ),
               ],
             ),
             heightBox20,

@@ -12,7 +12,7 @@ class ProfileController extends GetxController {
   bool get inProgress => _inProgress.value;
 
   final RxString _errorMessage = ''.obs;
-  String get errorMessage => _errorMessage.value;
+  String get errorMessage => _errorMessage.value; 
 
   final Rx<ProfileModel?> _profileDetailsModel = Rx<ProfileModel?>(null);
   ProfileData? get profileData => _profileDetailsModel.value?.data;

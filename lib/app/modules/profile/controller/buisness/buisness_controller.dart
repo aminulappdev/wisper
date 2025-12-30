@@ -45,7 +45,7 @@ class BusinessController extends GetxController {
 
         StorageUtil.saveData(
           StorageUtil.userId,
-          response.responseData['data']['auth']['business']['id'],
+          response.responseData['data']['auth']['id'],
         );
 
         _buisnessDetailsModel.value = BusinessModel.fromJson(

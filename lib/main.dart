@@ -12,7 +12,7 @@ import 'package:wisper/app/modules/onboarding/views/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+ 
   final SocketService socketService = Get.put(SocketService());
   await socketService.init();
   await StorageUtil.init();

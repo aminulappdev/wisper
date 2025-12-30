@@ -162,7 +162,7 @@ class MessageController extends GetxController {
                 senderName = msg.sender!.person!.name ?? 'Unknown';
                 senderImage = msg.sender!.person!.image;
               } else if (msg.sender!.business != null) {
-                senderName = msg.sender!.business!.name ?? 'Unknown';
+                senderName = msg.sender!.business!.name ?? 'Unknown'; 
                 senderImage = msg.sender!.business!.image;
               }
             }

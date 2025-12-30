@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/utils/validator_service.dart';
@@ -16,6 +17,7 @@ import 'package:wisper/app/core/widgets/line_widget.dart';
 import 'package:wisper/app/modules/homepage/controller/create_post_controller.dart';
 import 'package:wisper/app/modules/homepage/controller/feed_post_controller.dart';
 import 'package:wisper/app/modules/homepage/controller/my_post_controller.dart';
+import 'package:wisper/app/modules/profile/controller/buisness/buisness_controller.dart';
 import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
@@ -30,12 +32,20 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
   final TextEditingController _captionCtrl = TextEditingController();
   final CreatePostController createPostController = CreatePostController();
   final ProfileController profileController = Get.find<ProfileController>();
+  final BusinessController businessController = Get.find<BusinessController>();
   final formKey = GlobalKey<FormState>();
   final List<File> _selectedImages = [];
   final ImagePickerHelper _imagePickerHelper = ImagePickerHelper();
 
-  // Privacy state
-  String _selectedPrivacy = 'EVERYONE'; // Default
+  String _selectedPrivacy = 'EVERYONE';
+
+  // Role-based user info observables
+  final RxBool isLoading = true.obs;
+  final RxString userName = ''.obs;
+  final RxString userSubtitle = ''.obs;
+  final RxString userImageUrl = ''.obs;
+
+  late final bool isPerson;
 
   void _addImage(File image) {
     setState(() {
@@ -51,12 +61,12 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
 
   void createPost() {
     showLoadingOverLay(
-      asyncFunction: () async => await performCreatePost(context),
+      asyncFunction: () async => await performCreatePost(),
       msg: 'Please wait...',
     );
   }
 
-  Future<void> performCreatePost(BuildContext context) async {
+  Future<void> performCreatePost() async {
     final bool isSuccess = await createPostController.createPost(
       description: _captionCtrl.text.trim(),
       images: _selectedImages,
@@ -64,33 +74,59 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
     );
 
     if (isSuccess) {
-      if (isSuccess) {
-        final AllFeedPostController feedController =
-            Get.find<AllFeedPostController>();
-        final MyFeedPostController myFeedPostController =
-            Get.find<MyFeedPostController>();
-        myFeedPostController.resetPagination();
-        feedController.resetPagination();
-        await myFeedPostController.getAllPost();
-        await feedController.getAllPost();
-        Navigator.pop(context);
-        showSnackBarMessage(context, "Post created successfully!", false);
-      }
+      final AllFeedPostController feedController =
+          Get.find<AllFeedPostController>();
+      final MyFeedPostController myFeedPostController =
+          Get.find<MyFeedPostController>();
+      myFeedPostController.resetPagination();
+      feedController.resetPagination();
+      await myFeedPostController.getAllPost();
+      await feedController.getAllPost();
+      if (mounted) Navigator.pop(context);
+      showSnackBarMessage(context, "Post created successfully!", false);
     } else {
       showSnackBarMessage(context, createPostController.errorMessage, true);
     }
   }
 
+  void _updateUserInfo() {
+    if (isPerson) {
+      final data = profileController.profileData?.auth?.person;
+      userName.value = data?.name ?? '';
+      userSubtitle.value = data?.title ?? '';
+      userImageUrl.value = data?.image ?? '';
+      isLoading.value =
+          profileController.inProgress; // plain bool, কিন্তু assign valid
+    } else {
+      final data = businessController.buisnessData?.auth?.business;
+      userName.value = data?.name ?? '';
+      userSubtitle.value = data?.industry ?? '';
+      userImageUrl.value = data?.image ?? '';
+      isLoading.value = businessController.inProgress;
+    }
+  }
+
   @override
   void initState() {
-    profileController.getMyProfile();
     super.initState();
+    isPerson = StorageUtil.getData(StorageUtil.userRole) == 'PERSON';
+
+    // Initial fetch and update
+    if (isPerson) {
+      profileController.getMyProfile().then((_) {
+        if (mounted) _updateUserInfo();
+      });
+    } else {
+      businessController.getMyProfile().then((_) {
+        if (mounted) _updateUserInfo();
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // তোমার অ্যাপের ডার্ক থিম
+      backgroundColor: Colors.black,
       body: SizedBox(
         height: double.infinity,
         width: double.infinity,
@@ -104,7 +140,6 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
                 children: [
                   heightBox40,
 
-                  // Header: Cancel - Media - Post
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -146,68 +181,54 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
 
                   heightBox16,
 
-                  // User info
                   Obx(() {
-                    if (profileController.inProgress) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else {
-                      var name =
-                          profileController.profileData?.auth?.person != null
-                          ? profileController.profileData!.auth?.person!.name
-                          : profileController.profileData!.auth?.business!.name;
+                    if (isLoading.value) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
 
-                      var title =
-                          profileController.profileData?.auth?.person != null
-                          ? profileController.profileData!.auth?.person!.title
-                          : profileController
-                                .profileData!
-                                .auth
-                                ?.business!
-                                .industry;
-                      var imageUrl =
-                          profileController.profileData?.auth?.person != null
-                          ? profileController.profileData!.auth!.person!.image
-                          : profileController
-                                .profileData!
-                                .auth!
-                                .business!
-                                .image;
-                      return Row(
-                        children: [
-                          CircleAvatar(
-                            backgroundColor: Colors.grey,
-                            radius: 18.r,
-                            backgroundImage: NetworkImage(imageUrl ?? ''),
-                          ),
-                          widthBox8,
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                name ?? 'User Name',
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.white,
-                                ),
+                    return Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: Colors.grey,
+                          radius: 18.r,
+                          backgroundImage: userImageUrl.value.isNotEmpty
+                              ? NetworkImage(userImageUrl.value)
+                              : null,
+                          child: userImageUrl.value.isEmpty
+                              ? const Icon(Icons.person, color: Colors.white)
+                              : null,
+                        ),
+                        widthBox8,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              userName.value,
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white,
                               ),
+                            ),
+                            if (userSubtitle.value.isNotEmpty)
                               Text(
-                                title ?? 'User Title',
+                                userSubtitle.value,
                                 style: TextStyle(
                                   fontSize: 10.sp,
                                   color: LightThemeColors.themeGreyColor,
                                 ),
                               ),
-                            ],
-                          ),
-                        ],
-                      );
-                    }
+                          ],
+                        ),
+                      ],
+                    );
                   }),
 
                   heightBox20,
 
-                  // Caption field
                   SizedBox(
                     height: 150.h,
                     child: CustomTextField(
@@ -226,32 +247,33 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
                   StraightLiner(height: 0.5),
                   heightBox10,
 
-                  // Privacy Selector (Everyone can view)
                   GestureDetector(
                     onTap: () {
                       showModalBottomSheet(
                         context: context,
-                        backgroundColor: Colors.white,
+                        backgroundColor: Colors.black,
                         isScrollControlled: true,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.vertical(
                             top: Radius.circular(20.r),
                           ),
                         ),
-                        builder: (ctx) => _privacyBottomSheet(),
+                        builder: (_) => _privacyBottomSheet(),
                       );
                     },
                     child: Row(
                       children: [
                         Icon(
-                          Icons.public,
+                          _selectedPrivacy == 'EVERYONE'
+                              ? Icons.public
+                              : Icons.lock_outline,
                           color: LightThemeColors.blueColor,
                           size: 24.sp,
                         ),
                         widthBox10,
                         Text(
                           _selectedPrivacy == 'EVERYONE'
-                              ? 'Everyone can comment'
+                              ? 'Everyone'
                               : 'Only me',
                           style: TextStyle(
                             fontSize: 14.sp,
@@ -270,11 +292,9 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
 
                   heightBox20,
 
-                  // Add Gallery
                   GestureDetector(
-                    onTap: () {
-                      _imagePickerHelper.showAlertDialog(context, _addImage);
-                    },
+                    onTap: () =>
+                        _imagePickerHelper.showAlertDialog(context, _addImage),
                     child: Row(
                       children: [
                         CrashSafeImage(
@@ -296,7 +316,6 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
 
                   heightBox20,
 
-                  // Selected images preview
                   if (_selectedImages.isNotEmpty)
                     Wrap(
                       spacing: 10.w,
@@ -338,7 +357,7 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
                       }),
                     ),
 
-                  heightBox100, // যাতে কীবোর্ড উঠলে বাটন ঢাকা না পড়ে
+                  heightBox100,
                 ],
               ),
             ),
@@ -348,14 +367,9 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
     );
   }
 
-  // Privacy Bottom Sheet – White background + Grey handle
   Widget _privacyBottomSheet() {
-    final List<Map<String, dynamic>> privacyOptions = [
-      {
-        'title': 'Everyone can comment',
-        'value': 'EVERYONE',
-        'icon': Icons.public,
-      },
+    final options = [
+      {'title': 'Everyone', 'value': 'EVERYONE', 'icon': Icons.public},
       {'title': 'Only me', 'value': 'FOLLOWERS', 'icon': Icons.lock_outline},
     ];
 
@@ -366,7 +380,6 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Drag handle
             Container(
               width: 40.w,
               height: 5.h,
@@ -377,7 +390,7 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
             ),
             heightBox20,
             Text(
-              'Who can comment this post?',
+              'Who can see this post?',
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w600,
@@ -385,14 +398,14 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
               ),
             ),
             heightBox20,
-            ...privacyOptions.map((option) {
+            ...options.map((option) {
               return ListTile(
                 leading: Icon(
-                  option['icon'],
+                  option['icon'] as IconData,
                   color: LightThemeColors.blueColor,
                 ),
                 title: Text(
-                  option['title'],
+                  option['title'] as String,
                   style: TextStyle(
                     fontSize: 16.sp,
                     color: LightThemeColors.blueColor,
@@ -403,12 +416,12 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
                     : null,
                 onTap: () {
                   setState(() {
-                    _selectedPrivacy = option['value'];
+                    _selectedPrivacy = option['value'] as String;
                   });
                   Navigator.pop(context);
                 },
               );
-            }).toList(),
+            }),
           ],
         ),
       ),

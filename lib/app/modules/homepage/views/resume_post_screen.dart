@@ -1,3 +1,4 @@
+// ignore_for_file: use_build_context_synchronously
 import 'dart:io';
 import 'package:crash_safe_image/crash_safe_image.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/details_card.dart';
 import 'package:wisper/app/modules/homepage/controller/create_resume_controller.dart';
 import 'package:wisper/app/modules/homepage/controller/my_resume_controller.dart';
+import 'package:wisper/app/modules/profile/controller/buisness/buisness_controller.dart';
 import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
 import 'package:wisper/gen/assets.gen.dart';
 import 'package:file_picker/file_picker.dart';
@@ -27,7 +29,17 @@ class _ResumePostScreenState extends State<ResumePostScreen> {
   final List<File> _selectedFiles = [];
   final FilePickerHelper _filePickerHelper = FilePickerHelper();
   final CreateResumeController createPostController = CreateResumeController();
+
   final ProfileController profileController = Get.find<ProfileController>();
+  final BusinessController businessController = Get.find<BusinessController>();
+
+  // Role-based user info observables
+  final RxBool isLoading = true.obs;
+  final RxString userName = ''.obs;
+  final RxString userSubtitle = ''.obs;
+  final RxString userImageUrl = ''.obs;
+
+  late final bool isPerson;
 
   void _addFile(File file) {
     setState(() {
@@ -42,41 +54,76 @@ class _ResumePostScreenState extends State<ResumePostScreen> {
   }
 
   void createPost() {
+    if (_selectedFiles.isEmpty) {
+      showSnackBarMessage(
+        context,
+        "Please select at least one resume file",
+        true,
+      );
+      return;
+    }
+
     showLoadingOverLay(
-      asyncFunction: () async => await performCreatePost(context),
+      asyncFunction: () async => await performCreatePost(),
       msg: 'Please wait...',
     );
   }
 
-  Future<void> performCreatePost(BuildContext context) async {
+  Future<void> performCreatePost() async {
     final bool isSuccess = await createPostController.createResume(
       file: _selectedFiles,
     );
 
     if (isSuccess) {
-      if (isSuccess) {
-        final MyResumeController myResumeController =
-            Get.find<MyResumeController>();
-        await myResumeController.getAllResume(
-          StorageUtil.getData(StorageUtil.userId),
-        );
-        Navigator.pop(context);
-        showSnackBarMessage(context, "Post created successfully!", false);
-      }
+      final MyResumeController myResumeController =
+          Get.find<MyResumeController>();
+      await myResumeController.getAllResume(
+        StorageUtil.getData(StorageUtil.userId),
+      );
+      if (mounted) Navigator.pop(context);
+      showSnackBarMessage(context, "Resume posted successfully!", false);
     } else {
       showSnackBarMessage(context, createPostController.errorMessage, true);
     }
   }
 
+  void _updateUserInfo() {
+    if (isPerson) {
+      final person = profileController.profileData?.auth?.person;
+      userName.value = person?.name ?? '';
+      userSubtitle.value = person?.title ?? '';
+      userImageUrl.value = person?.image ?? '';
+      isLoading.value = profileController.inProgress;
+    } else {
+      final business = businessController.buisnessData?.auth?.business;
+      userName.value = business?.name ?? '';
+      userSubtitle.value = business?.industry ?? '';
+      userImageUrl.value = business?.image ?? '';
+      isLoading.value = businessController.inProgress;
+    }
+  }
+
   @override
   void initState() {
-    profileController.getMyProfile();
     super.initState();
+    isPerson = StorageUtil.getData(StorageUtil.userRole) == 'PERSON';
+
+    // Fetch profile based on role
+    if (isPerson) {
+      profileController.getMyProfile().then((_) {
+        if (mounted) _updateUserInfo();
+      });
+    } else {
+      businessController.getMyProfile().then((_) {
+        if (mounted) _updateUserInfo();
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black, // Dark theme consistent
       body: SizedBox(
         height: double.infinity,
         width: double.infinity,
@@ -87,6 +134,8 @@ class _ResumePostScreenState extends State<ResumePostScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 heightBox40,
+
+                // Header
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -95,111 +144,94 @@ class _ResumePostScreenState extends State<ResumePostScreen> {
                       child: Text(
                         'Cancel',
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 12.sp,
                           fontWeight: FontWeight.w400,
+                          color: Colors.white,
                         ),
                       ),
                     ),
                     Text(
                       'Resume',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 16.sp,
                         fontWeight: FontWeight.w600,
+                        color: Colors.white,
                       ),
                     ),
                     SizedBox(
-                      height: 32,
-                      width: 66,
+                      height: 32.h,
+                      width: 66.w,
                       child: CustomElevatedButton(
                         title: 'Post',
                         textSize: 12,
                         borderRadius: 50,
-                        onPress: () {
-                          createPost();
-                        },
+                        onPress: createPost,
                       ),
                     ),
                   ],
                 ),
-                heightBox16,
-                Obx(() {
-                  if (profileController.inProgress) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else {
-                    var name =
-                        profileController.profileData?.auth?.person != null
-                        ? profileController.profileData!.auth?.person!.name
-                        : profileController.profileData!.auth?.business!.name;
 
-                    var title =
-                        profileController.profileData?.auth?.person != null
-                        ? profileController.profileData!.auth?.person!.title
-                        : profileController
-                              .profileData!
-                              .auth
-                              ?.business!
-                              .industry;
-                    var imageUrl =
-                        profileController.profileData?.auth?.person != null
-                        ? profileController.profileData!.auth!.person!.image
-                        : profileController.profileData!.auth!.business!.image;
-                    return Row(
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: Colors.grey,
-                          radius: 18.r,
-                          backgroundImage: NetworkImage(imageUrl ?? ''),
-                        ),
-                        widthBox8,
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              name ?? 'User Name',
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.white,
-                              ),
+                heightBox16,
+
+                // User Info
+                Obx(() {
+                  if (isLoading.value) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+
+                  return Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: Colors.grey,
+                        radius: 18.r,
+                        backgroundImage: userImageUrl.value.isNotEmpty
+                            ? NetworkImage(userImageUrl.value)
+                            : null,
+                        child: userImageUrl.value.isEmpty
+                            ? const Icon(Icons.person, color: Colors.white)
+                            : null,
+                      ),
+                      widthBox8,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            userName.value.isEmpty
+                                ? 'User Name'
+                                : userName.value,
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.white,
                             ),
+                          ),
+                          if (userSubtitle.value.isNotEmpty)
                             Text(
-                              title ?? 'User Title',
+                              userSubtitle.value,
                               style: TextStyle(
                                 fontSize: 10.sp,
                                 color: LightThemeColors.themeGreyColor,
                               ),
                             ),
-                          ],
-                        ),
-                      ],
-                    );
-                  }
+                        ],
+                      ),
+                    ],
+                  );
                 }),
-                // heightBox20,
-                // SizedBox(
-                //   height: 150.h,
-                //   child: CustomTextField(
-                //     controller: _captionCtrl,
-                //     maxLines: 5,
-                //     hintText: 'Share your thoughts',
-                //     hintStyle: TextStyle(
-                //       fontSize: 14.sp,
-                //       color: Color(0xff8C8C8C),
-                //     ),
-                //   ),
-                // ),
-                // heightBox10,
-                // StraightLiner(height: 0.5),
-                heightBox10,
+
+                heightBox20,
+
+                // Add Resume Button
                 GestureDetector(
                   onTap: () {
-                    // _filePickerHelper.showAlertDialog(context, _addFile);
+                    _filePickerHelper.showAlertDialog(context, _addFile);
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color.fromARGB(255, 96, 96, 107),
-                      ),
+                      border: Border.all(color: const Color(0xFF60606B)),
                       borderRadius: BorderRadius.circular(10.r),
                     ),
                     height: 80.h,
@@ -224,15 +256,21 @@ class _ResumePostScreenState extends State<ResumePostScreen> {
                     ),
                   ),
                 ),
-                heightBox10,
+
+                heightBox20,
+
+                // Selected Files List
                 if (_selectedFiles.isNotEmpty)
                   ListView.separated(
-                    padding: EdgeInsets.all(0),
+                    padding: EdgeInsets.zero,
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     itemCount: _selectedFiles.length,
-                    separatorBuilder: (context, index) => heightBox10,
+                    separatorBuilder: (_, __) => heightBox10,
                     itemBuilder: (context, index) {
+                      final fileName = _selectedFiles[index].path
+                          .split('/')
+                          .last;
                       return DetailsCard(
                         child: Padding(
                           padding: const EdgeInsets.all(12.0),
@@ -246,16 +284,16 @@ class _ResumePostScreenState extends State<ResumePostScreen> {
                                       height: 20.h,
                                     ),
                                     widthBox10,
-                                    Text(
-                                      _selectedFiles[index].path
-                                          .split('/')
-                                          .last,
-                                      style: TextStyle(
-                                        fontSize: 12.sp,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.white,
+                                    Expanded(
+                                      child: Text(
+                                        fileName,
+                                        style: TextStyle(
+                                          fontSize: 12.sp,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.white,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ],
                                 ),
@@ -263,7 +301,7 @@ class _ResumePostScreenState extends State<ResumePostScreen> {
                               GestureDetector(
                                 onTap: () => _removeFile(index),
                                 child: Container(
-                                  decoration: BoxDecoration(
+                                  decoration: const BoxDecoration(
                                     color: Colors.red,
                                     shape: BoxShape.circle,
                                   ),
@@ -280,6 +318,8 @@ class _ResumePostScreenState extends State<ResumePostScreen> {
                       );
                     },
                   ),
+
+                heightBox100, // Keyboard safety
               ],
             ),
           ),
@@ -289,8 +329,8 @@ class _ResumePostScreenState extends State<ResumePostScreen> {
   }
 }
 
+// FilePickerHelper unchanged
 class FilePickerHelper {
-  // Function to pick files from the device
   Future<void> pickFiles(
     BuildContext context,
     Function(File) onFilePicked,
@@ -299,7 +339,7 @@ class FilePickerHelper {
       final result = await FilePicker.platform.pickFiles(
         allowMultiple: true,
         type: FileType.custom,
-        allowedExtensions: ['pdf'], // Restrict to PDF files
+        allowedExtensions: ['pdf'],
       );
       if (result != null && result.files.isNotEmpty) {
         for (var file in result.files) {
@@ -315,17 +355,16 @@ class FilePickerHelper {
     }
   }
 
-  // Function to show the file picker dialog
   Future<void> showAlertDialog(
     BuildContext context,
     Function(File) onFilePicked,
   ) {
     return showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (ctx) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(20.r),
           ),
           content: SizedBox(
             height: 100.h,
@@ -335,13 +374,11 @@ class FilePickerHelper {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   InkWell(
-                    onTap: () {
-                      pickFiles(context, onFilePicked);
-                    },
+                    onTap: () => pickFiles(context, onFilePicked),
                     child: Row(
                       children: [
                         Icon(Icons.description, size: 30.sp),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Text(
                           'Choose Resume',
                           style: TextStyle(
@@ -354,16 +391,10 @@ class FilePickerHelper {
                     ),
                   ),
                   heightBox12,
-                  Container(
-                    height: 1,
-                    width: double.infinity,
-                    color: const Color.fromARGB(255, 77, 76, 76),
-                  ),
+                  Container(height: 1, color: Colors.grey[400]),
                   heightBox12,
                   InkWell(
-                    onTap: () {
-                      if (Navigator.canPop(context)) Navigator.pop(context);
-                    },
+                    onTap: () => Navigator.pop(context),
                     child: Center(
                       child: Text(
                         'Cancel',
@@ -384,5 +415,3 @@ class FilePickerHelper {
     );
   }
 }
-
-// তোমার অন্যান্য import যদি থাকে (যেমন screen util এর .h, .sp)

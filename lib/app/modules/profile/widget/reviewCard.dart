@@ -10,14 +10,13 @@ class ReviewCard extends StatelessWidget {
   final String name;
   final String review;
   final String rating;
-  final String date;
+
   const ReviewCard({
     super.key,
     required this.image,
     required this.name,
     required this.review,
     required this.rating,
-    required this.date,
   });
 
   @override
@@ -37,7 +36,10 @@ class ReviewCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(radius: 21.r, backgroundImage: AssetImage(image)),
+                CircleAvatar(
+                  radius: 21.r,
+                  backgroundImage: NetworkImage(image),
+                ),
                 widthBox10,
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,15 +80,15 @@ class ReviewCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    heightBox8,
-                    Text(
-                      date,
-                      style: TextStyle(
-                        fontSize: 10.sp,
-                        fontWeight: FontWeight.w600,
-                        color: LightThemeColors.themeGreyColor,
-                      ),
-                    ),
+                    // heightBox8,
+                    // Text(
+                    //   date,
+                    //   style: TextStyle(
+                    //     fontSize: 10.sp,
+                    //     fontWeight: FontWeight.w600,
+                    //     color: LightThemeColors.themeGreyColor,
+                    //   ),
+                    // ),
                   ],
                 ),
               ],

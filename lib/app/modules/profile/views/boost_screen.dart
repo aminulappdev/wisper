@@ -93,6 +93,7 @@ class _BoostScreenState extends State<BoostScreen> {
             ),
             heightBox12,
             PostCard(
+              isPerson: widget.feedPostItemModel.author?.person != null,
               isComment: true,
               onTapComment: () {},
               trailing: Container(),

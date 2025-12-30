@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
-import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
 import 'package:wisper/app/core/widgets/shimmer/gallery_post_shimmer.dart';
 import 'package:wisper/app/modules/homepage/controller/feed_post_controller.dart';
@@ -61,6 +60,7 @@ class _PostSectionState extends State<PostSection> {
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: PostCard(
+                isPerson: post.author?.person != null,
                 onTapComment: () {
                   Get.to(CommentScreen(postId: post.id ?? ''));
                 },
@@ -74,15 +74,13 @@ class _PostSectionState extends State<PostSection> {
                     color: LightThemeColors.themeGreyColor,
                   ),
                 ),
-                ownerName: StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
+                ownerName: post.author?.person != null
                     ? post.author?.person?.name ?? 'Unknown User'
                     : post.author?.business?.name ?? 'Unknown Business',
-                ownerImage:
-                    StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
+                ownerImage: post.author?.person != null
                     ? post.author?.person?.image ?? ''
                     : post.author?.business?.image ?? '',
-                ownerProfession:
-                    StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
+                ownerProfession: post.author?.person != null
                     ? post.author?.person?.title ?? 'Professional'
                     : post.author?.business?.name ?? 'Business',
                 postImage: post.images.isNotEmpty ? post.images.first : null,

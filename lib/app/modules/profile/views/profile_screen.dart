@@ -65,9 +65,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      recommendationController.getAllRecommendations(
-        StorageUtil.getData(StorageUtil.userId),
-      );
+      userRole == 'PERSON'
+          ? recommendationController.getAllRecommendations(
+              StorageUtil.getData(StorageUtil.userId),
+            )
+          : null;
     });
   }
 
@@ -133,7 +135,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return RcommendationButtomSheet(
           recommendationItemModel: model,
           isCreateReview: false,
-          recieverId: StorageUtil.getData(StorageUtil.userAuthId),
+          recieverId: StorageUtil.getData(StorageUtil.userId),
         );
       },
     );
@@ -202,7 +204,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           : [
               {'index': '0', 'title': 'Post'},
               {'index': '1', 'title': 'Job'},
-              {'index': '2', 'title': 'Resume'},
             ];
 
       return Scaffold(
@@ -274,25 +275,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
               SizedBox(height: 10.h),
 
               // Fixed Recommendation Widget - Safe null handling
-              SizedBox(
-                height: 30.h,
-                child: Obx(() {
-                  // Safely get the list, default to empty if null
-                  final List<RecommendationItemModel> recList =
-                      recommendationController.recommendationData ?? [];
+              userRole == 'PERSON'
+                  ? SizedBox(
+                      height: 30.h,
+                      child: Obx(() {
+                        // Safely get the list, default to empty if null
+                        final List<RecommendationItemModel> recList =
+                            recommendationController.recommendationData ?? [];
 
-                  if (recommendationController.inProgress) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+                        if (recommendationController.inProgress) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
 
-                  return Recommendation(
-                    onTap: () {
-                      _showCreateGroup(recList);
-                    },
-                    count: recList.length,
-                  );
-                }),
-              ),
+                        return Recommendation(
+                          onTap: () {
+                            _showCreateGroup(recList);
+                          },
+                          count: recList.length,
+                        );
+                      }),
+                    )
+                  : const SizedBox.shrink(),
 
               SizedBox(height: 10.h),
 
@@ -319,7 +324,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: SelectOptionWidget(
                           currentIndex: tabIndex,
                           selectedIndex: selectedIndex,
-                          title: tab['title']!,
+                          title: tab['title'] ?? '',
                           lineColor: Colors.white,
                         ),
                       ),

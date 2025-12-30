@@ -4,15 +4,19 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
-import 'package:wisper/app/core/widgets/circle_icon.dart';
+
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/details_card.dart';
 import 'package:wisper/app/core/widgets/label_data.dart';
+import 'package:wisper/app/modules/chat/controller/create_chat_controller.dart';
+import 'package:wisper/app/modules/chat/views/person/message_screen.dart';
 import 'package:wisper/app/modules/homepage/controller/favorite_job_controller.dart';
 import 'package:wisper/app/modules/homepage/controller/single_job_controller.dart';
 import 'package:wisper/app/modules/homepage/widget/feature_list.dart';
+import 'package:wisper/app/modules/payment/view/payment_webview_screen.dart';
 import 'package:wisper/app/modules/profile/views/others_business_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
@@ -30,6 +34,9 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
   );
 
   final FavoriteController favoriteController = FavoriteController();
+  final CreateChatController createChatController = Get.put(
+    CreateChatController(),
+  );
 
   @override
   void initState() {
@@ -52,9 +59,45 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
     if (isSuccess) {
       final SingleJobController singleJobController =
           Get.find<SingleJobController>();
+      final FavoriteController favoriteController =
+          Get.find<FavoriteController>();
+      await favoriteController.getAllFavorite();
       await singleJobController.getSingleJob(widget.jobId);
     } else {
       showSnackBarMessage(context, favoriteController.errorMessage, true);
+    }
+  }
+
+  void createChat(String? memberId, String? memberName, String? memberImage) {
+    showLoadingOverLay(
+      asyncFunction: () async =>
+          await performCreateChat(context, memberId, memberName, memberImage),
+      msg: 'Please wait...',
+    );
+  }
+
+  Future<void> performCreateChat(
+    BuildContext context,
+    String? memberId,
+    String? memberName,
+    String? memberImage,
+  ) async {
+    final bool isSuccess = await createChatController.createChat(
+      memberId: memberId,
+    );
+
+    if (isSuccess) {
+      var chatId = createChatController.chatId;
+      Get.to(
+        ChatScreen(
+          chatId: chatId,
+          receiverId: memberId ?? '',
+          receiverImage: memberImage ?? '',
+          receiverName: memberName ?? '',
+        ),
+      );
+    } else {
+      showSnackBarMessage(context, createChatController.errorMessage, true);
     }
   }
 
@@ -100,15 +143,60 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                           textColor: Colors.white,
                         ),
                       ),
-                      CustomElevatedButton(
-                        title: 'Apply for job',
-                        width: 93,
-                        height: 28,
-                        textSize: 10,
-                        color: LightThemeColors.blueColor,
-                        borderRadius: 50,
-                        textColor: Colors.white,
-                      ),
+                      StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
+                          ? CustomElevatedButton(
+                              onPress: () {
+                                singleJobController
+                                            .singleJobData
+                                            ?.applicationType ==
+                                        'CHAT'
+                                    ? createChat(
+                                        singleJobController
+                                                .singleJobData
+                                                ?.authorId ??
+                                            '',
+                                        singleJobController
+                                                .singleJobData!
+                                                .author!
+                                                .business
+                                                ?.name ??
+                                            '',
+                                        singleJobController
+                                                .singleJobData
+                                                ?.author
+                                                ?.business
+                                                ?.image ??
+                                            '',
+                                      )
+                                    : singleJobController
+                                              .singleJobData
+                                              ?.applicationType ==
+                                          'EXTERNAL'
+                                    ? Get.to(
+                                        PaymentView(
+                                          paymentData: {
+                                            'title':
+                                                'Apply for ${singleJobController.singleJobData?.title}',
+                                            'link':
+                                                singleJobController
+                                                    .singleJobData
+                                                    ?.applicationLink ??
+                                                '',
+                                            'reference': '',
+                                          },
+                                        ),
+                                      )
+                                    : print('Email Applied');
+                              },
+                              title: 'Apply for job',
+                              width: 93,
+                              height: 28,
+                              textSize: 10,
+                              color: LightThemeColors.blueColor,
+                              borderRadius: 50,
+                              textColor: Colors.white,
+                            )
+                          : Container(),
                     ],
                   ),
                   heightBox20,
@@ -123,32 +211,37 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          favorite();
-                        },
-                        child: CircleAvatar(
-                          backgroundColor: LightThemeColors.circleIconColor,
-                          radius: 16.r,
-                          child: isFavorite
-                              ? Icon(
-                                  Icons.favorite,
-                                  color: Colors.white,
-                                  size: 20.r,
-                                )
-                              : Icon(
-                                  Icons.favorite_border,
-                                  color: Colors.white,
-                                  size: 20.r,
-                                ),
-                        ),
-                      ),
+                      StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
+                          ? GestureDetector(
+                              onTap: () {
+                                favorite();
+                              },
+                              child: CircleAvatar(
+                                backgroundColor:
+                                    LightThemeColors.circleIconColor,
+                                radius: 16.r,
+                                child: isFavorite
+                                    ? Icon(
+                                        Icons.favorite,
+                                        color: Colors.white,
+                                        size: 20.r,
+                                      )
+                                    : Icon(
+                                        Icons.favorite_border,
+                                        color: Colors.white,
+                                        size: 20.r,
+                                      ),
+                              ),
+                            )
+                          : Container(),
                     ],
                   ),
                   heightBox10,
                   GestureDetector(
                     onTap: () {
-                      Get.to(OthersBusinessScreen(userId: job.author!.id!));
+                      Get.to(
+                        OthersBusinessScreen(userId: job.author?.id ?? ''),
+                      );
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -264,14 +357,42 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Salary',
+                            singleJobController
+                                        .singleJobData
+                                        ?.compensationType ==
+                                    'MONTHLY'
+                                ? 'Monthly'
+                                : 'One off',
                             style: TextStyle(
                               fontSize: 12.sp,
                               fontWeight: FontWeight.w600,
                               color: Color(0xff8C8C8C),
                             ),
                           ),
-                          heightBox4,
+                        ],
+                      ),
+                    ),
+                  ),
+                  heightBox10,
+                  Text(
+                    'Salary',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xffD1D1D1),
+                    ),
+                  ),
+                  heightBox10,
+                  DetailsCard(
+                    width: double.infinity,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                        vertical: 6,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Text(
                             '\$ ${job.salary.toString()}/$shift',
                             style: TextStyle(
@@ -294,7 +415,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Location',
+                            'Location Type',
                             style: TextStyle(
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w600,
@@ -318,7 +439,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                                   ),
                                   widthBox4,
                                   Text(
-                                    job.location ?? '',
+                                    job.locationType ?? '',
                                     style: TextStyle(
                                       fontSize: 12.sp,
                                       fontWeight: FontWeight.w400,
@@ -378,6 +499,37 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   heightBox20,
 
                   Text(
+                    'Location',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xffD1D1D1),
+                    ),
+                  ),
+                  heightBox10,
+                  DetailsCard(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            job.location ?? 'Not mentioned',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xff8C8C8C),
+                            ),
+                            textAlign: TextAlign.justify,
+
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  heightBox20,
+                  Text(
                     'Description',
                     style: TextStyle(
                       fontSize: 14.sp,
@@ -418,6 +570,43 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                                 color: LightThemeColors.blueColor,
                               ),
                             ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  heightBox20,
+
+                  Text(
+                    'Application Type',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xffD1D1D1),
+                    ),
+                  ),
+                  heightBox10,
+                  DetailsCard(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            job.applicationType == 'CHAT'
+                                ? 'Chat'
+                                : job.applicationType == 'EXTERNAL'
+                                ? 'External'
+                                : job.applicationType ?? 'Email',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xff8C8C8C),
+                            ),
+                            textAlign: TextAlign.justify,
+                            maxLines: isDescriptionExpanded ? 4 : 10,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
