@@ -16,6 +16,7 @@ import 'package:wisper/app/core/widgets/details_card.dart';
 import 'package:wisper/app/modules/calls/views/audio_call_screen.dart';
 import 'package:wisper/app/modules/calls/views/video_call_screen.dart';
 import 'package:wisper/app/modules/chat/controller/block_user_controller.dart';
+import 'package:wisper/app/modules/profile/views/others_business_screen.dart';
 import 'package:wisper/app/modules/profile/views/others_person_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
@@ -25,6 +26,7 @@ class ChatHeader extends StatefulWidget {
   final String? status;
   final String? memberId;
   final String? chatId;
+  final bool? isPerson;
   const ChatHeader({
     super.key,
     this.name,
@@ -32,6 +34,7 @@ class ChatHeader extends StatefulWidget {
     this.status,
     this.memberId,
     this.chatId,
+    this.isPerson,
   });
 
   @override
@@ -46,6 +49,7 @@ class _ChatHeaderState extends State<ChatHeader> {
   @override
   void initState() {
     super.initState();
+    print(' is person: ${widget.isPerson}');
     _initializeCamera();
   }
 
@@ -110,7 +114,6 @@ class _ChatHeaderState extends State<ChatHeader> {
             color: Colors.white,
           ),
         ),
-
         Row(
           children: [
             CrashSafeImage(
@@ -153,7 +156,11 @@ class _ChatHeaderState extends State<ChatHeader> {
       ],
       optionActions: {
         '0': () {
-          Get.to(() => OthersPersonScreen(userId: 'DemoId'));
+          Get.to(
+            () => widget.isPerson!
+                ? OthersPersonScreen(userId: widget.memberId ?? '')
+                : OthersBusinessScreen(userId: widget.memberId ?? ''),
+          );
         },
         '1': () {
           _showMutePopup();
@@ -183,43 +190,54 @@ class _ChatHeaderState extends State<ChatHeader> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Row(
-                  children: [
-                    CircleIconWidget(
-                      imagePath: Assets.images.arrowBack.keyName,
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      radius: 13,
-                    ),
-                    widthBox10,
-                    CircleAvatar(
-                      backgroundImage: AssetImage(Assets.images.image.keyName),
-                      radius: 20,
-                    ),
-                    widthBox10,
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.name!,
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
+                GestureDetector(
+                  onTap: () {
+                    Get.to(
+                      () => widget.isPerson!
+                          ? OthersPersonScreen(userId: widget.memberId ?? '')
+                          : OthersBusinessScreen(userId: widget.memberId ?? ''),
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      CircleIconWidget(
+                        imagePath: Assets.images.arrowBack.keyName,
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        radius: 13,
+                      ),
+                      widthBox10,
+                      CircleAvatar(
+                        backgroundImage: AssetImage(
+                          Assets.images.image.keyName,
                         ),
-                        Text(
-                          widget.status!,
-                          style: GoogleFonts.poppins(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w400,
-                            color: LightThemeColors.themeGreyColor,
+                        radius: 20,
+                      ),
+                      widthBox10,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.name!,
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          Text(
+                            widget.status!,
+                            style: GoogleFonts.poppins(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w400,
+                              color: LightThemeColors.themeGreyColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
                 Row(
                   children: [

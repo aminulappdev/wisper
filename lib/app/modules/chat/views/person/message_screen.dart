@@ -14,6 +14,7 @@ class ChatScreen extends StatefulWidget {
   final String? receiverName;
   final String? receiverImage;
   final String? chatId;
+  final bool? isPerson;
 
   const ChatScreen({
     super.key,
@@ -21,6 +22,7 @@ class ChatScreen extends StatefulWidget {
     this.receiverName,
     this.receiverImage,
     this.chatId,
+    this.isPerson,
   });
 
   @override
@@ -48,6 +50,7 @@ class _ChatScreenState extends State<ChatScreen> {
       body: Column(
         children: [
           ChatHeader(
+            isPerson: widget.isPerson,
             chatId: widget.chatId,
             name: widget.receiverName,
             image: widget.receiverImage,
@@ -84,8 +87,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   return MessageBubble(
                     message: msg,
                     isMe: isMe,
-                    fileUrl:
-                        imageUrl, // পুরানো নাম রেখেছি, কিন্তু এটা এখন সব file-এর URL
+                    fileUrl: imageUrl,
                     fileType: msg[SocketMessageKeys.fileType] ?? '',
                     senderImage: msg[SocketMessageKeys.senderImage],
                     senderName: msg[SocketMessageKeys.senderName],

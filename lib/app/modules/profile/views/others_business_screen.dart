@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
+import 'package:wisper/app/core/utils/date_formatter.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
@@ -93,6 +94,10 @@ class _OthersBusinessScreenState extends State<OthersBusinessScreen> {
 
           // Data is loaded — now safe to access without fear of null
           final business = controller.profileData?.auth?.business;
+          final createdAt = DateTime.now();
+          final DateFormatter dateFormatter = createdAt != null
+          ? DateFormatter(createdAt)
+          : DateFormatter(DateTime.now());
 
           return Column(
             children: [
@@ -149,8 +154,9 @@ class _OthersBusinessScreenState extends State<OthersBusinessScreen> {
               ),
               SizedBox(height: 10.h),
               LocationInfo(
-                isDate: false,
+                
                 location: business?.address ?? 'No Address',
+                date: dateFormatter.getShortDateFormat(),
               ),
               SizedBox(height: 20.h),
               const StraightLiner(height: 0.4, color: Color(0xff454545)),

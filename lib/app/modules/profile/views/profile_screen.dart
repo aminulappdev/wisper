@@ -303,7 +303,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               LocationInfo(
                 location: displayAddress ?? 'Location not set',
-                date: dateFormatter.getFullDateFormat(),
+                date: dateFormatter.getShortDateFormat(),
               ),
 
               SizedBox(height: 20.h),

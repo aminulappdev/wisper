@@ -90,21 +90,27 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
                           // এখানে অন্য জনের নাম বের করছি সার্চের জন্য
                           final currentUserId =
-                              StorageUtil.getData(StorageUtil.userId) as String?;
+                              StorageUtil.getData(StorageUtil.userId)
+                                  as String?;
                           final other = chat.participants.firstWhereOrNull(
-                              (p) => p.auth?.id != currentUserId);
+                            (p) => p.auth?.id != currentUserId,
+                          );
 
-                          final receiverAuth = other?.auth ?? chat.participants.first.auth;
+                          final receiverAuth =
+                              other?.auth ?? chat.participants.first.auth;
 
                           if (type == 'GROUP') {
-                            nameToSearch = chat.group?.name?.toLowerCase() ?? '';
+                            nameToSearch =
+                                chat.group?.name?.toLowerCase() ?? '';
                           } else if (type == 'CLASS') {
-                            nameToSearch = chat.chatClass?.name?.toLowerCase() ?? '';
+                            nameToSearch =
+                                chat.chatClass?.name?.toLowerCase() ?? '';
                           } else {
-                            nameToSearch = (receiverAuth?.person?.name ??
-                                    receiverAuth?.business?.name ??
-                                    '')
-                                .toLowerCase();
+                            nameToSearch =
+                                (receiverAuth?.person?.name ??
+                                        receiverAuth?.business?.name ??
+                                        '')
+                                    .toLowerCase();
                           }
                           return nameToSearch.contains(query);
                         }).toList();
@@ -146,9 +152,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
                           StorageUtil.getData(StorageUtil.userId) as String?;
 
                       // নিরাপদে অন্য জনকে বের করা
-                      final otherParticipant = chat.participants.firstWhereOrNull(
-                        (p) => p.auth?.id != currentUserId,
-                      );
+                      final otherParticipant = chat.participants
+                          .firstWhereOrNull((p) => p.auth?.id != currentUserId);
 
                       // যদি না পায় তাহলে প্রথম জনকেই নেবে (কখনোই null হবে না)
                       final receiverParticipant =
@@ -157,11 +162,13 @@ class _ChatListScreenState extends State<ChatListScreen> {
                       final receiverAuth = receiverParticipant.auth;
 
                       // নাম আর ইমেজ সঠিকভাবে বের করা
-                      final displayName = receiverAuth?.person?.name ??
+                      final displayName =
+                          receiverAuth?.person?.name ??
                           receiverAuth?.business?.name ??
                           'Unknown';
 
-                      final displayImage = receiverAuth?.person?.image ??
+                      final displayImage =
+                          receiverAuth?.person?.image ??
                           receiverAuth?.business?.image ??
                           Assets.images.image.keyName;
 
@@ -171,8 +178,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
                       final tileName = type == 'GROUP'
                           ? chat.group?.name ?? 'Group Chat'
                           : type == 'CLASS'
-                              ? chat.chatClass?.name ?? 'Class Chat'
-                              : displayName;
+                          ? chat.chatClass?.name ?? 'Class Chat'
+                          : displayName;
 
                       final tileImage = (type == 'GROUP' || type == 'CLASS')
                           ? Assets.images.image.keyName
@@ -186,24 +193,33 @@ class _ChatListScreenState extends State<ChatListScreen> {
                       return MemberListTile(
                         onTap: () {
                           if (type == 'GROUP') {
-                            Get.to(() => GroupChatScreen(
-                                  chatId: chat.id,
-                                  groupName: chat.group?.name ?? '',
-                                  groupId: chat.groupId ?? '',
-                                ));
+                            Get.to(
+                              () => GroupChatScreen(
+                                chatId: chat.id,
+                                groupName: chat.group?.name ?? '',
+                                groupId: chat.groupId ?? '',
+                              ),
+                            );
                           } else if (type == 'CLASS') {
-                            Get.to(() => ClassChatScreen(
-                                  chatId: chat.id,
-                                  className: chat.chatClass?.name ?? '',
-                                  classId: chat.classId ?? '',
-                                ));
+                            Get.to(
+                              () => ClassChatScreen(
+                                chatId: chat.id,
+                                className: chat.chatClass?.name ?? '',
+                                classId: chat.classId ?? '',
+                              ),
+                            );
                           } else {
-                            Get.to(() => ChatScreen(
-                                  chatId: chat.id,
-                                  receiverName: displayName,
-                                  receiverId: receiverId,
-                                  receiverImage: displayImage,
-                                ));
+                            Get.to(
+                              () => ChatScreen(
+                                isPerson: receiverAuth?.person == null
+                                    ? false
+                                    : true,
+                                chatId: chat.id,
+                                receiverName: displayName,
+                                receiverId: receiverId,
+                                receiverImage: displayImage,
+                              ),
+                            );
                           }
                         },
                         isGroup: type == 'GROUP',
@@ -212,8 +228,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
                         name: tileName,
                         message: lastMessageText,
                         time: time,
-                        unreadMessageCount:
-                            (chat.count?.messages ?? 0).toString(),
+                        unreadMessageCount: (chat.count?.messages ?? 0)
+                            .toString(),
                       );
                     },
                   );

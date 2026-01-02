@@ -205,43 +205,55 @@ class _GroupChatHeaderState extends State<GroupChatHeader> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Row(
-                  children: [
-                    CircleIconWidget(
-                      imagePath: Assets.images.arrowBack.keyName,
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      radius: 13,
-                    ),
-                    widthBox10,
-                    CircleAvatar(
-                      backgroundImage: AssetImage(Assets.images.image.keyName),
-                      radius: 20,
-                    ),
-                    widthBox10,
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.groupName,
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
+                GestureDetector(
+                  onTap: () {
+                    Get.to(
+                      () => GroupInfoScreen(
+                        groupId: widget.groupId,
+                        chatId: widget.chatId,
+                      ),
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      CircleIconWidget(
+                        imagePath: Assets.images.arrowBack.keyName,
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        radius: 13,
+                      ),
+                      widthBox10,
+                      CircleAvatar(
+                        backgroundImage: AssetImage(
+                          Assets.images.image.keyName,
                         ),
-                        Text(
-                          'online',
-                          style: GoogleFonts.poppins(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w400,
-                            color: LightThemeColors.themeGreyColor,
+                        radius: 20,
+                      ),
+                      widthBox10,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.groupName,
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          Text(
+                            'online',
+                            style: GoogleFonts.poppins(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w400,
+                              color: LightThemeColors.themeGreyColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
                 Row(
                   children: [

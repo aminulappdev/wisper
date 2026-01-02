@@ -16,6 +16,7 @@ class InfoCard extends StatelessWidget {
   final VoidCallback? trailingOnTap;
   final GlobalKey? trailingKey;
   final VoidCallback? showMember;
+  final bool? isBack;
 
   const InfoCard({
     super.key,
@@ -29,6 +30,7 @@ class InfoCard extends StatelessWidget {
     this.trailingKey,
     this.showMember,
     this.isEditImage = true,
+    this.isBack = false,
   });
 
   // Helper to safely determine the correct ImageProvider
@@ -76,7 +78,16 @@ class InfoCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 80.h, width: 20.w),
+              isBack == true
+                  ? CircleIconWidget(
+                      radius: 14,
+                      iconRadius: 18,
+                      imagePath: Assets.images.cross.keyName,
+                      onTap: () {
+                        Navigator.pop(context);
+                      }, // Use passed callback
+                    )
+                  : Container(),
               Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,

@@ -51,7 +51,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
             chatId: widget.chatId ?? '',
             groupName: widget.groupName ?? '',
             groupImage: widget.groupImage ?? '',
-            groupId: widget.groupId ?? '',
+            groupId: widget.groupId ?? '', 
           ),
 
           Expanded(
