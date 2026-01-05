@@ -1,15 +1,21 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/utils/video_player.dart';
+import 'package:wisper/app/core/widgets/circle_icon.dart';
+import 'package:wisper/gen/assets.gen.dart';
 
 class MessageBubble extends StatelessWidget {
   final Map<String, dynamic> message;
   final bool isMe;
-  final String fileUrl; // imageUrl এর বদলে fileUrl
-  final String fileType; // নতুন
+  final String fileUrl;
+  final String fileType;
   final String senderName;
   final String? senderImage;
   final String time;
@@ -21,7 +27,7 @@ class MessageBubble extends StatelessWidget {
     required this.isMe,
     required this.fileUrl,
     required this.fileType,
-    required this.senderName, 
+    required this.senderName,
     this.senderImage,
     required this.time,
     this.isGroupChat = false,
@@ -33,8 +39,204 @@ class MessageBubble extends StatelessWidget {
     return Uri.tryParse(fileUrl)?.pathSegments.last ?? 'file';
   }
 
+  // Helper: get file extension
+  String _getFileExtension() {
+    if (fileUrl.isEmpty) return '';
+    final uri = Uri.tryParse(fileUrl);
+    if (uri == null) return '';
+
+    final path = uri.path;
+    if (path.contains('.')) {
+      return path.split('.').last.split('?').first.toLowerCase();
+    }
+    return '';
+  }
+
+  // Helper: get file icon
+  IconData _getFileIcon(String extension) {
+    switch (extension) {
+      case 'pdf':
+        return Icons.picture_as_pdf;
+      case 'doc':
+      case 'docx':
+        return Icons.description;
+      case 'xls':
+      case 'xlsx':
+        return Icons.table_chart;
+      case 'ppt':
+      case 'pptx':
+        return Icons.slideshow;
+      case 'txt':
+        return Icons.text_fields;
+      case 'zip':
+      case 'rar':
+        return Icons.folder_zip;
+      default:
+        return Icons.insert_drive_file;
+    }
+  }
+
+  void _openFullScreenImage() {
+    Get.to(
+      () => Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.black,
+          foregroundColor: Colors.white,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Get.back(),
+          ),
+        ),
+        backgroundColor: Colors.black,
+        body: Center(
+          child: InteractiveViewer(
+            panEnabled: true,
+            minScale: 0.5,
+            maxScale: 4.0,
+            child: Image.network(
+              fileUrl,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Center(
+                  child: CircularProgressIndicator(
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                              loadingProgress.expectedTotalBytes!
+                        : null,
+                  ),
+                );
+              },
+              errorBuilder: (context, error, stackTrace) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.error, color: Colors.red, size: 50),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Failed to load image',
+                        style: TextStyle(color: Colors.white, fontSize: 16.sp),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    Future<void> _handleFileOpen() async {
+      if (fileUrl.isEmpty) {
+        showSnackBarMessage(context, "No file available", true);
+        return;
+      }
+
+      final extension = _getFileExtension();
+      final fileName = _getFileName();
+
+      // Show loading
+      Get.dialog(
+        const Center(child: CircularProgressIndicator()),
+        barrierDismissible: false,
+      );
+
+      try {
+        // For PDF - open in app
+        if (extension == 'pdf') {
+          Get.back(); // Remove loading dialog
+          Get.to(
+            () => Scaffold(
+              appBar: AppBar(
+                leading: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CircleIconWidget(
+                    iconRadius: 18.r,
+                    imagePath: Assets.images.cross.keyName,
+                    onTap: () {
+                      Get.back();
+                    },
+                  ),
+                ),
+                title: Text(fileName, style: const TextStyle(fontSize: 16)),
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+                elevation: 0,
+              ),
+              backgroundColor: Colors.grey[900],
+              body: SfPdfViewer.network(
+                fileUrl,
+                onDocumentLoadFailed: (PdfDocumentLoadFailedDetails details) {
+                  Get.back();
+                  showSnackBarMessage(
+                    Get.context!,
+                    "Failed to load PDF: ${details.description}",
+                    true,
+                  );
+                },
+                onDocumentLoaded: (PdfDocumentLoadedDetails details) {
+                  // PDF loaded successfully
+                },
+              ),
+            ),
+          );
+          return;
+        }
+
+        // For other files - download and open with external app
+        final dir = await getTemporaryDirectory();
+        final filePath = '${dir.path}/$fileName';
+
+        // Download the file
+        await Dio().download(
+          fileUrl,
+          filePath,
+          onReceiveProgress: (received, total) {
+            if (total != -1) {
+              print(
+                'Download progress: ${(received / total * 100).toStringAsFixed(0)}%',
+              );
+            }
+          },
+        );
+
+        Get.back(); // Remove loading dialog
+
+        // Open with external app
+        final OpenResult result = await OpenFilex.open(filePath);
+
+        switch (result.type) {
+          case ResultType.done:
+            // Successfully opened
+            break;
+          case ResultType.fileNotFound:
+            showSnackBarMessage(Get.context!, 'File not found', true);
+            break;
+          case ResultType.noAppToOpen:
+            showSnackBarMessage(
+              Get.context!,
+              'No app found to open this file',
+              true,
+            );
+            break;
+          case ResultType.permissionDenied:
+            showSnackBarMessage(Get.context!, 'Permission denied', true);
+            break;
+          case ResultType.error:
+          default:
+            showSnackBarMessage(Get.context!, 'Error: ${result.message}', true);
+            break;
+        }
+      } catch (e) {
+        Get.back(); // Remove loading dialog
+        showSnackBarMessage(Get.context!, 'Error: ${e.toString()}', true);
+      }
+    }
+
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Row(
@@ -98,10 +300,7 @@ class MessageBubble extends StatelessWidget {
                       if (fileUrl.isNotEmpty) ...[
                         if (fileType == 'IMAGE')
                           GestureDetector(
-                            onTap: () {
-                              // Optional: full screen image viewer
-                              // Get.to(() => FullScreenImage(url: fileUrl));
-                            },
+                            onTap: _openFullScreenImage,
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(12.r),
                               child: Image.network(
@@ -109,6 +308,27 @@ class MessageBubble extends StatelessWidget {
                                 height: 200.h,
                                 width: double.infinity,
                                 fit: BoxFit.cover,
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return Container(
+                                        height: 200.h,
+                                        color: Colors.grey[300],
+                                        child: Center(
+                                          child: CircularProgressIndicator(
+                                            value:
+                                                loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null
+                                                ? loadingProgress
+                                                          .cumulativeBytesLoaded /
+                                                      loadingProgress
+                                                          .expectedTotalBytes!
+                                                : null,
+                                          ),
+                                        ),
+                                      );
+                                    },
                                 errorBuilder: (_, __, ___) => Container(
                                   height: 200.h,
                                   color: Colors.grey[300],
@@ -137,12 +357,16 @@ class MessageBubble extends StatelessWidget {
                               child: Stack(
                                 alignment: Alignment.center,
                                 children: [
-                                  // Optional: blurred preview if you have thumbnail
-                                  // Otherwise just black background
-                                  const Icon(
-                                    Icons.play_circle_filled,
-                                    size: 60,
-                                    color: Colors.white,
+                                  // Video thumbnail (if available)
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12.r),
+                                    ),
+                                    child: const Icon(
+                                      Icons.play_circle_filled,
+                                      size: 60,
+                                      color: Colors.white70,
+                                    ),
                                   ),
                                   Positioned(
                                     bottom: 8,
@@ -173,49 +397,59 @@ class MessageBubble extends StatelessWidget {
                           )
                         else // Other files (pdf, doc, etc.)
                           GestureDetector(
-                            onTap: () async {
-                              if (await canLaunchUrl(Uri.parse(fileUrl))) {
-                                await launchUrl(
-                                  Uri.parse(fileUrl),
-                                  mode: LaunchMode.externalApplication,
-                                );
-                              }
-                            },
+                            onTap: _handleFileOpen,
                             child: Container(
-                              padding: EdgeInsets.all(12.r),
+                              padding: EdgeInsets.all(4.r),
                               decoration: BoxDecoration(
                                 color: isMe
                                     ? Colors.white.withOpacity(0.2)
                                     : Colors.grey[200],
                                 borderRadius: BorderRadius.circular(12.r),
+                                border: Border.all(
+                                  color: isMe
+                                      ? Colors.white30
+                                      : Colors.grey[300]!,
+                                  width: 1,
+                                ),
                               ),
                               child: Row(
                                 children: [
                                   Icon(
-                                    Icons.description,
-                                    size: 26.r,
+                                    _getFileIcon(_getFileExtension()),
+                                    size: 28.r,
                                     color: isMe
                                         ? Colors.white
-                                        : Colors.grey[700],
+                                        : Colors.blue[700],
                                   ),
                                   SizedBox(width: 12.w),
                                   Expanded(
-                                    child: Text(
-                                      _getFileName(),
-                                      style: TextStyle(
-                                        fontSize: 12.sp,
-                                        color: isMe
-                                            ? Colors.white
-                                            : Colors.black,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          _getFileName(),
+                                          style: TextStyle(
+                                            fontSize: 12.sp,
+                                            color: isMe
+                                                ? Colors.white
+                                                : Colors.black,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        SizedBox(height: 4.h),
+                                        Text(
+                                          _getFileExtension().toUpperCase(),
+                                          style: TextStyle(
+                                            fontSize: 10.sp,
+                                            color: isMe
+                                                ? Colors.white70
+                                                : Colors.grey[600],
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                  Icon(
-                                    Icons.download,
-                                    size: 24.r,
-                                    color: isMe ? Colors.white70 : Colors.grey,
                                   ),
                                 ],
                               ),
@@ -226,11 +460,16 @@ class MessageBubble extends StatelessWidget {
 
                       // Text Message
                       if (message['text'].toString().isNotEmpty)
-                        Text(
-                          message['text'].toString(),
-                          style: TextStyle(
-                            fontSize: 13.sp,
-                            color: isMe ? Colors.white : Colors.black,
+                        Padding(
+                          padding: EdgeInsets.only(
+                            top: fileUrl.isNotEmpty ? 8.h : 0,
+                          ),
+                          child: Text(
+                            message['text'].toString(),
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              color: isMe ? Colors.white : Colors.black,
+                            ),
                           ),
                         ),
                     ],
@@ -238,31 +477,34 @@ class MessageBubble extends StatelessWidget {
                 ),
 
                 // Time + seen tick
-                Row(
-                  mainAxisAlignment: isMe
-                      ? MainAxisAlignment.end
-                      : MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      time,
-                      style: TextStyle(
-                        fontSize: 10.sp,
-                        color: isMe ? Colors.white70 : Colors.grey,
+                Padding(
+                  padding: EdgeInsets.only(top: 2.h),
+                  child: Row(
+                    mainAxisAlignment: isMe
+                        ? MainAxisAlignment.end
+                        : MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        time,
+                        style: TextStyle(
+                          fontSize: 10.sp,
+                          color: isMe ? Colors.white70 : Colors.grey[600],
+                        ),
                       ),
-                    ),
-                    if (isMe) ...[
-                      const SizedBox(width: 8),
-                      Icon(
-                        message['seen'] == true
-                            ? Icons.check_circle
-                            : Icons.check,
-                        size: 16,
-                        color: message['seen'] == true
-                            ? Colors.cyan
-                            : Colors.white70,
-                      ),
+                      if (isMe) ...[
+                        SizedBox(width: 6.w),
+                        Icon(
+                          message['seen'] == true
+                              ? Icons.check_circle
+                              : Icons.check,
+                          size: 14.sp,
+                          color: message['seen'] == true
+                              ? Colors.cyan
+                              : Colors.white70,
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ],
             ),

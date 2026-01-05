@@ -127,13 +127,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  void _showCreateGroup(List<RecommendationItemModel> model) {
+  void _showCreateGroup() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
         return RcommendationButtomSheet(
-          recommendationItemModel: model,
           isCreateReview: false,
           recieverId: StorageUtil.getData(StorageUtil.userId),
         );
@@ -239,7 +238,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       height: 31.h,
                       width: 116.w,
                       child: CustomElevatedButton(
-                        textSize: 12,
+                        textSize: 12, 
                         title: 'Share Profile',
                         onPress: () {},
                         borderRadius: 50,
@@ -273,24 +272,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
               userRole == 'PERSON'
                   ? SizedBox(
                       height: 30.h,
-                      child: Obx(() {
-                        // Safely get the list, default to empty if null
-                        final List<RecommendationItemModel> recList =
-                            recommendationController.recommendationData ?? [];
+                      child: GetBuilder<AllRecommendationController>(
+                        builder: (controller) {
+                          final int count =
+                              controller.recommendationData.length;
 
-                        if (recommendationController.inProgress) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
+                          return Recommendation(
+                            isEmpty: count == 0,
+                            onTap:
+                                _showCreateGroup, // লিস্ট পাস না করে ফাংশন কল
+                            count: count,
                           );
-                        }
-
-                        return Recommendation(
-                          onTap: () {
-                            _showCreateGroup(recList);
-                          },
-                          count: recList.length,
-                        );
-                      }),
+                        },
+                      ),
                     )
                   : const SizedBox.shrink(),
 

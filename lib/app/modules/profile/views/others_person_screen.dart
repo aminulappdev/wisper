@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
+import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart' show DateFormatter;
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
@@ -9,16 +10,18 @@ import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/line_widget.dart';
 import 'package:wisper/app/core/widgets/shimmer/info_card_shimmer.dart';
+import 'package:wisper/app/modules/chat/controller/all_connection_controller.dart';
 import 'package:wisper/app/modules/chat/controller/create_chat_controller.dart';
 import 'package:wisper/app/modules/chat/views/person/message_screen.dart';
 import 'package:wisper/app/modules/chat/widgets/location_info.dart';
 import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart';
+import 'package:wisper/app/modules/homepage/controller/add_request_controller.dart';
 import 'package:wisper/app/modules/homepage/views/my_resume_section.dart';
 import 'package:wisper/app/modules/homepage/views/others_post_section.dart';
 import 'package:wisper/app/modules/profile/controller/person/others_profile_controller.dart';
 import 'package:wisper/app/modules/profile/controller/recommendetion_controller.dart';
-import 'package:wisper/app/modules/profile/model/recommendation_model.dart';
-import 'package:wisper/app/modules/profile/views/person/edit_person_profile_screen.dart';
+import 'package:wisper/app/modules/profile/controller/remove_connection_controller.dart';
+import 'package:wisper/app/modules/profile/views/create_review.dart';
 import 'package:wisper/app/modules/profile/views/recommendation_screen.dart';
 import 'package:wisper/app/modules/profile/widget/info_card.dart';
 import 'package:wisper/app/modules/profile/widget/recommendation_widget.dart';
@@ -37,17 +40,27 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
   final CreateChatController createChatController = Get.put(
     CreateChatController(),
   );
+  final AllConnectionController connectionController = Get.put(
+    AllConnectionController(),
+  );
+  final RemoveConnectionController removeConnectionController = Get.put(
+    RemoveConnectionController(),
+  );
   final AllRecommendationController recommendationController = Get.put(
     AllRecommendationController(),
+  );
+  final AddRequestController addRequestController = Get.put(
+    AddRequestController(),
   );
 
   int selectedIndex = 0;
 
   @override
   void initState() {
-    controller.getOthersProfile(widget.userId);
-
     super.initState();
+
+    // প্রোফাইল এবং রেকমেন্ডেশন লোড করো
+    controller.getOthersProfile(widget.userId);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       recommendationController.getAllRecommendations(widget.userId);
@@ -56,21 +69,26 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
 
   @override
   void dispose() {
-    controller.dispose();
-    recommendationController.dispose();
+    // Get.put করা controller গুলো dispose করো (যদি একাধিকবার put না করতে চাও)
+    Get.delete<OtherPersonController>();
+    Get.delete<CreateChatController>();
+    Get.delete<AllConnectionController>();
+    Get.delete<RemoveConnectionController>();
+    Get.delete<AllRecommendationController>();
+    Get.delete<AddRequestController>();
     super.dispose();
   }
 
+  // চ্যাট তৈরি করা
   void createChat(String? memberId, String? memberName, String? memberImage) {
     showLoadingOverLay(
       asyncFunction: () async =>
-          await performCreateChat(context, memberId, memberName, memberImage),
+          await performCreateChat(memberId, memberName, memberImage),
       msg: 'Please wait...',
     );
   }
 
   Future<void> performCreateChat(
-    BuildContext context,
     String? memberId,
     String? memberName,
     String? memberImage,
@@ -79,185 +97,282 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
       memberId: widget.userId,
     );
 
-    if (isSuccess) {
-      var chatId = createChatController.chatId;
+    if (isSuccess && mounted) {
       Get.to(
-        ChatScreen(
-          chatId: chatId,
+        () => ChatScreen(
+          chatId: createChatController.chatId,
           receiverId: memberId ?? '',
           receiverImage: memberImage ?? '',
           receiverName: memberName ?? '',
         ),
       );
-    } else {
+    } else if (mounted) {
       showSnackBarMessage(context, createChatController.errorMessage, true);
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+  // কানেকশন রিমুভ
+  void removeConnection() {
+    showLoadingOverLay(
+      asyncFunction: () async => await performRemoveConnection(),
+      msg: 'Removing connection...',
+    );
+  }
+
+  Future<void> performRemoveConnection() async {
+    final bool isSuccess = await removeConnectionController.deleteConnection(
+      connectionMemberId: widget.userId,
+    );
+
+    if (isSuccess && mounted) {
+      controller.getOthersProfile(widget.userId); // রিফ্রেশ প্রোফাইল
+      showSnackBarMessage(context, 'Connection removed', false);
+      Navigator.pop(context); // bottom sheet বন্ধ
+    } else if (mounted) {
+      showSnackBarMessage(context, 'Failed to remove connection', true);
+    }
+  }
+
+  // রিকোয়েস্ট পাঠানো
+  void addRequest() {
+    showLoadingOverLay(
+      asyncFunction: () async => await performAddRequest(),
+      msg: 'Sending request...',
+    );
+  }
+
+  Future<void> performAddRequest() async {
+    final bool isSuccess = await addRequestController.addRequest(
+      receiverId: widget.userId,
+    );
+
+    if (isSuccess && mounted) {
+      controller.getOthersProfile(widget.userId);
+      showSnackBarMessage(context, 'Request sent successfully', false);
+    } else if (mounted) {
+      showSnackBarMessage(context, addRequestController.errorMessage, true);
+    }
+  }
+
+  // রেকমেন্ডেশন বটম শিট দেখানো (লিস্ট পাস না করে!)
+  void _showRecommendationSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => RcommendationButtomSheet(
+        recieverId: widget.userId,
+        isCreateReview: true, // অন্যের প্রোফাইলে রিভিউ দিতে পারবে
+      ),
+    );
+  }
+
+  // রিমুভ কানেকশন কনফার্মেশন
+  void _showRemoveConnection() {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => Container(
+        color: Colors.black,
+        height: 250.h,
+        padding: const EdgeInsets.all(20.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 30.h),
-            Obx(() {
-              if (controller.inProgress) {
-                return InfoCardShimmerEffectWidget();
-              }
-              {
-                return InfoCard(
-                  isBack: true,
-                  isEditImage: false,
-                  isTrailing: false,
-                  imagePath: controller.profileData?.auth?.person?.image ?? '',
-                  editOnTap: () {},
-                  title: controller.profileData?.auth?.person?.name ?? '',
-                  memberInfo: controller.profileData?.auth?.person?.title ?? '',
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircleIconWidget(
-                        imagePath: Assets.images.call.keyName,
-                        onTap: () {},
-                        radius: 15,
-                        color: LightThemeColors.blueColor,
-                        iconColor: Colors.white,
-                      ),
-                      SizedBox(width: 10.w),
-                      CircleIconWidget(
-                        imagePath: Assets.images.unselectedChat.keyName,
-                        onTap: () {
-                          print('call');
-                          createChat(
-                            controller.profileData?.auth?.person?.id ?? '',
-                            controller.profileData?.auth?.person?.name ?? '',
-                            controller.profileData?.auth?.person?.image ?? '',
-                          );
-                        },
-                        radius: 15,
-                        color: LightThemeColors.blueColor,
-                        iconColor: Colors.white,
-                      ),
-                      SizedBox(width: 10.w),
-                      SizedBox(
-                        height: 31.h,
-                        width: 116.w,
-                        child: CustomElevatedButton(
-                          color: LightThemeColors.blueColor,
-                          textSize: 12,
-                          title: 'Block',
-                          onPress: () {
-                            Get.to(() => const EditPersonProfileScreen());
-                          },
-                          borderRadius: 50,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }
-            }),
-            SizedBox(height: 10.h),
-            Obx(() {
-              if (recommendationController.inProgress) {
-                return SizedBox(height: 30, child: const Center());
-              } else if (recommendationController.recommendationData?.isEmpty ??
-                  true) {
-                return Recommendation(
-                  onTap: () {
-                    _showCreateGroup(
-                      recommendationController.recommendationData ?? [],
-                    );
-                  },
-                  count: 0,
-                );
-              } else {
-                return Recommendation(
-                  onTap: () {
-                    _showCreateGroup(
-                      recommendationController.recommendationData ?? [],
-                    );
-                  },
-                  count:
-                      recommendationController.recommendationData?.length ?? 0,
-                );
-              }
-            }),
-            SizedBox(height: 10.h),
-            Obx(() {
-              if (controller.inProgress) {
-                return const Center();
-              } else {
-                final createdAt = controller.profileData?.auth?.createdAt;
-                final DateFormatter dateFormatter = createdAt != null
-                    ? DateFormatter(createdAt)
-                    : DateFormatter(DateTime.now());
-                return LocationInfo(
-                  date: dateFormatter.getShortDateFormat(),
-                  location:
-                      controller.profileData?.auth?.person?.address ??
-                      'No Location',
-                );
-              }
-            }),
-            SizedBox(height: 20.h),
-            const StraightLiner(height: 0.4, color: Color(0xff454545)),
-            SizedBox(height: 10.h),
+            CircleIconWidget(
+              imagePath: Assets.images.delete.keyName,
+              onTap: () {},
+              iconRadius: 22,
+              radius: 24,
+              color: const Color(0xff312609),
+              iconColor: const Color(0xffDC8B44),
+            ),
+            heightBox20,
+            Text(
+              'Remove Connection?',
+              style: TextStyle(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+            heightBox8,
+            Text(
+              'Are you sure you want to remove this connection?',
+              style: TextStyle(fontSize: 14.sp, color: const Color(0xff9FA3AA)),
+            ),
+            heightBox20,
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = 0;
-                    });
-                  },
-                  child: SelectOptionWidget(
-                    currentIndex: 0,
-                    selectedIndex: selectedIndex,
-                    title: 'Post',
-                    lineColor: const Color.fromARGB(255, 255, 255, 255),
+                Expanded(
+                  child: CustomElevatedButton(
+                    color: const Color.fromARGB(255, 15, 15, 15),
+                    borderColor: const Color(0xff262629),
+                    title: 'Discard',
+                    onPress: () => Navigator.pop(context),
                   ),
                 ),
-                SizedBox(width: 100.w),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = 1;
-                    });
-                  },
-                  child: SelectOptionWidget(
-                    currentIndex: 1,
-                    selectedIndex: selectedIndex,
-                    title: 'Resume',
-                    lineColor: const Color.fromARGB(255, 255, 255, 255),
+                widthBox12,
+                Expanded(
+                  child: CustomElevatedButton(
+                    color: const Color(0xffE62047),
+                    title: 'Remove',
+                    onPress: () {
+                      Navigator.pop(context); // কনফার্মেশন শিট বন্ধ
+                      removeConnection();
+                    },
                   ),
                 ),
               ],
             ),
-            const StraightLiner(height: 0.4, color: Color(0xff454545)),
-            SizedBox(height: 10.h),
-            if (selectedIndex == 0) OthersPostSection(userId: widget.userId),
-            if (selectedIndex == 1) MyResumeSection(userId: widget.userId),
           ],
         ),
       ),
     );
   }
 
-  void _showCreateGroup(List<RecommendationItemModel> model) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (BuildContext context) { 
-        return RcommendationButtomSheet(
-          recommendationItemModel: model,
-          isCreateReview: true,
-          recieverId: widget.userId,
-        );
-      },
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
+        child: Column(
+          children: [
+            SizedBox(height: 30.h),
+
+            // প্রোফাইল কার্ড
+            Obx(() {
+              if (controller.inProgress)
+                return const InfoCardShimmerEffectWidget();
+
+              final person = controller.othersProfileData?.auth?.person;
+
+              return InfoCard(
+                isBack: true,
+                isEditImage: false,
+                isTrailing: false,
+                imagePath: person?.image ?? '',
+                editOnTap: () {},
+                title: person?.name ?? 'Unknown',
+                memberInfo: person?.title ?? '',
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircleIconWidget(
+                      imagePath: Assets.images.call.keyName,
+                      onTap: () {},
+                      radius: 15,
+                      color: LightThemeColors.blueColor,
+                      iconColor: Colors.white,
+                    ),
+                    SizedBox(width: 10.w),
+                    CircleIconWidget(
+                      imagePath: Assets.images.unselectedChat.keyName,
+                      onTap: () =>
+                          createChat(person?.id, person?.name, person?.image),
+                      radius: 15,
+                      color: LightThemeColors.blueColor,
+                      iconColor: Colors.white,
+                    ),
+                    SizedBox(width: 10.w),
+                    SizedBox(
+                      height: 31.h,
+                      width: 116.w,
+                      child: CustomElevatedButton(
+                        color: controller.othersProfileData?.isConnected == true
+                            ? Colors.grey
+                            : LightThemeColors.blueColor,
+                        textSize: 12,
+                        title: controller.othersProfileData?.isConnected == true
+                            ? 'Added'
+                            : 'Add',
+                        onPress:
+                            controller.othersProfileData?.isConnected == true
+                            ? _showRemoveConnection
+                            : addRequest,
+                        borderRadius: 50,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+
+            SizedBox(height: 10.h),
+
+            // রেকমেন্ডেশন উইজেট - GetBuilder দিয়ে real-time update
+            GetBuilder<AllRecommendationController>(
+              builder: (recController) {
+                final int count = recController.recommendationData.length;
+
+                return Recommendation(
+                  isEmpty: count == 0,
+                  onTap: _showRecommendationSheet, // live sheet খুলবে
+                  count: count,
+                );
+              },
+            ),
+
+            SizedBox(height: 10.h),
+
+            // লোকেশন ও জয়েন ডেট
+            Obx(() {
+              if (controller.inProgress) return const SizedBox();
+
+              final createdAt = controller.othersProfileData?.auth?.createdAt;
+              final dateFormatter = createdAt != null
+                  ? DateFormatter(createdAt)
+                  : DateFormatter(DateTime.now());
+
+              return LocationInfo(
+                date: dateFormatter.getShortDateFormat(),
+                location:
+                    controller.othersProfileData?.auth?.person?.address ??
+                    'No Location',
+              );
+            }),
+
+            SizedBox(height: 20.h),
+            const StraightLiner(height: 0.4, color: Color(0xff454545)),
+            SizedBox(height: 10.h),
+
+            // ট্যাব: Post / Resume
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () => setState(() => selectedIndex = 0),
+                  child: SelectOptionWidget(
+                    currentIndex: 0,
+                    selectedIndex: selectedIndex,
+                    title: 'Post',
+                    lineColor: Colors.white,
+                  ),
+                ),
+                SizedBox(width: 100.w),
+                GestureDetector(
+                  onTap: () => setState(() => selectedIndex = 1),
+                  child: SelectOptionWidget(
+                    currentIndex: 1,
+                    selectedIndex: selectedIndex,
+                    title: 'Resume',
+                    lineColor: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+
+            const StraightLiner(height: 0.4, color: Color(0xff454545)),
+            SizedBox(height: 10.h),
+
+            // ট্যাব কন্টেন্ট
+            Expanded(
+              child: selectedIndex == 0
+                  ? OthersPostSection(userId: widget.userId)
+                  : MyResumeSection(userId: widget.userId),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

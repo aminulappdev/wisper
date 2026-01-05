@@ -33,9 +33,16 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  final ProfileController profileController = Get.find<ProfileController>();
-  final BusinessController businessController = Get.find<BusinessController>();
+  final ProfileController profileController = Get.put(ProfileController());
+  final BusinessController businessController = Get.put(BusinessController());
 
+  @override
+  // void initState() {
+  //   super.initState();
+  //   StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
+  //       ? profileController.getMyProfile()
+  //       : businessController.getMyProfile();
+  // }
   @override
   Widget build(BuildContext context) {
     var profileImage = StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
@@ -102,20 +109,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         Get.to(() => const ChangePasswordScreen());
                       },
                     ),
-                    heightBox20,
-                    StraightLiner(height: 0.5),
+                    heightBox10,
                     StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
-                        ? heightBox10
-                        : const SizedBox.shrink(),
-                    StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
-                        ? SettingsFeatureRow(
-                            title: 'Favorites',
-                            onTap: () {
-                              Get.to(() => const FavoriteJobScreen());
-                            },
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              StraightLiner(height: 0.5),
+                              heightBox10,
+
+                              SettingsFeatureRow(
+                                title: 'Favorites',
+                                onTap: () {
+                                  Get.to(() => const FavoriteJobScreen());
+                                },
+                              ),
+                              heightBox10,
+                            ],
                           )
-                        : const SizedBox.shrink(),
-                    heightBox20,
+                        : Container(),
                     StraightLiner(height: 0.5),
                     heightBox10,
                     SettingsFeatureRow(

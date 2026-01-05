@@ -19,7 +19,7 @@ import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
-class MyResumeSection extends StatefulWidget {
+class MyResumeSection extends StatefulWidget { 
   final String userId;
   const MyResumeSection({super.key, required this.userId});
 

@@ -17,104 +17,66 @@ class FileDecodeController extends GetxController {
   String get imageUrl => _url.value;
   set imageUrl(String value) => _url.value = value;
 
-  // নতুন: current file type ট্র্যাক করার জন্য
-  final RxString _currentFileType = ''.obs;
-  String get  currentFileType => _currentFileType.value;
+  // **Reactive RxString getter for ever()**
+  RxString get imageUrlRx => _url;
 
-  // Clear everything
+  final RxString _currentFileType = ''.obs;
+  String get currentFileType => _currentFileType.value;
+
+  bool get hasAttachment => _url.value.isNotEmpty;
+
   void clearAll() {
     _url.value = '';
     _currentFileType.value = '';
+    _errorMessage.value = '';
+    _inProgress.value = false;
   }
 
   Future<bool> imageDecode({File? image}) async {
-    _currentFileType.value = "IMAGE"; // টাইপ সেট
-    _inProgress.value = true;
-
-    try {
-      final NetworkResponse response = await Get.find<NetworkCaller>().postRequest(
-        image: image,
-        keyNameImage: 'file',
-        Urls.fileDecodeUrl,
-        accessToken: StorageUtil.getData(StorageUtil.userAccessToken),
-      );
-
-      if (response.isSuccess && response.responseData != null) {
-        _errorMessage.value = '';
-        _url.value = response.responseData['data']['url'];
-        _inProgress.value = false;
-        return true;
-      } else {
-        _errorMessage.value = response.errorMessage;
-        if (_errorMessage.value.contains('expired')) Get.to(() => SignInScreen());
-        _inProgress.value = false;
-        return false;
-      }
-    } catch (e) {
-      _errorMessage.value = 'Failed to decode image: ${e.toString()}';
-      print('Error decoding image: $e');
-      _inProgress.value = false;
-      return false;
-    }
+    return _decodeFile(file: image, type: 'IMAGE', errorPrefix: 'image');
   }
 
   Future<bool> videoDecode({File? image}) async {
-    _currentFileType.value = "VIDEO"; // টাইপ সেট
-    _inProgress.value = true;
-
-    try {
-      final NetworkResponse response = await Get.find<NetworkCaller>().postRequest(
-        image: image,
-        keyNameImage: 'file',
-        Urls.fileDecodeUrl,
-        accessToken: StorageUtil.getData(StorageUtil.userAccessToken),
-      );
-
-      if (response.isSuccess && response.responseData != null) {
-        _errorMessage.value = '';
-        _url.value = response.responseData['data']['url'];
-        _inProgress.value = false;
-        return true;
-      } else {
-        _errorMessage.value = response.errorMessage;
-        if (_errorMessage.value.contains('expired')) Get.to(() => SignInScreen());
-        _inProgress.value = false;
-        return false;
-      }
-    } catch (e) {
-      _errorMessage.value = 'Failed to decode video: ${e.toString()}';
-      print('Error decoding video: $e');
-      _inProgress.value = false;
-      return false;
-    }
+    return _decodeFile(file: image, type: 'VIDEO', errorPrefix: 'video');
   }
 
   Future<bool> fileDecode({File? image}) async {
-    _currentFileType.value = "DOC"; // টাইপ সেট
+    return _decodeFile(file: image, type: 'DOC', errorPrefix: 'file');
+  }
+
+  Future<bool> _decodeFile({
+    required File? file,
+    required String type,
+    required String errorPrefix,
+  }) async {
+    _currentFileType.value = type;
     _inProgress.value = true;
 
     try {
-      final NetworkResponse response = await Get.find<NetworkCaller>().postRequest(
-        image: image,
+      final NetworkResponse response =
+          await Get.find<NetworkCaller>().postRequest(
+        image: file,
         keyNameImage: 'file',
         Urls.fileDecodeUrl,
         accessToken: StorageUtil.getData(StorageUtil.userAccessToken),
       );
 
       if (response.isSuccess && response.responseData != null) {
-        _errorMessage.value = '';
         _url.value = response.responseData['data']['url'];
+        _errorMessage.value = '';
         _inProgress.value = false;
         return true;
       } else {
         _errorMessage.value = response.errorMessage;
-        if (_errorMessage.value.contains('expired')) Get.to(() => SignInScreen());
         _inProgress.value = false;
+
+        if (_errorMessage.value.contains('expired')) {
+          Get.offAll(() => SignInScreen());
+        }
         return false;
       }
     } catch (e) {
-      _errorMessage.value = 'Failed to decode file: ${e.toString()}';
-      print('Error decoding file: $e');
+      _errorMessage.value = 'Failed to decode $errorPrefix: ${e.toString()}';
       _inProgress.value = false;
       return false;
     }

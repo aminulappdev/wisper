@@ -143,7 +143,7 @@ class _OthersBusinessScreenState extends State<OthersBusinessScreen> {
                         color: LightThemeColors.blueColor,
                         textSize: 12,
                         title: 'Block',
-                        onPress: () {
+                        onPress: () { 
                           Get.to(() => const EditPersonProfileScreen());
                         },
                         borderRadius: 50,

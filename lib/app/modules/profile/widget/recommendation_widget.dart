@@ -4,47 +4,66 @@ import 'package:wisper/gen/assets.gen.dart';
 
 class Recommendation extends StatelessWidget {
   final int count;
+  final bool isEmpty;
   final VoidCallback onTap;
-  const Recommendation({super.key, required this.onTap, required this.count});
+
+  const Recommendation({
+    super.key,
+    required this.onTap,
+    required this.count,
+    required this.isEmpty,
+  });
 
   @override
-  Widget build(BuildContext context) { 
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 90),
       child: GestureDetector(
         onTap: onTap,
         child: SizedBox(
           width: double.infinity,
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              CircleAvatar(
-                radius: 10.r,
-                backgroundImage: AssetImage(Assets.images.image.keyName),
-              ),
-              Positioned(
-                left: 10,
-                child: CircleAvatar(
-                  radius: 10.r,
-                  backgroundImage: AssetImage(Assets.images.image.keyName),
-                ),
-              ),
-              Positioned(
-                left: 20,
-                child: CircleAvatar(
-                  radius: 10.r,
-                  backgroundImage: AssetImage(Assets.images.image.keyName),
-                ),
-              ),
-              Positioned(
-                left: 45,
-                child: Text(
+          child: isEmpty
+              ? Text(
                   '$count recommendations',
                   style: TextStyle(fontSize: 13.sp, color: Color(0xff7F8694)),
+                )
+              : Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    CircleAvatar(
+                      radius: 10.r,
+                      backgroundImage: AssetImage(Assets.images.image.keyName),
+                    ),
+                    Positioned(
+                      left: 10,
+                      child: CircleAvatar(
+                        radius: 10.r,
+                        backgroundImage: AssetImage(
+                          Assets.images.image.keyName,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: 20,
+                      child: CircleAvatar(
+                        radius: 10.r,
+                        backgroundImage: AssetImage(
+                          Assets.images.image.keyName,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: 45,
+                      child: Text(
+                        '$count recommendations',
+                        style: TextStyle(
+                          fontSize: 13.sp,
+                          color: Color(0xff7F8694),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
         ),
       ),
     );

@@ -9,7 +9,7 @@ class SeetingsFeatureCard extends StatelessWidget {
   final String iconPath;
   final String title;
   final Widget widget;
-  const SeetingsFeatureCard({
+  const SeetingsFeatureCard({ 
     super.key,
     required this.iconPath,
     required this.title,

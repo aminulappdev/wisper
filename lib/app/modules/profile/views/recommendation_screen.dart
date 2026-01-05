@@ -1,36 +1,36 @@
+// lib/app/modules/profile/views/rcommendation_bottom_sheet.dart (নাম ঠিক করো)
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/get_storage.dart';
+import 'package:wisper/app/modules/profile/controller/recommendetion_controller.dart';
 import 'package:wisper/app/modules/profile/model/recommendation_model.dart';
 import 'package:wisper/app/modules/profile/views/create_review.dart';
 import 'package:wisper/app/modules/profile/widget/reviewCard.dart';
 
-class RcommendationButtomSheet extends StatefulWidget {
+class RcommendationButtomSheet extends StatelessWidget {
   final String? recieverId;
-  final List<RecommendationItemModel> recommendationItemModel;
   final bool isCreateReview;
+
   const RcommendationButtomSheet({
     super.key,
-    required this.recommendationItemModel,
-    this.isCreateReview = true,
     this.recieverId,
-  }); 
+    this.isCreateReview = true,
+  });
 
-  @override
-  State<RcommendationButtomSheet> createState() =>
-      _RcommendationButtomSheetState();
-}
-
-class _RcommendationButtomSheetState extends State<RcommendationButtomSheet> {
   @override
   Widget build(BuildContext context) {
+    final AllRecommendationController controller =
+        Get.find<AllRecommendationController>();
+
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.9,
       ),
       child: Container(
-        color: Color(0xff0D0D0D),
+        color: const Color(0xff0D0D0D),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
@@ -43,86 +43,92 @@ class _RcommendationButtomSheetState extends State<RcommendationButtomSheet> {
                   style: TextStyle(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w800,
+                    color: Colors.white,
                   ),
                 ),
               ),
               heightBox10,
-              Expanded(
-                // Use Expanded to give ListView a bounded height
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  itemCount: widget.recommendationItemModel.length,
 
-                  itemBuilder: (context, index) {
-                    return ReviewCard(
-                      image:
-                          widget
-                              .recommendationItemModel[index]
-                              .giver!
-                              .person!
-                              .image ??
-                          '',
-                      name:
-                          widget
-                              .recommendationItemModel[index]
-                              .giver!
-                              .person
-                              ?.name ??
-                          '',
-                      review: widget.recommendationItemModel[index].text ?? '',
-                      rating: widget.recommendationItemModel[index].rating
-                          .toString(),
+              // Live data from controller
+              Expanded(
+                child: Obx(() {
+                  final List<RecommendationItemModel> items =
+                      controller.recommendationData;
+
+                  if (controller.inProgress) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (items.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        'No recommendations yet',
+                        style: TextStyle(color: Colors.white70),
+                      ),
                     );
-                  },
-                ),
+                  }
+
+                  return ListView.builder(
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      final item = items[index];
+                      final giverPerson = item.giver?.person;
+                      final giverBusiness = item.giver?.business;
+
+                      return ReviewCard(
+                        image: giverPerson?.image ?? giverBusiness?.image ?? '',
+                        name: giverPerson?.name ??
+                            giverBusiness?.name ??
+                            'Anonymous',
+                        review: item.text ?? '',
+                        rating: item.rating.toString(),
+                      );
+                    },
+                  );
+                }),
               ),
+
               heightBox10,
-              widget.isCreateReview == false ||
-                      StorageUtil.getData(StorageUtil.userRole) != 'PERSON'
-                  ? Container()
-                  : Center(
-                      child: GestureDetector(
-                        onTap: () {
-                          _showCreatePost();
-                        },
-                        child: SizedBox(
-                          width: 210,
-                          height: 30,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50.r),
-                              color: Color(0xff3DBCF7).withValues(alpha: 0.20),
-                            ),
-                            child: Center(
-                              child: Text(
-                                '+ Add Recommendation',
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xff2799EA),
-                                ),
-                              ),
-                            ),
+
+              // Add Recommendation button
+              if (isCreateReview &&
+                  StorageUtil.getData(StorageUtil.userRole) == 'PERSON')
+                Center(
+                  child: GestureDetector(
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (_) => CreateReviewSheet(
+                          recieverId: recieverId ?? '',
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: 210.w,
+                      height: 30.h,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50.r),
+                        color: const Color(0xff3DBCF7).withOpacity(0.20),
+                      ),
+                      child: Center(
+                        child: Text(
+                          '+ Add Recommendation',
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xff2799EA),
                           ),
                         ),
                       ),
                     ),
+                  ),
+                ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  void _showCreatePost() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return CreateReviewSheet(recieverId: widget.recieverId ?? '');
-      },
     );
   }
 }

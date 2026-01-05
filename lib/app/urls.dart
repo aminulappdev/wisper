@@ -47,7 +47,7 @@ class Urls {
   static const String boostPackaegesUrl = '$_baseUrl/boost-packages';
   static const String favoritesUrl = '$_baseUrl/favorites';
 
-  static String otherProfileById(String id) {
+   static String otherProfileById(String id) {
     return '$_baseUrl/persons/$id';
   }
 

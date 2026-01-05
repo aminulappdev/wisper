@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:collection/collection.dart'; // <-- এটা যোগ করো (firstWhereOrNull এর জন্য)
 import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/services/socket/socket_service.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
@@ -120,13 +119,16 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   }
 
                   if (filteredChats.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        'No Chats Found',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                    return  Center(
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height / 2,
+                        child: Text(
+                          'No Chats Found',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     );

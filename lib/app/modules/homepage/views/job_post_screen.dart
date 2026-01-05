@@ -271,13 +271,13 @@ class _JobPostScreenState extends State<JobPostScreen> {
               ),
               heightBox16,
 
-              // 7. Location → এখন টেক্সট ফিল্ড (ড্রপডাউন নয়)
-              const Label(label: 'Location'), heightBox6,
-              CustomTextField(
-                controller: _locationC,
-                hintText: 'e.g. Dhaka, Bangladesh | Remote | New York',
-              ),
-              heightBox16,
+              // // 7. Location → এখন টেক্সট ফিল্ড (ড্রপডাউন নয়)
+              // const Label(label: 'Location'), heightBox6,
+              // CustomTextField(
+              //   controller: _locationC,
+              //   hintText: 'e.g. Dhaka, Bangladesh | Remote | New York',
+              // ),
+              // heightBox16,
 
               // 8. Industry
               const Label(label: 'Industry'), heightBox6,

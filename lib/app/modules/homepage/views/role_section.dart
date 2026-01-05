@@ -33,7 +33,7 @@ class _RoleSectionState extends State<RoleSection> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      allRoleController.getAllRole(widget.searchQuery);
+      allRoleController.getAllRole(widget.searchQuery); 
     });
 
     super.initState();

@@ -17,7 +17,7 @@ class InfoCard extends StatelessWidget {
   final GlobalKey? trailingKey;
   final VoidCallback? showMember;
   final bool? isBack;
-
+ 
   const InfoCard({
     super.key,
     required this.imagePath,

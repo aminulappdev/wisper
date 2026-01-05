@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
+import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/modules/payment/controller/payment_url_controller.dart';
 
 class PaymentView extends StatefulWidget {
@@ -9,7 +10,7 @@ class PaymentView extends StatefulWidget {
   static const String routeName = '/payment-webview-screen';
 
   const PaymentView({super.key, required this.paymentData});
- 
+
   @override
   State<PaymentView> createState() => _PaymentViewState();
 }
@@ -55,14 +56,25 @@ class _PaymentViewState extends State<PaymentView> {
     return Scaffold(
       backgroundColor: LightThemeColors.whiteColor,
       appBar: AppBar(
-        backgroundColor: LightThemeColors.primaryColor,
+        backgroundColor: LightThemeColors.darkGreyColor,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 18),
+          icon: const Icon(Icons.close, color: Colors.white, size: 18),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        title: Text(widget.paymentData['title'] ?? '', style: const TextStyle(color: Colors.black)),
+
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Icon(Icons.shield_outlined, color: Colors.white, size: 14),
+            // widthBox4,
+            Text(
+              widget.paymentData['link'] ?? '',
+              style: const TextStyle(color: Colors.white, fontSize: 12),
+            ),
+          ],
+        ),
         centerTitle: true,
       ),
       body: WebViewWidget(controller: _controller),

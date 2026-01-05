@@ -32,6 +32,8 @@ class ProfileData {
           : List<dynamic>.from(json["recommendations"]!.map((x) => x)),
     );
   }
+
+  void operator [](String other) {}
 }
 
 class Auth {

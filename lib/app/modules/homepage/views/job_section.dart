@@ -36,7 +36,7 @@ class _JobSectionState extends State<JobSection> {
         return SizedBox(
           height: 500,
           child: const Center(
-            child: Text('Not available', style: TextStyle(fontSize: 12)),
+            child: Text('Not available', style: TextStyle(fontSize: 12)), 
           ),
         );
       } else {
@@ -64,7 +64,7 @@ class _JobSectionState extends State<JobSection> {
                       '',
                   jobTitle: controller.allJobData[index].title ?? '',
                   salary: controller.allJobData[index].salary.toString(),
-                  location: controller.allJobData[index].location ?? '',
+                  location: controller.allJobData[index].location ?? 'Not Mentioned',
                   jobType: controller.allJobData[index].type ?? '',
                   jobDescription:
                       controller.allJobData[index].description ?? '',

@@ -241,31 +241,31 @@ class _ChatHeaderState extends State<ChatHeader> {
                 ),
                 Row(
                   children: [
-                    CircleIconWidget(
-                      imagePath: Assets.images.call.keyName,
-                      onTap: () {
-                        Get.to(() => AudioCallScreen());
-                      },
-                      radius: 15,
-                      iconColor: Colors.white,
-                    ),
-                    widthBox10,
-                    CircleIconWidget(
-                      imagePath: Assets.images.video.keyName,
-                      onTap: () {
-                        if (cameras != null) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  VideoCallScreen(cameras: cameras!),
-                            ),
-                          );
-                        }
-                      },
-                      radius: 15,
-                    ),
-                    widthBox10,
+                    // CircleIconWidget(
+                    //   imagePath: Assets.images.call.keyName,
+                    //   onTap: () {
+                    //     Get.to(() => AudioCallScreen());
+                    //   },
+                    //   radius: 15,
+                    //   iconColor: Colors.white,
+                    // ),
+                    // widthBox10,
+                    // CircleIconWidget(
+                    //   imagePath: Assets.images.video.keyName,
+                    //   onTap: () {
+                    //     if (cameras != null) {
+                    //       Navigator.push(
+                    //         context,
+                    //         MaterialPageRoute(
+                    //           builder: (context) =>
+                    //               VideoCallScreen(cameras: cameras!),
+                    //         ),
+                    //       );
+                    //     }
+                    //   },
+                    //   radius: 15,
+                    // ),
+                    // widthBox10,
                     CircleIconWidget(
                       key: suffixButtonKey,
                       imagePath: Assets.images.moreHor.keyName,

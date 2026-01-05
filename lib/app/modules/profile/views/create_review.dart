@@ -13,7 +13,7 @@ import 'package:wisper/app/modules/profile/controller/create_recommandation.dart
 import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
 import 'package:wisper/app/modules/profile/controller/recommendetion_controller.dart';
 
-class CreateReviewSheet extends StatefulWidget { 
+class CreateReviewSheet extends StatefulWidget {
   final String recieverId;
   const CreateReviewSheet({super.key, required this.recieverId});
 
@@ -69,7 +69,7 @@ class _CreateReviewSheetState extends State<CreateReviewSheet> {
       isLoading.value = businessController.inProgress;
     }
   }
- 
+
   void addRecommendation() {
     if (_rating == 0) {
       showSnackBarMessage(context, "Please give a rating", true);
@@ -88,23 +88,28 @@ class _CreateReviewSheetState extends State<CreateReviewSheet> {
   }
 
   Future<void> performRecommendation() async {
-    final bool isSuccess = await createRecommendationController.addRecommendation(
-      text: _reviewController.text.trim(),
-      rating: _rating,
-      recieverId: widget.recieverId,
-    );
+    final bool isSuccess = await createRecommendationController
+        .addRecommendation(
+          text: _reviewController.text.trim(),
+          rating: _rating,
+          recieverId: widget.recieverId,
+        );
 
-    if (isSuccess) {
-      final AllRecommendationController allRecommendationController =
-          Get.find<AllRecommendationController>();
-      await allRecommendationController.getAllRecommendations(widget.recieverId);
+    if (isSuccess && mounted) {
+      final controller = Get.find<AllRecommendationController>();
+      await controller.getAllRecommendations(widget.recieverId);
+      controller.update(); // GetBuilder rebuild করবে
+      controller.refreshRecommendations();
 
-      if (mounted) {
-        Navigator.pop(context);
-        showSnackBarMessage(context, "Review posted successfully!", false);
-      }
-    } else {
-      showSnackBarMessage(context, createRecommendationController.errorMessage, true);
+      await Future.delayed(const Duration(milliseconds: 300));
+      if (mounted) Navigator.pop(context);
+      // showSnackBarMessage(context, "Review posted successfully!", false);
+    } else if (mounted) {
+      showSnackBarMessage(
+        context,
+        createRecommendationController.errorMessage,
+        true,
+      );
     }
   }
 
@@ -205,7 +210,11 @@ class _CreateReviewSheetState extends State<CreateReviewSheet> {
                                 ? NetworkImage(userImageUrl.value)
                                 : null,
                             child: userImageUrl.value.isEmpty
-                                ? Icon(Icons.person, size: 24.sp, color: Colors.white70)
+                                ? Icon(
+                                    Icons.person,
+                                    size: 24.sp,
+                                    color: Colors.white70,
+                                  )
                                 : null,
                           ),
                           widthBox12,

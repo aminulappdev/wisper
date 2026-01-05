@@ -19,7 +19,7 @@ class AllConnectionController extends GetxController {
   List<AllConnectionItemModel>? get allConnectionData =>
       _allConnectionModel.value!.data?.connections;
 
-  // @override
+  // @override 
   // void onInit() {
   //   super.onInit();
   //   getMyProfile();

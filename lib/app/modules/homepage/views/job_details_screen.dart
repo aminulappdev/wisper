@@ -7,7 +7,6 @@ import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
-
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/details_card.dart';
 import 'package:wisper/app/core/widgets/label_data.dart';
@@ -19,6 +18,9 @@ import 'package:wisper/app/modules/homepage/widget/feature_list.dart';
 import 'package:wisper/app/modules/payment/view/payment_webview_screen.dart';
 import 'package:wisper/app/modules/profile/views/others_business_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
+
+import 'package:open_mail_launcher/open_mail_launcher.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class JobDetailsScreen extends StatefulWidget {
   final String jobId;
@@ -32,7 +34,6 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
   final SingleJobController singleJobController = Get.put(
     SingleJobController(),
   );
-
   final FavoriteController favoriteController = FavoriteController();
   final CreateChatController createChatController = Get.put(
     CreateChatController(),
@@ -55,7 +56,6 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
     final bool isSuccess = await favoriteController.favorite(
       jobId: widget.jobId,
     );
-
     if (isSuccess) {
       final SingleJobController singleJobController =
           Get.find<SingleJobController>();
@@ -85,7 +85,6 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
     final bool isSuccess = await createChatController.createChat(
       memberId: memberId,
     );
-
     if (isSuccess) {
       var chatId = createChatController.chatId;
       Get.to(
@@ -101,7 +100,80 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
     }
   }
 
+  Future<void> routeToEmail(String emailAddress) async {
+    if (emailAddress.isEmpty || !emailAddress.contains('@')) {
+      showSnackBarMessage(context, 'Valid email address not available', true);
+      return;
+    }
+
+    try {
+      final List<MailApp> apps = await OpenMailLauncher.getMailApps();
+
+      if (apps.isEmpty) {
+        showSnackBarMessage(
+          context,
+          'No email apps installed on this device',
+          true,
+        );
+        return;
+      }
+
+      final MailApp? gmailApp = apps.firstWhere(
+        (app) => app.name.toLowerCase().contains('gmail'),
+        orElse: () => apps.first,
+      );
+
+      final String jobTitle =
+          singleJobController.singleJobData?.title ?? 'Job Position';
+
+      final EmailContent emailContent = EmailContent(
+        to: [emailAddress],
+        subject: 'Application for $jobTitle',
+        body:
+            'Dear Hiring Manager,\n\nI am interested in applying for the $jobTitle position.\n\nBest regards,\n[Your Name]',
+      );
+
+      bool opened = false;
+
+      if (gmailApp != null) {
+        opened = await OpenMailLauncher.openSpecificMailApp(
+          mailApp: gmailApp,
+          emailContent: emailContent,
+        );
+      }
+
+      if (!opened) {
+        final Uri mailtoUri = Uri(
+          scheme: 'mailto',
+          path: emailAddress,
+          query: encodeQueryParameters({
+            'subject': emailContent.subject ?? '',
+            'body': emailContent.body ?? '',
+          }),
+        );
+
+        if (await canLaunchUrl(mailtoUri)) {
+          await launchUrl(mailtoUri);
+        } else {
+          showSnackBarMessage(context, 'Could not open any email app', true);
+        }
+      }
+    } catch (e) {
+      showSnackBarMessage(context, 'Error opening email: $e', true);
+    }
+  }
+
+  String? encodeQueryParameters(Map<String, String> params) {
+    return params.entries
+        .map(
+          (e) =>
+              '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}',
+        )
+        .join('&');
+  }
+
   bool isDescriptionExpanded = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -121,10 +193,10 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                 : job?.experienceLevel == 'JUNIOR'
                 ? 'Junior'
                 : 'Entry Level');
+
             return SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-
                 children: [
                   heightBox40,
                   Row(
@@ -146,47 +218,50 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                       StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
                           ? CustomElevatedButton(
                               onPress: () {
-                                singleJobController
+                                var applicationType = singleJobController
+                                    .singleJobData
+                                    ?.applicationType;
+
+                                if (applicationType == 'CHAT') {
+                                  createChat(
+                                    singleJobController
                                             .singleJobData
-                                            ?.applicationType ==
-                                        'CHAT'
-                                    ? createChat(
-                                        singleJobController
+                                            ?.authorId ??
+                                        '',
+                                    singleJobController
+                                            .singleJobData!
+                                            .author!
+                                            .business
+                                            ?.name ??
+                                        '',
+                                    singleJobController
+                                            .singleJobData
+                                            ?.author
+                                            ?.business
+                                            ?.image ??
+                                        '',
+                                  );
+                                } else if (applicationType == 'EXTERNAL') {
+                                  Get.to(
+                                    PaymentView(
+                                      paymentData: {
+                                        'title':
+                                            'Apply for ${singleJobController.singleJobData?.title}',
+                                        'link':
+                                            singleJobController
                                                 .singleJobData
-                                                ?.authorId ??
+                                                ?.applicationLink ??
                                             '',
-                                        singleJobController
-                                                .singleJobData!
-                                                .author!
-                                                .business
-                                                ?.name ??
-                                            '',
-                                        singleJobController
-                                                .singleJobData
-                                                ?.author
-                                                ?.business
-                                                ?.image ??
-                                            '',
-                                      )
-                                    : singleJobController
-                                              .singleJobData
-                                              ?.applicationType ==
-                                          'EXTERNAL'
-                                    ? Get.to(
-                                        PaymentView(
-                                          paymentData: {
-                                            'title':
-                                                'Apply for ${singleJobController.singleJobData?.title}',
-                                            'link':
-                                                singleJobController
-                                                    .singleJobData
-                                                    ?.applicationLink ??
-                                                '',
-                                            'reference': '',
-                                          },
-                                        ),
-                                      )
-                                    : print('Email Applied');
+                                        'reference': '',
+                                      },
+                                    ),
+                                  );
+                                } else {
+                                  // EMAIL case – তোমার model-এ employer-এর email কোন field-এ আছে change করো
+                                  String recipientEmail =
+                                      'employer@example.com'; // fallback email
+                                  routeToEmail(recipientEmail);
+                                }
                               },
                               title: 'Apply for job',
                               width: 93,
@@ -205,7 +280,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        'Flutter Developer',
+                        job?.title ?? 'Job Title',
                         style: TextStyle(
                           fontSize: 21.sp,
                           fontWeight: FontWeight.w600,
@@ -240,7 +315,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   GestureDetector(
                     onTap: () {
                       Get.to(
-                        OthersBusinessScreen(userId: job.author?.id ?? ''),
+                        OthersBusinessScreen(userId: job?.author?.id ?? ''),
                       );
                     },
                     child: Row(
@@ -249,13 +324,14 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                       children: [
                         CircleAvatar(
                           radius: 20.r,
-                          backgroundImage: job!.author?.business?.image != null
-                              ? NetworkImage(job.author!.business!.image!)
-                              : AssetImage(Assets.images.icon01.keyName),
+                          backgroundImage: job?.author?.business?.image != null
+                              ? NetworkImage(job!.author!.business!.image!)
+                              : AssetImage(Assets.images.icon01.keyName)
+                                    as ImageProvider,
                         ),
                         widthBox8,
                         Text(
-                          job.author?.business?.name ?? '',
+                          job?.author?.business?.name ?? '',
                           style: TextStyle(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
@@ -285,7 +361,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                           LabelData(
                             horizontalPadding: 20,
                             verticalPadding: 8,
-                            title: job.type == 'FULL_TIME'
+                            title: job?.type == 'FULL_TIME'
                                 ? 'Full Time'
                                 : 'Part Time',
                             bgColor: LightThemeColors.blueColor,
@@ -357,10 +433,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            singleJobController
-                                        .singleJobData
-                                        ?.compensationType ==
-                                    'MONTHLY'
+                            job?.compensationType == 'MONTHLY'
                                 ? 'Monthly'
                                 : 'One off',
                             style: TextStyle(
@@ -394,18 +467,17 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '\$ ${job.salary.toString()}/$shift',
+                            '\$ ${job?.salary.toString() ?? ''}/$shift',
                             style: TextStyle(
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w600,
-                              color: Color.fromARGB(255, 255, 255, 255),
+                              color: Colors.white,
                             ),
                           ),
                         ],
                       ),
                     ),
                   ),
-
                   heightBox10,
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -439,7 +511,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                                   ),
                                   widthBox4,
                                   Text(
-                                    job.locationType ?? '',
+                                    job?.locationType ?? '',
                                     style: TextStyle(
                                       fontSize: 12.sp,
                                       fontWeight: FontWeight.w400,
@@ -452,7 +524,6 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                           ),
                         ],
                       ),
-
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -481,7 +552,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                                   ),
                                   widthBox4,
                                   Text(
-                                    job.qualification ?? '',
+                                    job?.qualification ?? '',
                                     style: TextStyle(
                                       fontSize: 12.sp,
                                       fontWeight: FontWeight.w400,
@@ -497,7 +568,6 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                     ],
                   ),
                   heightBox20,
-
                   Text(
                     'Location',
                     style: TextStyle(
@@ -514,14 +584,13 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            job.location ?? 'Not mentioned',
+                            job?.author!.business?.address ?? 'Not mentioned',
                             style: TextStyle(
                               fontSize: 12.sp,
                               fontWeight: FontWeight.w400,
                               color: Color(0xff8C8C8C),
                             ),
                             textAlign: TextAlign.justify,
-
                             overflow: TextOverflow.ellipsis,
                           ),
                         ],
@@ -545,14 +614,14 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            job.description ?? '',
+                            job?.description ?? '',
                             style: TextStyle(
                               fontSize: 12.sp,
                               fontWeight: FontWeight.w400,
                               color: Color(0xff8C8C8C),
                             ),
                             textAlign: TextAlign.justify,
-                            maxLines: isDescriptionExpanded ? 4 : 10,
+                            maxLines: isDescriptionExpanded ? null : 10,
                             overflow: TextOverflow.ellipsis,
                           ),
                           heightBox10,
@@ -563,7 +632,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                               });
                             },
                             child: Text(
-                              isDescriptionExpanded ? 'Read More' : 'Read Less',
+                              isDescriptionExpanded ? 'Read Less' : 'Read More',
                               style: TextStyle(
                                 fontSize: 12.sp,
                                 fontWeight: FontWeight.w800,
@@ -575,9 +644,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                       ),
                     ),
                   ),
-
                   heightBox20,
-
                   Text(
                     'Application Type',
                     style: TextStyle(
@@ -594,19 +661,16 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            job.applicationType == 'CHAT'
+                            job?.applicationType == 'CHAT'
                                 ? 'Chat'
-                                : job.applicationType == 'EXTERNAL'
+                                : job?.applicationType == 'EXTERNAL'
                                 ? 'External'
-                                : job.applicationType ?? 'Email',
+                                : 'Email',
                             style: TextStyle(
                               fontSize: 12.sp,
                               fontWeight: FontWeight.w400,
                               color: Color(0xff8C8C8C),
                             ),
-                            textAlign: TextAlign.justify,
-                            maxLines: isDescriptionExpanded ? 4 : 10,
-                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
@@ -626,13 +690,16 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(
-                        children: [
-                          for (var requirement in job.requirements)
-                            FeatureList(
-                              iconPath: Assets.images.mark02.keyName,
-                              title: requirement,
-                            ),
-                        ],
+                        children:
+                            job?.requirements
+                                ?.map(
+                                  (requirement) => FeatureList(
+                                    iconPath: Assets.images.mark02.keyName,
+                                    title: requirement,
+                                  ),
+                                )
+                                .toList() ??
+                            [],
                       ),
                     ),
                   ),
@@ -650,16 +717,20 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(
-                        children: [
-                          for (var re in job.responsibilities)
-                            FeatureList(
-                              iconPath: Assets.images.mark02.keyName,
-                              title: re,
-                            ),
-                        ],
+                        children:
+                            job?.responsibilities
+                                ?.map(
+                                  (re) => FeatureList(
+                                    iconPath: Assets.images.mark02.keyName,
+                                    title: re,
+                                  ),
+                                )
+                                .toList() ??
+                            [],
                       ),
                     ),
                   ),
+                  heightBox20,
                 ],
               ),
             );

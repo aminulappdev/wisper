@@ -6,12 +6,62 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:logger/logger.dart';
 import 'package:mime/mime.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 import 'package:wisper/app/core/services/network_caller/error_message_model.dart';
 import 'package:wisper/app/core/services/network_caller/network_response.dart';
 
-
 class NetworkCaller {
   final Logger _logger = Logger();
+
+  // Compress single image and return compressed File (fallback to original if fails)
+  Future<File?> _compressImage(File originalFile) async {
+    try {
+      final tempDir = await getTemporaryDirectory();
+      final fileName = 'comp_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final targetPath = path.join(tempDir.path, fileName);
+
+      final XFile? compressedXFile = await FlutterImageCompress.compressAndGetFile(
+        originalFile.absolute.path,
+        targetPath,
+        quality: 70,
+        format: CompressFormat.jpeg,
+      );
+
+      if (compressedXFile == null) {
+        print('Compression failed: XFile is null');
+        return originalFile;
+      }
+
+      final File compressedFile = File(compressedXFile.path);
+
+      if (await compressedFile.exists()) {
+        final originalKb = originalFile.lengthSync() ~/ 1024;
+        final compressedKb = compressedFile.lengthSync() ~/ 1024;
+        print('Image compressed: $originalKb KB → $compressedKb KB');
+        return compressedFile;
+      }
+
+      return originalFile;
+    } catch (e) {
+      print('Compression error: $e');
+      return originalFile;
+    }
+  }
+
+  // Optional: Clean old compressed temp files (call this on app start or logout)
+  Future<void> clearTempCompressedFiles() async {
+    try {
+      final dir = await getTemporaryDirectory();
+      final files = dir.listSync();
+      for (var entity in files) {
+        if (entity is File && entity.path.contains('comp_')) {
+          await entity.delete();
+        }
+      }
+    } catch (_) {}
+  }
 
   // GET request
   Future<NetworkResponse> getRequest(
@@ -32,10 +82,10 @@ class NetworkCaller {
   // POST request
   Future<NetworkResponse> postRequest(
     String url, {
-    Map<String, dynamic>? queryParams, 
+    Map<String, dynamic>? queryParams,
     Map<String, String>? headers,
     Map<String, dynamic>? body,
-    File? image, 
+    File? image,
     List<File>? images,
     File? cover,
     String? keyNameImage,
@@ -129,11 +179,6 @@ class NetworkCaller {
     );
   }
 
-  
-  String _cleanPath(String path) {
-    return path.startsWith('file://') ? path.replaceFirst('file://', '') : path;
-  }
- 
   void _logRequest(String url, Map<String, String> headers, [dynamic body]) {
     _logger.i('URL => $url\nHeaders => $headers\nBody => $body');
   }
@@ -153,7 +198,7 @@ class NetworkCaller {
       );
     }
   }
- 
+
   Future<NetworkResponse> _handleRequest({
     required String method,
     required String url,
@@ -168,103 +213,76 @@ class NetworkCaller {
     String? accessToken,
   }) async {
     try {
-      // Append query parameters if provided
+      // Append query parameters
+      String fullUrl = url;
       if (queryParams != null && queryParams.isNotEmpty) {
-        url +=
-            '?${queryParams.entries.map((e) => '${e.key}=${e.value}').join('&')}';
+        fullUrl += '?${queryParams.entries.map((e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value.toString())}').join('&')}';
       }
 
-      Uri uri = Uri.parse(url);
+      Uri uri = Uri.parse(fullUrl);
+
       Map<String, String> defaultHeaders = {
-        'content-type': 'application/json',
-        ...?headers, // Merge custom headers
+        'Accept': 'application/json',
+        ...?headers,
       };
 
-      // Add accessToken to headers if provided
       if (accessToken != null && accessToken.isNotEmpty) {
         defaultHeaders['Authorization'] = 'Bearer $accessToken';
       }
 
       http.Response? response;
-      var request = image != null || images != null || cover != null
-          ? http.MultipartRequest(method, uri)
-          : null;
 
-      if (request != null) {
-        // Handle multipart request for file uploads
+      // Check if multipart needed
+      if (image != null || images?.isNotEmpty == true || cover != null) {
+        final request = http.MultipartRequest(method, uri);
         request.headers.addAll(defaultHeaders);
+
+        // Add JSON payload
         if (body != null) {
           request.fields['payload'] = jsonEncode(body);
         }
 
-        // Add single image
+        // Single image
         if (image != null) {
-          String imagePath = _cleanPath(image.path);
-          print('Adding image: $imagePath');
-          if (await image.exists()) {
-            String? mimeType = lookupMimeType(imagePath) ?? 'image/jpeg';
-            request.files.add(
-              await http.MultipartFile.fromPath(
-                keyNameImage ?? 'image',
-                imagePath,
-                contentType: MediaType.parse(mimeType),
-              ),
-            );
-          } else {
-            print('Image file does not exist: $imagePath');
-            return NetworkResponse(
-              isSuccess: false,
-              statusCode: -1,
-              errorMessage: 'Image file does not exist: $imagePath',
-            );
-          }
+          final compressed = await _compressImage(image);
+          final mime = lookupMimeType(compressed!.path) ?? 'image/jpeg';
+          request.files.add(await http.MultipartFile.fromPath(
+            keyNameImage ?? 'image',
+            compressed.path,
+            contentType: MediaType.parse(mime),
+          ));
         }
 
-        // Add multiple images
+        // Multiple images
         if (images != null && images.isNotEmpty) {
           for (File img in images) {
-            String imagePath = _cleanPath(img.path);
-            print('Adding multiple images: $imagePath');
-            if (await img.exists()) {
-              String? mimeType = lookupMimeType(imagePath) ?? 'image/jpeg';
-              request.files.add(
-                await http.MultipartFile.fromPath(
-                  keyNameImage ?? 'images',
-                  imagePath,
-                  contentType: MediaType.parse(mimeType),
-                ),
-              );
-            } else {
-              print('Image file does not exist: $imagePath');
-            }
+            final compressed = await _compressImage(img);
+            final mime = lookupMimeType(compressed!.path) ?? 'image/jpeg';
+            request.files.add(await http.MultipartFile.fromPath(
+              keyNameImage ?? 'images',
+              compressed.path,
+              contentType: MediaType.parse(mime),
+            ));
           }
         }
 
-        // Add cover image
+        // Cover image
         if (cover != null) {
-          String coverPath = _cleanPath(cover.path);
-          print('Adding cover: $coverPath');
-          if (await cover.exists()) {
-            String? mimeType = lookupMimeType(coverPath) ?? 'image/jpeg';
-            request.files.add(
-              await http.MultipartFile.fromPath(
-                keyNameCover ?? 'cover',
-                coverPath,
-                contentType: MediaType.parse(mimeType),
-              ),
-            );
-          } else {
-            print('Cover file does not exist: $coverPath');
-          }
+          final compressed = await _compressImage(cover);
+          final mime = lookupMimeType(compressed!.path) ?? 'image/jpeg';
+          request.files.add(await http.MultipartFile.fromPath(
+            keyNameCover ?? 'cover',
+            compressed.path,
+            contentType: MediaType.parse(mime),
+          ));
         }
 
-        _logRequest(url, defaultHeaders, body);
-        print('Request files: ${request.files}');
-        var streamedResponse = await request.send();
+        _logRequest(fullUrl, request.headers, request.fields);
+        final streamedResponse = await request.send();
         response = await http.Response.fromStream(streamedResponse);
       } else {
-        // Handle regular HTTP request
-        _logRequest(url, defaultHeaders, body);
+        // Regular JSON request
+        _logRequest(fullUrl, defaultHeaders, body);
         switch (method) {
           case 'GET':
             response = await http.get(uri, headers: defaultHeaders);
@@ -272,21 +290,21 @@ class NetworkCaller {
           case 'POST':
             response = await http.post(
               uri,
-              headers: defaultHeaders,
+              headers: {...defaultHeaders, 'Content-Type': 'application/json'},
               body: body != null ? jsonEncode(body) : null,
             );
             break;
           case 'PATCH':
             response = await http.patch(
               uri,
-              headers: defaultHeaders,
+              headers: {...defaultHeaders, 'Content-Type': 'application/json'},
               body: body != null ? jsonEncode(body) : null,
             );
             break;
           case 'PUT':
             response = await http.put(
               uri,
-              headers: defaultHeaders,
+              headers: {...defaultHeaders, 'Content-Type': 'application/json'},
               body: body != null ? jsonEncode(body) : null,
             );
             break;
@@ -296,24 +314,39 @@ class NetworkCaller {
         }
       }
 
-      _logResponse(url, response!.statusCode, response.headers, response.body);
+      _logResponse(fullUrl, response!.statusCode, response.headers, response.body);
 
+      // Success
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final decodedResponse = jsonDecode(response.body);
-        return NetworkResponse(
-          isSuccess: true,
-          statusCode: response.statusCode,
-          responseData: decodedResponse,
-        );
+        try {
+          final decodedResponse = jsonDecode(response.body);
+          return NetworkResponse(
+            isSuccess: true,
+            statusCode: response.statusCode,
+            responseData: decodedResponse,
+          );
+        } catch (e) {
+          return NetworkResponse(
+            isSuccess: true,
+            statusCode: response.statusCode,
+            responseData: response.body,
+          );
+        }
       } else {
-        final decodedResponse = jsonDecode(response.body);
-        ErrorMessageModel errorMessageModel = ErrorMessageModel.fromJson(
-          decodedResponse,
-        );
+        // Error
+        String errorMsg = 'Something went wrong';
+        try {
+          final decodedResponse = jsonDecode(response.body);
+          final errorModel = ErrorMessageModel.fromJson(decodedResponse);
+          errorMsg = errorModel.message ?? errorMsg;
+        } catch (_) {
+          errorMsg = response.body.isNotEmpty ? response.body : errorMsg;
+        }
+
         return NetworkResponse(
           isSuccess: false,
           statusCode: response.statusCode,
-          errorMessage: errorMessageModel.message ?? 'Something went wrong',
+          errorMessage: errorMsg,
         );
       }
     } catch (e) {
@@ -325,6 +358,4 @@ class NetworkCaller {
       );
     }
   }
-
-
 }

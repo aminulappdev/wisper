@@ -65,7 +65,7 @@ class _PostSectionState extends State<PostSection> {
                   Get.to(CommentScreen(postId: post.id ?? ''));
                 },
                 isComment: false,
-                ownerId: post.author?.id ?? '',
+                ownerId: post.author?.id ?? '', 
                 trailing: const Text(
                   'Sponsor',
                   style: TextStyle(
