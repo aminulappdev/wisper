@@ -85,7 +85,7 @@ class _OthersPostSectionState extends State<OthersPostSection> {
                 ownerProfession: post.author?.person != null
                     ? post.author?.person?.title
                     : post.author?.business?.industry ?? '',
-                postImage: post.images.isNotEmpty ? post.images.first : null,
+                postImage: post.images.isNotEmpty ? post.images : [],
                 postDescription: post.caption ?? '',
                 postTime: formattedTime,
                 views: post.views.toString(),

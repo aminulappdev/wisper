@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
@@ -97,6 +98,14 @@ class _MyPostSectionState extends State<MyPostSection> {
             targetKey: suffixButtonKey,
             options: [
               Text(
+                'Boost Post',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w500,
+                  color: LightThemeColors.blueColor,
+                ),
+              ),
+              Text(
                 'Edit Post',
                 style: TextStyle(
                   fontSize: 14.sp,
@@ -114,9 +123,10 @@ class _MyPostSectionState extends State<MyPostSection> {
               ),
             ],
             optionActions: {
-              '0': () =>
+              '0': () => Get.to(() => BoostScreen(feedPostItemModel: post)),
+              '1': () =>
                   Get.to(() => EditGalleryPostScreen(feedPostItemModel: post)),
-              '1': () => _showDeletePost(post.id!),
+              '2': () => _showDeletePost(post.id!),
             },
             menuWidth: 180.w,
             menuHeight: 48.h,
@@ -134,18 +144,18 @@ class _MyPostSectionState extends State<MyPostSection> {
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  SizedBox(
-                    height: 36.h,
-                    width: 90.w,
-                    child: CustomElevatedButton(
-                      title: 'Boost Post',
-                      textSize: 12,
-                      borderRadius: 50,
-                      onPress: () =>
-                          Get.to(() => BoostScreen(feedPostItemModel: post)),
-                    ),
-                  ),
-                  SizedBox(width: 12.w),
+                  // SizedBox(
+                  //   height: 36.h,
+                  //   width: 90.w,
+                  //   child: CustomElevatedButton(
+                  //     title: 'Boost Post',
+                  //     textSize: 12,
+                  //     borderRadius: 50,
+                  //     onPress: () =>
+                  //         Get.to(() => BoostScreen(feedPostItemModel: post)),
+                  //   ),
+                  // ),
+                  // SizedBox(width: 12.w),
                   GestureDetector(
                     key: suffixButtonKey,
                     onTap: () => customPopupMenu.showMenuAtPosition(context),
@@ -167,7 +177,7 @@ class _MyPostSectionState extends State<MyPostSection> {
                   StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
                   ? post.author?.person?.title ?? 'Professional'
                   : post.author?.business?.name ?? 'Business',
-              postImage: post.images.isNotEmpty ? post.images.first : null,
+              postImage: post.images.isNotEmpty ? post.images : [],
               postDescription: post.caption ?? '',
               postTime: formattedTime.getRelativeTimeFormat(),
               views: post.views?.toString() ?? '0',

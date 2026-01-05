@@ -10,7 +10,7 @@ class AuthHeader extends StatelessWidget {
   final String title;
   bool? isBack;
   String? subtitle;
-  AuthHeader({
+  AuthHeader({ 
     super.key,
     required this.title,
     this.subtitle,
@@ -25,7 +25,7 @@ class AuthHeader extends StatelessWidget {
         isBack! == false
             ? heightBox4
             : CircleIconWidget(
-                iconRadius: 18,
+                iconRadius: 14.r,
                 imagePath: Assets.images.arrowBack.keyName,
                 onTap: () {
                   Navigator.pop(context);

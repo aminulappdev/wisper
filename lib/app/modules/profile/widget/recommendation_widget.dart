@@ -8,7 +8,7 @@ class Recommendation extends StatelessWidget {
   const Recommendation({super.key, required this.onTap, required this.count});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) { 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 90),
       child: GestureDetector(

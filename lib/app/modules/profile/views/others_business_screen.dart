@@ -94,7 +94,7 @@ class _OthersBusinessScreenState extends State<OthersBusinessScreen> {
 
           // Data is loaded — now safe to access without fear of null
           final business = controller.profileData?.auth?.business;
-          final createdAt = DateTime.now();
+          final createdAt = controller.profileData?.auth?.createdAt;
           final DateFormatter dateFormatter = createdAt != null
           ? DateFormatter(createdAt)
           : DateFormatter(DateTime.now());

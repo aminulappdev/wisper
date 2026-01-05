@@ -57,9 +57,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               heightBox40,
-              Text(
-                'Settings',
-                style: TextStyle(fontSize: 21.sp, fontWeight: FontWeight.w600),
+              Row(
+                children: [
+                  CircleIconWidget(
+                    iconRadius: 14.r,
+                    imagePath: Assets.images.arrowBack.keyName,
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  widthBox12,
+                  Text(
+                    'Settings',
+                    style: TextStyle(
+                      fontSize: 21.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
               heightBox10,
               SeetingsFeatureCard(

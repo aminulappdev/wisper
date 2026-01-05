@@ -104,8 +104,7 @@ class _BoostScreenState extends State<BoostScreen> {
               postTime: widget.feedPostItemModel.createdAt.toString(),
               views: widget.feedPostItemModel.views.toString(),
               postImage: widget.feedPostItemModel.images.isNotEmpty
-                  ? widget.feedPostItemModel.images.first
-                  : null,
+                  ? widget.feedPostItemModel.images : [],
             ),
             heightBox20,
             Text(

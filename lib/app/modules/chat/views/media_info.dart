@@ -98,7 +98,9 @@ class _MediaInfoState extends State<MediaInfo> {
                       ),
                     )
                   : ImageContainer(
-                      image: controller.chatsData![index].file ?? '',
+                      images: controller.chatsData![index].file != null
+                          ? [controller.chatsData![index].file!]
+                          : [],
                       height: 164,
                       width: 177,
                       borderRadius: 10,

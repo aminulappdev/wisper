@@ -13,7 +13,7 @@ class InfoCard extends StatelessWidget {
   final String memberInfo;
   final Widget child;
   final bool isTrailing;
-  final VoidCallback? trailingOnTap;
+  final VoidCallback? trailingOnTap; 
   final GlobalKey? trailingKey;
   final VoidCallback? showMember;
   final bool? isBack;
@@ -42,7 +42,7 @@ class InfoCard extends StatelessWidget {
     // Local file path (from image picker)
     if (path.startsWith('/') ||
         path.contains('/storage/') ||
-        path.contains('/data/')) {
+        path.contains('/data/')) { 
       final file = File(path);
       if (file.existsSync()) {
         return FileImage(file);

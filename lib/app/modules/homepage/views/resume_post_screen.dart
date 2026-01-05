@@ -225,37 +225,39 @@ class _ResumePostScreenState extends State<ResumePostScreen> {
                 heightBox20,
 
                 // Add Resume Button
-                GestureDetector(
-                  onTap: () {
-                    _filePickerHelper.showAlertDialog(context, _addFile);
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: const Color(0xFF60606B)),
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                    height: 80.h,
-                    width: double.infinity,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CrashSafeImage(
-                          Assets.images.gallery02.keyName,
-                          height: 24.h,
-                        ),
-                        widthBox10,
-                        Text(
-                          'Add Resume',
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w400,
-                            color: LightThemeColors.blueColor,
+                _selectedFiles.isNotEmpty
+                    ? const SizedBox.shrink()
+                    : GestureDetector(
+                        onTap: () {
+                          _filePickerHelper.showAlertDialog(context, _addFile);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: const Color(0xFF60606B)),
+                            borderRadius: BorderRadius.circular(10.r),
+                          ),
+                          height: 80.h,
+                          width: double.infinity,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CrashSafeImage(
+                                Assets.images.gallery02.keyName,
+                                height: 24.h,
+                              ),
+                              widthBox10,
+                              Text(
+                                'Add Resume',
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w400,
+                                  color: LightThemeColors.blueColor,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
+                      ),
 
                 heightBox20,
 

@@ -1,27 +1,28 @@
-import 'package:crash_safe_image/crash_safe_image.dart';
+// তোমার PostCard ফাইল
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
-import 'package:wisper/app/core/widgets/image_container_widget.dart';
+import 'package:wisper/app/core/widgets/image_container_widget.dart'; // নতুনটা
 import 'package:wisper/app/modules/profile/views/others_business_screen.dart';
 import 'package:wisper/app/modules/profile/views/others_person_screen.dart';
-import 'package:wisper/gen/assets.gen.dart';
 
 class PostCard extends StatelessWidget {
   final Widget trailing;
-  final String? ownerId; 
-  final bool? isPerson;
+  final String? ownerId;
+  final bool? isPerson; 
   final String? ownerName;
   final String? ownerImage;
   final String? ownerProfession;
-  final String? postImage;
+  final List<String>? postImage;        // লিস্ট
   final String? postDescription;
   final String? postTime;
   final String? views;
   final bool? isComment;
   final VoidCallback onTapComment;
+
   const PostCard({
     super.key,
     required this.trailing,
@@ -40,20 +41,28 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('Post Image: $postImage');
+    print('Post Images: $postImage');
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GestureDetector(
           onTap: () {
-            isPerson == true
-                ? Get.to(() => OthersPersonScreen(userId: ownerId ?? ''))
-                : Get.to(() => OthersBusinessScreen(userId: ownerId ?? ''));
+            if (isPerson == true) {
+              Get.to(() => OthersPersonScreen(userId: ownerId ?? ''));
+            } else {
+              Get.to(() => OthersBusinessScreen(userId: ownerId ?? ''));
+            }
           },
           child: CircleAvatar(
             backgroundColor: Colors.grey.shade800,
             radius: 20.r,
-            backgroundImage: NetworkImage(ownerImage ?? ''),
+            backgroundImage: ownerImage != null && ownerImage!.isNotEmpty
+                ? NetworkImage(ownerImage!)
+                : null,
+            child: ownerImage == null || ownerImage!.isEmpty
+                ? Icon(Icons.person, color: Colors.white, size: 20.r)
+                : null,
           ),
         ),
         widthBox8,
@@ -70,19 +79,20 @@ class PostCard extends StatelessWidget {
                     children: [
                       Text(
                         ownerName ?? '',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
                         ),
                       ),
-                      Text(
-                        ownerProfession ?? '',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 10,
-                          color: LightThemeColors.themeGreyColor,
+                      if (ownerProfession != null && ownerProfession!.isNotEmpty)
+                        Text(
+                          ownerProfession!,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 10,
+                            color: LightThemeColors.themeGreyColor,
+                          ),
                         ),
-                      ),
                     ],
                   ),
                   trailing,
@@ -99,21 +109,22 @@ class PostCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (postImage == null) ...{
-                      Container(),
-                    } else ...{
+                    // নতুন ImageContainer — লিস্ট পাস করছি
+                    if (postImage != null && postImage!.isNotEmpty)
                       ImageContainer(
-                        image: postImage ?? '',
-                        height: 168,
+                        images: postImage,
+                        height: 200, // তোমার পছন্দমতো, 168 থেকে 200 ভালো দেখায়
                         width: double.infinity,
                         borderRadius: 8,
-                      ),
-                    },
+                      )
+                    else
+                      const SizedBox.shrink(),
+
                     Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: Text(
                         postDescription ?? '',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.w500,
                           fontSize: 12,
                         ),
@@ -126,35 +137,17 @@ class PostCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Row(
-                  //   crossAxisAlignment: CrossAxisAlignment.start,
-                  //   children: [
-                  //     CrashSafeImage(
-                  //       Assets.images.visibility.keyName,
-                  //       height: 12,
-                  //     ),
-                  //     widthBox4,
-                  //     Text(
-                  //       '$views views',
-                  //       style: TextStyle(
-                  //         fontWeight: FontWeight.w400,
-                  //         fontSize: 10,
-                  //         color: LightThemeColors.themeGreyColor,
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
                   GestureDetector(
-                          onTap: onTapComment,
-                          child: Text(
-                            'Comments',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 10,
-                              color: LightThemeColors.themeGreyColor,
-                            ),
-                          ),
-                        ),
+                    onTap: onTapComment,
+                    child: Text(
+                      'Comments',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 10,
+                        color: LightThemeColors.themeGreyColor,
+                      ),
+                    ),
+                  ),
                   Text(
                     postTime ?? '',
                     style: TextStyle(

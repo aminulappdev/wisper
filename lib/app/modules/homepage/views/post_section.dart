@@ -83,7 +83,7 @@ class _PostSectionState extends State<PostSection> {
                 ownerProfession: post.author?.person != null
                     ? post.author?.person?.title ?? 'Professional'
                     : post.author?.business?.name ?? 'Business',
-                postImage: post.images.isNotEmpty ? post.images.first : null,
+                postImage: post.images.isNotEmpty ? post.images : [],
                 postDescription: post.caption ?? '',
                 postTime: formattedTime,
                 views: post.views.toString(),

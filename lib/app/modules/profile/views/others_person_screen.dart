@@ -190,7 +190,7 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
               if (controller.inProgress) {
                 return const Center();
               } else {
-                final createdAt = DateTime.now();
+                final createdAt = controller.profileData?.auth?.createdAt;
                 final DateFormatter dateFormatter = createdAt != null
                     ? DateFormatter(createdAt)
                     : DateFormatter(DateTime.now());
@@ -251,7 +251,7 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (BuildContext context) {
+      builder: (BuildContext context) { 
         return RcommendationButtomSheet(
           recommendationItemModel: model,
           isCreateReview: true,

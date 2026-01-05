@@ -153,11 +153,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       // BUSINESS
       if (index == 0) return MyPostSection();
       if (index == 1) return MyJobSection();
-      if (index == 2) {
-        return MyResumeSection(
-          userId: StorageUtil.getData(StorageUtil.userAuthId)!,
-        );
-      }
     }
     return const SizedBox.shrink();
   }
@@ -328,7 +323,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           lineColor: Colors.white,
                         ),
                       ),
-                      if (idx < tabs.length - 1) SizedBox(width: 30.w),
+                      if (idx < tabs.length - 1) SizedBox(width: 100.w),
                     ],
                   );
                 }).toList(),

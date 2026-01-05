@@ -17,7 +17,7 @@ import 'package:wisper/app/modules/profile/controller/person/profile_controller.
 class EditPersonProfileScreen extends StatefulWidget {
   const EditPersonProfileScreen({super.key});
 
-  @override
+  @override 
   State<EditPersonProfileScreen> createState() =>
       _EditPersonProfileScreenState();
 }
@@ -212,7 +212,7 @@ class _EditPersonProfileScreenState extends State<EditPersonProfileScreen> {
 
               Center(
                 child: CustomElevatedButton(
-                  height: 56.h,
+                  height: MediaQuery.of(context).size.height * 0.05,
                   title: 'Submit',
                   onPress: _submitProfile,
                   color: Colors.blue,

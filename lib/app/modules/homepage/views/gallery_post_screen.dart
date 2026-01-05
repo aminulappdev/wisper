@@ -45,9 +45,19 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
   final RxString userSubtitle = ''.obs;
   final RxString userImageUrl = ''.obs;
 
+  // Realtime character count
+  final RxInt currentCaptionLength = 0.obs;
+
   late final bool isPerson;
 
+  static const int maxImages = 4;
+
   void _addImage(File image) {
+    if (_selectedImages.length >= maxImages) {
+      showSnackBarMessage(context, "Maximum $maxImages images allowed!", true);
+      return;
+    }
+
     setState(() {
       _selectedImages.add(image);
     });
@@ -60,6 +70,21 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
   }
 
   void createPost() {
+    // Check if at least one image is selected
+    if (_selectedImages.isEmpty) {
+      showSnackBarMessage(
+        context,
+        "Please select at least one image to post!",
+        true,
+      );
+      return;
+    }
+
+    // Validate form (caption validation if any)
+    if (!formKey.currentState!.validate()) {
+      return;
+    }
+
     showLoadingOverLay(
       asyncFunction: () async => await performCreatePost(),
       msg: 'Please wait...',
@@ -95,8 +120,7 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
       userName.value = data?.name ?? '';
       userSubtitle.value = data?.title ?? '';
       userImageUrl.value = data?.image ?? '';
-      isLoading.value =
-          profileController.inProgress; // plain bool, কিন্তু assign valid
+      isLoading.value = profileController.inProgress;
     } else {
       final data = businessController.buisnessData?.auth?.business;
       userName.value = data?.name ?? '';
@@ -111,6 +135,11 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
     super.initState();
     isPerson = StorageUtil.getData(StorageUtil.userRole) == 'PERSON';
 
+    // Realtime caption length listener
+    _captionCtrl.addListener(() {
+      currentCaptionLength.value = _captionCtrl.text.length;
+    });
+
     // Initial fetch and update
     if (isPerson) {
       profileController.getMyProfile().then((_) {
@@ -121,6 +150,12 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
         if (mounted) _updateUserInfo();
       });
     }
+  }
+
+  @override
+  void dispose() {
+    _captionCtrl.dispose();
+    super.dispose();
   }
 
   @override
@@ -162,20 +197,28 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
                           color: Colors.white,
                         ),
                       ),
-                      SizedBox(
-                        height: 32.h,
-                        width: 66.w,
-                        child: CustomElevatedButton(
-                          title: 'Post',
-                          textSize: 12,
-                          borderRadius: 50,
-                          onPress: () {
-                            if (formKey.currentState!.validate()) {
-                              createPost();
-                            }
-                          },
-                        ),
-                      ),
+                      _selectedImages.isEmpty
+                          ? SizedBox(
+                              height: 32.h,
+                              width: 66.w,
+                              child: CustomElevatedButton(
+                                color: Colors.grey,
+                                title: 'Post',
+                                textSize: 12,
+                                borderRadius: 50,
+                              ),
+                            )
+                          : SizedBox(
+                              height: 32.h,
+                              width: 66.w,
+                              child: CustomElevatedButton(
+                                title: 'Post',
+                                textSize: 12,
+                                borderRadius: 50,
+                                onPress:
+                                    createPost, // Updated to use new validation
+                              ),
+                            ),
                     ],
                   ),
 
@@ -229,15 +272,23 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
 
                   heightBox20,
 
-                  SizedBox(
-                    height: 150.h,
-                    child: CustomTextField(
-                      controller: _captionCtrl,
-                      maxLines: 5,
-                      hintText: 'Share your thoughts',
-                      validator: ValidatorService.validateSimpleField,
-                      hintStyle: TextStyle(
-                        fontSize: 14.sp,
+                  CustomTextField(
+                    controller: _captionCtrl,
+                    maxLength: 60,
+                    maxLines: 5,
+                    hintText: 'Share your thoughts',
+                    validator: ValidatorService.validateSimpleField,
+                    hintStyle: TextStyle(
+                      fontSize: 14.sp,
+                      color: const Color(0xff8C8C8C),
+                    ),
+                  ),
+                  heightBox4,
+                  Obx(
+                    () => Text(
+                      'Maximum limit ${currentCaptionLength.value}/60',
+                      style: TextStyle(
+                        fontSize: 10.sp,
                         color: const Color(0xff8C8C8C),
                       ),
                     ),
@@ -292,27 +343,42 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
 
                   heightBox20,
 
-                  GestureDetector(
-                    onTap: () =>
-                        _imagePickerHelper.showAlertDialog(context, _addImage),
-                    child: Row(
-                      children: [
-                        CrashSafeImage(
-                          Assets.images.gallery02.keyName,
-                          height: 24.h,
-                        ),
-                        widthBox10,
-                        Text(
-                          'Add Gallery',
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w400,
-                            color: LightThemeColors.blueColor,
+                  // Add Gallery button - hidden when 4 images selected
+                  if (_selectedImages.length < maxImages)
+                    GestureDetector(
+                      onTap: () => _imagePickerHelper.showAlertDialog(
+                        context,
+                        _addImage,
+                      ),
+                      child: Row(
+                        children: [
+                          CrashSafeImage(
+                            Assets.images.gallery02.keyName,
+                            height: 24.h,
                           ),
+                          widthBox10,
+                          Text(
+                            'Add Gallery',
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w400,
+                              color: LightThemeColors.blueColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10.h),
+                      child: Text(
+                        'Maximum $maxImages images selected',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: LightThemeColors.themeGreyColor,
                         ),
-                      ],
+                      ),
                     ),
-                  ),
 
                   heightBox20,
 

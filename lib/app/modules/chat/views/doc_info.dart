@@ -12,7 +12,7 @@ class DocInfo extends StatelessWidget {
   final bool isDownloaded;
   final VoidCallback onTap;
   const DocInfo({
-    super.key,
+    super.key, 
     required this.title,
     required this.isDownloaded,
     required this.onTap,
@@ -27,60 +27,51 @@ class DocInfo extends StatelessWidget {
       borderWidth: 0.5,
       child: Padding(
         padding: const EdgeInsets.all(12.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                CrashSafeImage(
-                  Assets.images.pdf.keyName,
-                  height: 24,
-                  width: 24,
-                ),
-                widthBox10,
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: 200.w,
-                      child: Text(
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        title,
-                        style: TextStyle(color: Colors.white, fontSize: 12.sp),
+        child: GestureDetector(
+          onTap: onTap,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  CrashSafeImage(
+                    Assets.images.pdf.keyName,
+                    height: 24,
+                    width: 24,
+                  ),
+                  widthBox10,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 200.w,
+                        child: Text(
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          title,
+                          style: TextStyle(color: Colors.white, fontSize: 12.sp),
+                        ),
                       ),
-                    ),
-                    Text(
-                      'PDF Document',
-                      style: TextStyle(color: Colors.white, fontSize: 10.sp),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            isDownloaded
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: GestureDetector(
-                      onTap: onTap,
+                      Text(
+                        'PDF Document',
+                        style: TextStyle(color: Colors.white, fontSize: 10.sp),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+          
+              isMyResume == true
+                  ? GestureDetector(
+                      onTap: onDelete,
                       child: CrashSafeImage(
-                        Assets.images.download.keyName,
+                        Assets.images.delete.keyName,
                         height: 18,
                       ),
-                    ),
-                  )
-                : Container(),
-
-            isMyResume == true
-                ? GestureDetector(
-                    onTap: onDelete,
-                    child: CrashSafeImage(
-                      Assets.images.delete.keyName,
-                      height: 18,
-                    ),
-                  )
-                : Container(),
-          ],
+                    )
+                  : Container(),
+            ],
+          ),
         ),
       ),
     );
