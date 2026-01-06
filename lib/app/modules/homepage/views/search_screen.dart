@@ -62,7 +62,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     },
                   ),
                 ),
-                widthBox8,
+                widthBox8, 
                 CircleAvatar(
                   backgroundColor: const Color.fromARGB(255, 104, 104, 104),
                   child: GestureDetector(

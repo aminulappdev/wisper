@@ -50,7 +50,7 @@ class Urls {
    static String otherProfileById(String id) {
     return '$_baseUrl/persons/$id';
   }
-
+ 
   static String chatDataById(String id) {
     return '$_baseUrl/chats/files/$id';
   }

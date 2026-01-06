@@ -60,7 +60,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
       final SingleJobController singleJobController =
           Get.find<SingleJobController>();
       final FavoriteController favoriteController =
-          Get.find<FavoriteController>();
+          Get.put(FavoriteController());
       await favoriteController.getAllFavorite();
       await singleJobController.getSingleJob(widget.jobId);
     } else {
@@ -298,7 +298,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                                 child: isFavorite
                                     ? Icon(
                                         Icons.favorite,
-                                        color: Colors.white,
+                                        color: Colors.red,
                                         size: 20.r,
                                       )
                                     : Icon(
@@ -480,7 +480,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   ),
                   heightBox10,
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween, 
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Column(

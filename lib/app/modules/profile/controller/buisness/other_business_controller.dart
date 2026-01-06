@@ -3,18 +3,19 @@ import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/services/network_caller/network_caller.dart';
 import 'package:wisper/app/core/services/network_caller/network_response.dart';
 import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
+import 'package:wisper/app/modules/profile/model/buisness_model.dart';
 import 'package:wisper/app/modules/profile/model/profile_model.dart';
 import 'package:wisper/app/urls.dart';
 
 class OtherBusinessController extends GetxController {
   final RxBool _inProgress = false.obs;
   bool get inProgress => _inProgress.value;
-
+ 
   final RxString _errorMessage = ''.obs;
   String get errorMessage => _errorMessage.value;
 
-  final Rx<ProfileModel?> _profileDetailsModel = Rx<ProfileModel?>(null);
-  ProfileData? get profileData => _profileDetailsModel.value?.data;
+  final Rx<BusinessModel?> _profileDetailsModel = Rx<BusinessModel?>(null);
+  BusinessData? get profileData => _profileDetailsModel.value?.data;
  
   Future<bool> getOthersProfile(String id) async {
     print('Triggered getOthersProfile');
@@ -32,7 +33,7 @@ class OtherBusinessController extends GetxController {
         print('Profile Data: ${response.responseData}');
         _errorMessage.value = '';
 
-        _profileDetailsModel.value = ProfileModel.fromJson(
+        _profileDetailsModel.value = BusinessModel.fromJson(
           response.responseData,
         );
 

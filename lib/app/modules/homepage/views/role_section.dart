@@ -13,7 +13,7 @@ import 'package:wisper/app/modules/homepage/controller/add_request_controller.da
 import 'package:wisper/app/modules/homepage/controller/all_role_controller.dart';
 import 'package:wisper/app/modules/homepage/widget/role_card.dart';
 
-class RoleSection extends StatefulWidget {
+class RoleSection extends StatefulWidget { 
   const RoleSection({super.key, this.searchQuery});
   final String? searchQuery;
 
@@ -37,6 +37,14 @@ class _RoleSectionState extends State<RoleSection> {
     });
 
     super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant RoleSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.searchQuery != oldWidget.searchQuery) {
+      allRoleController.getAllRole(widget.searchQuery);
+    }
   }
 
   void addRequest(String? receiverId) {

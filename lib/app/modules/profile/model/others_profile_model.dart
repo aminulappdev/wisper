@@ -22,16 +22,16 @@ class OthersProfileModel {
 class Data {
     Data({
         required this.auth,
-        required this.isConnected,
+        required this.connection,
     });
 
     final Auth? auth;
-    final bool? isConnected;
+    final Connection? connection;
 
     factory Data.fromJson(Map<String, dynamic> json){ 
         return Data(
             auth: json["auth"] == null ? null : Auth.fromJson(json["auth"]),
-            isConnected: json["isConnected"],
+            connection: json["connection"] == null ? null : Connection.fromJson(json["connection"]),
         );
     }
 
@@ -89,6 +89,33 @@ class Person {
             title: json["title"],
             industry: json["industry"],
             address: json["address"],
+        );
+    }
+
+}
+
+class Connection {
+    Connection({
+        required this.id,
+        required this.requesterId,
+        required this.receiverId,
+        required this.status,
+        required this.createdAt,
+    });
+
+    final String? id;
+    final String? requesterId;
+    final String? receiverId;
+    final String? status;
+    final DateTime? createdAt;
+
+    factory Connection.fromJson(Map<String, dynamic> json){ 
+        return Connection(
+            id: json["id"],
+            requesterId: json["requesterId"],
+            receiverId: json["receiverId"],
+            status: json["status"],
+            createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
         );
     }
 

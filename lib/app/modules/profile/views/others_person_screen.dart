@@ -21,7 +21,6 @@ import 'package:wisper/app/modules/homepage/views/others_post_section.dart';
 import 'package:wisper/app/modules/profile/controller/person/others_profile_controller.dart';
 import 'package:wisper/app/modules/profile/controller/recommendetion_controller.dart';
 import 'package:wisper/app/modules/profile/controller/remove_connection_controller.dart';
-import 'package:wisper/app/modules/profile/views/create_review.dart';
 import 'package:wisper/app/modules/profile/views/recommendation_screen.dart';
 import 'package:wisper/app/modules/profile/widget/info_card.dart';
 import 'package:wisper/app/modules/profile/widget/recommendation_widget.dart';
@@ -278,17 +277,46 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
                       height: 31.h,
                       width: 116.w,
                       child: CustomElevatedButton(
-                        color: controller.othersProfileData?.isConnected == true
-                            ? Colors.grey
-                            : LightThemeColors.blueColor,
+                        color:
+                            controller.othersProfileData!.connection?.status ==
+                                null
+                            ? LightThemeColors.blueColor
+                            : LightThemeColors.themeGreyColor,
                         textSize: 12,
-                        title: controller.othersProfileData?.isConnected == true
+                        title:
+                            controller.othersProfileData!.connection?.status ==
+                                'ACCEPTED'
                             ? 'Added'
+                            : controller
+                                      .othersProfileData!
+                                      .connection
+                                      ?.status ==
+                                  'PENDING'
+                            ? 'Pending'
+                            : controller
+                                      .othersProfileData!
+                                      .connection
+                                      ?.status ==
+                                  'REJECTED'
+                            ? 'Rejected'
+                            : controller
+                                      .othersProfileData!
+                                      .connection
+                                      ?.status ==
+                                  'BLOCKED'
+                            ? 'Blocked'
                             : 'Add',
                         onPress:
-                            controller.othersProfileData?.isConnected == true
+                            controller.othersProfileData!.connection?.status ==
+                                'ACCEPTED'
                             ? _showRemoveConnection
-                            : addRequest,
+                            : controller
+                                      .othersProfileData!
+                                      .connection
+                                      ?.status ==
+                                  null
+                            ? addRequest
+                            : null,
                         borderRadius: 50,
                       ),
                     ),

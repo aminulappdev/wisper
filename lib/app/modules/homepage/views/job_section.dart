@@ -9,7 +9,7 @@ class JobSection extends StatefulWidget {
   final String? searchQuery;
   const JobSection({super.key, this.searchQuery});
 
-  @override
+  @override 
   State<JobSection> createState() => _JobSectionState(); 
 }
 
@@ -25,6 +25,15 @@ class _JobSectionState extends State<JobSection> {
       }
       controller.getJobs(searchQuery: widget.searchQuery);
     });
+  }
+
+  @override
+  void didUpdateWidget(covariant JobSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.searchQuery != oldWidget.searchQuery) {
+      controller.resetPagination();
+      controller.getJobs(searchQuery: widget.searchQuery);
+    }
   }
 
   @override
