@@ -200,7 +200,7 @@ class _MainButtonNavbarScreenState extends State<MainButtonNavbarScreen> {
 
     return GestureDetector(
       onTap: () {
-        if (selectedKey != index) {
+        if (selectedKey != index) { 
           setState(() => selectedKey = index);
         }
       },

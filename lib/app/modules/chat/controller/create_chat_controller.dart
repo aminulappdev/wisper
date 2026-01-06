@@ -5,7 +5,7 @@ import 'package:wisper/app/core/services/network_caller/network_response.dart';
 import 'package:wisper/app/urls.dart';
 
 class CreateChatController extends GetxController {
-  final RxBool _inProgress = false.obs;
+  final RxBool _inProgress = false.obs; 
   bool get inProgress => _inProgress.value;
 
   final RxString _errorMessage = ''.obs;

@@ -1,11 +1,12 @@
 // app/modules/chat/controller/message_controller.dart
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/services/network_caller/network_caller.dart';
 import 'package:wisper/app/core/services/socket/socket_service.dart';
-import 'package:wisper/app/modules/chat/controller/all_chats_controller.dart';
-import 'package:wisper/app/modules/chat/controller/image_decode_controller.dart'; // Added for image handling
+import 'package:wisper/app/modules/chat/controller/image_decode_controller.dart';
 import 'package:wisper/app/modules/chat/model/message_keys.dart';
 import 'package:wisper/app/modules/chat/model/message_model.dart';
 import 'package:wisper/app/urls.dart';
@@ -38,16 +39,125 @@ class MessageController extends GetxController {
     // Socket listener (একবারই on করা)
     socketService.socket.off('newMessage');
     socketService.socket.on('newMessage', _handleIncomingMessage);
-    socketService.socket.on('chatList', _updateData);
+    socketService.socket.on('chatList', _handleIncomingChat);
     socketService.socket.on('typingStatus', _handleTypingStatus);
-
   }
 
-  void _updateData(dynamic data) {
-    print('updateData called');
-    final AllChatsController _allChatsController =
-        Get.find<AllChatsController>();
-    _allChatsController.getAllChats();
+  void _handleIncomingChat(dynamic rawData) {
+  print('Real-time chatList event received: $rawData');
+
+  if (rawData == null) return;
+
+  final Map<String, dynamic> data = rawData is String
+      ? jsonDecode(rawData)
+      : rawData as Map<String, dynamic>;
+
+  // যদি 'chats' key না থাকে বা list না হয় → invalid payload
+  if (!data.containsKey('chats') || data['chats'] is! List) {
+    print('Invalid payload format for chatList event');
+    return;
+  }
+
+  final List<dynamic> incomingChats = data['chats'];
+
+  final list = socketService.socketFriendList;
+  list.clear(); // Full replace
+
+  final String currentUserId = StorageUtil.getData(StorageUtil.userId) ?? '';
+
+  for (final chatJson in incomingChats) {
+    if (chatJson is! Map<String, dynamic>) continue;
+
+    final String chatId = chatJson['id']?.toString() ?? '';
+    if (chatId.isEmpty) continue;
+
+    final String type = chatJson['type'] ?? 'INDIVIDUAL';
+
+    // Default values
+    String displayName = 'Unknown User';
+    String displayImage = '';
+    String receiverId = '';
+
+
+    // INDIVIDUAL চ্যাটের জন্য অন্য participant থেকে নাম/ইমেজ বের করা
+    if (type == 'INDIVIDUAL' && chatJson['participants'] is List) {
+      final participants = chatJson['participants'] as List;
+      final other = participants.firstWhere(
+        (p) => p['auth']?['id'] != currentUserId,
+        orElse: () => participants.firstOrNull,
+      );
+
+      if (other != null && other['auth'] != null) {
+        final auth = other['auth'];
+        displayName = auth['person']?['name'] ??
+            auth['business']?['name'] ??
+            'Unknown User';
+        displayImage = auth['person']?['image'] ??
+            auth['business']?['image'] ??
+            '';
+        receiverId = auth['id'] ?? '';
+      }
+    }
+
+    // GROUP বা CLASS এর নাম/ইমেজ
+    if (type == 'GROUP') {
+      displayName = chatJson['group']?['name'] ?? 'Group Chat';
+      displayImage = chatJson['group']?['image'] ?? '';
+    } else if (type == 'CLASS') {
+      displayName = chatJson['class']?['name'] ?? 'Class Chat';
+      displayImage = chatJson['class']?['image'] ?? '';
+    }
+
+    // Latest message
+    final messagesList = chatJson['messages'] as List<dynamic>? ?? [];
+    final latestMsg = messagesList.isNotEmpty ? messagesList.first : null;
+    final String lastMessage = latestMsg?['text']?.toString() ?? 'No messages yet';
+
+    final String latestTime = chatJson['latestMessageAt']?.toString() ??
+        DateTime.now().toIso8601String();
+
+    // Unread count
+    final int unreadCount = chatJson['_count']?['messages'] ?? 0;
+
+    // Add to socket list
+    list.add({
+      "id": chatId,
+      "type": type,
+      "latestMessageAt": latestTime,
+      "lastMessage": lastMessage,
+      "unreadMessageCount": unreadCount,
+      "group": chatJson['group'] != null
+          ? {
+              "name": chatJson['group']['name'],
+              "image": chatJson['group']['image'],
+            }
+          : null,
+      "chatClass": chatJson['class'] != null
+          ? {
+              "name": chatJson['class']['name'],
+              "image": chatJson['class']['image'],
+            }
+          : null,
+      "receiverName": displayName,
+      "receiverImage": displayImage,
+      "receiverId": type == 'INDIVIDUAL' ? receiverId : '',
+    });
+  }
+
+  // Sort by latest message time (newest first)
+  _sortSocketList();
+}
+
+  void _sortSocketList() {
+    socketService.socketFriendList.sort((a, b) {
+      final DateTime aTime =
+          DateTime.tryParse(a['latestMessageAt'] ?? '') ?? DateTime(1970);
+      final DateTime bTime =
+          DateTime.tryParse(b['latestMessageAt'] ?? '') ?? DateTime(1970);
+      return bTime.compareTo(aTime); // Latest first
+    });
+
+    socketService.socketFriendList.refresh(); // GetX UI update
   }
 
   void _handleTypingStatus(dynamic data) {
@@ -162,7 +272,7 @@ class MessageController extends GetxController {
                 senderName = msg.sender!.person!.name ?? 'Unknown';
                 senderImage = msg.sender!.person!.image;
               } else if (msg.sender!.business != null) {
-                senderName = msg.sender!.business!.name ?? 'Unknown'; 
+                senderName = msg.sender!.business!.name ?? 'Unknown';
                 senderImage = msg.sender!.business!.image;
               }
             }

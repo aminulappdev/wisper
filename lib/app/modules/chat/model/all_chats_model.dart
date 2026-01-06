@@ -10,7 +10,7 @@ class AllChatsModel {
       success: json["success"],
       message: json["message"],
       data: json["data"] == null ? null : Data.fromJson(json["data"]),
-    );
+    ); 
   }
 }
 
