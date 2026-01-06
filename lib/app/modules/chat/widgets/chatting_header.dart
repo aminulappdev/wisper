@@ -209,9 +209,7 @@ class _ChatHeaderState extends State<ChatHeader> {
                       ),
                       widthBox10,
                       CircleAvatar(
-                        backgroundImage: AssetImage(
-                          Assets.images.image.keyName,
-                        ),
+                        backgroundImage: NetworkImage(widget.image ?? ''),
                         radius: 20,
                       ),
                       widthBox10,

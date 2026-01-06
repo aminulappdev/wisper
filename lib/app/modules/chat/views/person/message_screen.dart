@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
+import 'package:wisper/app/core/widgets/shimmer/chat_shimmer.dart';
 import 'package:wisper/app/modules/chat/controller/message_controller.dart';
 import 'package:wisper/app/modules/chat/model/message_keys.dart';
 import 'package:wisper/app/modules/chat/views/person/message_input_bar.dart';
@@ -51,7 +52,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     // Scroll controller listener
     _scrollController.addListener(_scrollListener);
-    
+
     super.initState();
   }
 
@@ -92,10 +93,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _handleNewMessages() {
     final currentCount = ctrl.messages.length;
-    
+
     if (currentCount > _previousMessageCount) {
       final newMessagesCount = currentCount - _previousMessageCount;
-      
+
       // If user is at bottom, auto scroll with animation
       if (_isAtBottom) {
         Future.delayed(const Duration(milliseconds: 50), () {
@@ -107,7 +108,7 @@ class _ChatScreenState extends State<ChatScreen> {
           _showNewMessageIndicator = true;
         });
       }
-      
+
       _previousMessageCount = currentCount;
     }
   }
@@ -116,47 +117,62 @@ class _ChatScreenState extends State<ChatScreen> {
   String _getDateSeparatorText(DateTime date) {
     final now = DateTime.now();
     final yesterday = DateTime.now().subtract(const Duration(days: 1));
-    
-    if (date.year == now.year && date.month == now.month && date.day == now.day) {
+
+    if (date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day) {
       return 'Today';
-    } else if (date.year == yesterday.year && 
-               date.month == yesterday.month && 
-               date.day == yesterday.day) {
+    } else if (date.year == yesterday.year &&
+        date.month == yesterday.month &&
+        date.day == yesterday.day) {
       return 'Yesterday';
     } else {
       final monthNames = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
       ];
       return '${date.day} ${monthNames[date.month - 1]} ${date.year}';
     }
   }
 
   // Check if we need to show date separator for this message
-  bool _shouldShowDateSeparator(int index, List<Map<String, dynamic>> messages) {
+  bool _shouldShowDateSeparator(
+    int index,
+    List<Map<String, dynamic>> messages,
+  ) {
     if (messages.isEmpty || index >= messages.length) return false;
-    
+
     final currentMsg = messages[index];
     final currentDateStr = currentMsg[SocketMessageKeys.createdAt];
     final currentDate = DateTime.tryParse(currentDateStr) ?? DateTime.now();
-    
+
     if (index == 0) {
       _lastDateSeparator = _getDateSeparatorText(currentDate);
       return true;
     }
-    
+
     final prevMsg = messages[index - 1];
     final prevDateStr = prevMsg[SocketMessageKeys.createdAt];
     final prevDate = DateTime.tryParse(prevDateStr) ?? DateTime.now();
-    
+
     final currentSeparator = _getDateSeparatorText(currentDate);
     final prevSeparator = _getDateSeparatorText(prevDate);
-    
+
     if (currentSeparator != prevSeparator) {
       _lastDateSeparator = currentSeparator;
       return true;
     }
-    
+
     return false;
   }
 
@@ -190,19 +206,13 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           Text(
             "🔒 Messages and calls are end-to-end encrypted",
-            style: TextStyle(
-              fontSize: 11.sp,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 11.sp, color: Colors.grey[600]),
           ),
           SizedBox(height: 4.h),
           Text(
             "No one outside of this chat can read or listen to them.",
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 10.sp,
-              color: Colors.grey[500],
-            ),
+            style: TextStyle(fontSize: 10.sp, color: Colors.grey[500]),
           ),
         ],
       ),
@@ -220,6 +230,8 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
           ChatHeader(
             isPerson: widget.isPerson,
@@ -242,7 +254,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   });
 
                   if (ctrl.isLoading.value) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(child: ChatShimmerEffectWidget());
                   }
 
                   if (ctrl.messages.isEmpty) {
@@ -256,7 +268,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                 Text(
                                   "No messages yet",
                                   style: TextStyle(
-                                    fontSize: 16.sp, 
+                                    fontSize: 16.sp,
                                     color: Colors.grey,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -265,7 +277,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                 Text(
                                   "Start the conversation!",
                                   style: TextStyle(
-                                    fontSize: 12.sp, 
+                                    fontSize: 12.sp,
                                     color: Colors.grey,
                                   ),
                                 ),
@@ -279,48 +291,55 @@ class _ChatScreenState extends State<ChatScreen> {
                   }
 
                   // Create a reversed list for display (newest at bottom)
-                  final displayedMessages = ctrl.messages.toList().reversed.toList();
+                  final displayedMessages = ctrl.messages
+                      .toList()
+                      .reversed
+                      .toList();
 
                   return ListView.builder(
                     controller: _scrollController,
                     reverse: false, // Regular list (newest at bottom)
                     padding: EdgeInsets.only(
                       top: 10.r,
-                      bottom: 80.r, // Space for input bar and new message indicator
+                      bottom: 10.r,
                       left: 10.r,
                       right: 10.r,
                     ),
-                    itemCount: displayedMessages.length + 1, // +1 for encryption notice
+                    itemCount:
+                        displayedMessages.length +
+                        1, // +1 for encryption notice
                     itemBuilder: (context, index) {
                       // Encryption notice at top
                       if (index == 0) {
                         return _buildEncryptionNotice();
                       }
-                      
+
                       // Adjust index for message items
                       final messageIndex = index - 1;
-                      
+
                       if (messageIndex >= displayedMessages.length) {
                         return const SizedBox.shrink();
                       }
-                      
+
                       final msg = displayedMessages[messageIndex];
-                      final isMe = msg[SocketMessageKeys.senderId] == ctrl.userAuthId;
+                      final isMe =
+                          msg[SocketMessageKeys.senderId] == ctrl.userAuthId;
                       final imageUrl = msg[SocketMessageKeys.imageUrl] ?? "";
-                      
+
                       // Check if we need date separator
                       bool showDateSeparator = _shouldShowDateSeparator(
-                        messageIndex, 
-                        displayedMessages
+                        messageIndex,
+                        displayedMessages,
                       );
-                      
+
                       return Column(
                         children: [
                           if (showDateSeparator && _lastDateSeparator != null)
                             _buildDateSeparator(_lastDateSeparator!),
-                          
+
                           // Animate new messages (if this is one of the recent messages)
-                          if (messageIndex < (ctrl.messages.length - _previousMessageCount))
+                          if (messageIndex <
+                              (ctrl.messages.length - _previousMessageCount))
                             AnimatedMessageBubble(
                               message: msg,
                               isMe: isMe,
@@ -467,29 +486,27 @@ class _AnimatedMessageBubbleState extends State<AnimatedMessageBubble>
   @override
   void initState() {
     super.initState();
-    
+
     _controller = AnimationController(
       duration: const Duration(milliseconds: 400),
       vsync: this,
     );
-    
+
     _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
         curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
       ),
     );
-    
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0.0, 0.5),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.0, 1.0, curve: Curves.easeOut),
-      ),
-    );
-    
+
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0.0, 0.5), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: const Interval(0.0, 1.0, curve: Curves.easeOut),
+          ),
+        );
+
     // Start animation after a small delay
     Future.delayed(const Duration(milliseconds: 50), () {
       _controller.forward();

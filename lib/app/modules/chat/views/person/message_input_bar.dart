@@ -47,7 +47,7 @@ class MessageInputBar extends StatelessWidget {
                     )),
               ],
             ),
-          ),
+          ), 
         ),
       ),
     );

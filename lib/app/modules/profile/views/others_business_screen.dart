@@ -18,8 +18,6 @@ import 'package:wisper/app/modules/homepage/views/others_job_section.dart';
 import 'package:wisper/app/modules/homepage/views/others_post_section.dart';
 import 'package:wisper/app/modules/profile/controller/buisness/other_business_controller.dart';
 import 'package:wisper/app/modules/profile/controller/remove_connection_controller.dart';
-import 'package:wisper/app/modules/profile/views/person/edit_person_profile_screen.dart';
-import 'package:wisper/app/modules/profile/views/recommendation_screen.dart';
 import 'package:wisper/app/modules/profile/widget/info_card.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
@@ -147,7 +145,7 @@ class _OthersBusinessScreenState extends State<OthersBusinessScreen> {
             ),
             heightBox20,
             Text(
-              'Remove Connection?',
+              'Remove Connection?', 
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w600,
@@ -192,6 +190,7 @@ class _OthersBusinessScreenState extends State<OthersBusinessScreen> {
   @override
   void dispose() {
     controller.dispose();
+    
     super.dispose();
   }
 

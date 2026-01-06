@@ -240,8 +240,9 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
 
             // প্রোফাইল কার্ড
             Obx(() {
-              if (controller.inProgress)
+              if (controller.inProgress) {
                 return const InfoCardShimmerEffectWidget();
+              }
 
               final person = controller.othersProfileData?.auth?.person;
 
@@ -328,17 +329,18 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
             SizedBox(height: 10.h),
 
             // রেকমেন্ডেশন উইজেট - GetBuilder দিয়ে real-time update
-            GetBuilder<AllRecommendationController>(
-              builder: (recController) {
-                final int count = recController.recommendationData.length;
-
-                return Recommendation(
-                  isEmpty: count == 0,
-                  onTap: _showRecommendationSheet, // live sheet খুলবে
-                  count: count,
-                );
-              },
-            ),
+            Obx(() {
+              final int count =
+                  recommendationController.recommendationData.length;
+              if (controller.inProgress) return const Text('Loading...');
+              return Recommendation(
+                isEmpty: recommendationController.recommendationData.isEmpty
+                    ? true
+                    : false,
+                onTap: _showRecommendationSheet, // live sheet খুলবে
+                count: count,
+              );
+            }),
 
             SizedBox(height: 10.h),
 
