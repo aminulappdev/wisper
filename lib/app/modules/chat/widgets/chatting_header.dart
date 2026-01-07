@@ -23,7 +23,7 @@ import 'package:wisper/gen/assets.gen.dart';
 class ChatHeader extends StatefulWidget {
   final String? name;
   final String? image;
-  final String? status;
+  final bool? status;
   final String? memberId;
   final String? chatId;
   final bool? isPerson;
@@ -225,11 +225,13 @@ class _ChatHeaderState extends State<ChatHeader> {
                             ),
                           ),
                           Text(
-                            widget.status!,
+                            widget.status == true ? 'Online' : 'Offline',
                             style: GoogleFonts.poppins(
                               fontSize: 10,
                               fontWeight: FontWeight.w400,
-                              color: LightThemeColors.themeGreyColor,
+                              color: widget.status == true
+                                  ? Colors.green
+                                  : LightThemeColors.themeGreyColor,
                             ),
                           ),
                         ],

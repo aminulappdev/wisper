@@ -70,6 +70,7 @@ dependencies:
   open_mail_launcher: ^0.1.1
   flutter_image_compress: ^2.4.0
   app_links: 
+  firebase_messaging: 
  
 
 dev_dependencies:

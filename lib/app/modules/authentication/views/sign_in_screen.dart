@@ -11,6 +11,7 @@ import 'package:wisper/app/core/utils/validator_service.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/custom_text_filed.dart';
 import 'package:wisper/app/core/widgets/label.dart';
+import 'package:wisper/app/modules/authentication/controller/google_sign_up_controller.dart';
 import 'package:wisper/app/modules/authentication/controller/sign_in_controller.dart';
 import 'package:wisper/app/modules/authentication/views/auth_screen.dart';
 import 'package:wisper/app/modules/authentication/views/forgot_password.dart';
@@ -30,6 +31,9 @@ class _SignInScreenState extends State<SignInScreen> {
   final SignInController signInController = Get.put(SignInController());
   final ProfileController profileController = Get.put(ProfileController());
   final BusinessController businessController = Get.put(BusinessController());
+  final GoogleSignUpAuthController googleAuthController = Get.put(
+    GoogleSignUpAuthController(),
+  );
 
   final formKey = GlobalKey<FormState>();
   final emailController = TextEditingController(
@@ -156,9 +160,14 @@ class _SignInScreenState extends State<SignInScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        CrashSafeImage(
-                          Assets.images.gmail.keyName,
-                          height: 30.h,
+                        GestureDetector(
+                          onTap: () {
+                            googleAuthController.signUpWithGoogle();
+                          },
+                          child: CrashSafeImage(
+                            Assets.images.gmail.keyName,
+                            height: 30.h,
+                          ),
                         ),
                         widthBox14,
                         CrashSafeImage(

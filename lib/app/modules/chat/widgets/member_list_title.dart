@@ -14,6 +14,7 @@ class MemberListTile extends StatelessWidget {
   final String message;
   final String time;
   final String unreadMessageCount;
+  final bool isOnline;
 
   const MemberListTile({
     super.key,
@@ -25,6 +26,7 @@ class MemberListTile extends StatelessWidget {
     required this.time,
     required this.unreadMessageCount,
     required this.isClass,
+    required this.isOnline,
   });
 
   @override
@@ -39,30 +41,53 @@ class MemberListTile extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [ 
+            children: [
               // Profile Image
-              CircleAvatar(
-                radius: 25.r,
-                backgroundColor: isGroup
-                    ? const Color(0xff051B33)
-                    : const Color(0xff102B19),
-                child: isGroup
-                    ? CrashSafeImage(
-                        Assets.images.userGroup.keyName,
-                        color: const Color(0xff1F7DE9),
-                        height: 26.h,
-                      )
-                    : isClass
-                    ? CrashSafeImage(
-                        Assets.images.education.keyName,
-                        color: const Color(0xff11AE46),
-                        height: 22.h,
-                      )
-                    : CircleAvatar(
-                        radius: 25.r,
-                        backgroundColor: Colors.grey.shade800,
-                        backgroundImage: NetworkImage(imagePath),
+              Stack(
+                children: [
+                  // মেইন প্রোফাইল পিকচার / আইকন
+                  CircleAvatar(
+                    radius: 25.r,
+                    backgroundColor: isGroup
+                        ? const Color(0xff051B33)
+                        : isClass
+                        ? const Color(0xff102B19)
+                        : Colors.grey.shade800,
+                    child: isGroup
+                        ? CrashSafeImage(
+                            Assets.images.userGroup.keyName,
+                            color: const Color(0xff1F7DE9),
+                            height: 26.h,
+                          )
+                        : isClass
+                        ? CrashSafeImage(
+                            Assets.images.education.keyName,
+                            color: const Color(0xff11AE46),
+                            height: 22.h,
+                          )
+                        : CircleAvatar(
+                            radius: 25.r,
+                            backgroundImage: NetworkImage(imagePath),
+                            backgroundColor: Colors.transparent,
+                          ),
+                  ),
+
+                  // শুধু Individual চ্যাটে এবং online থাকলে online dot দেখাবে
+                  if (!isGroup && !isClass && isOnline)
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        width: 14.w,
+                        height: 14.h,
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2.5),
+                        ),
                       ),
+                    ),
+                ],
               ),
 
               const SizedBox(width: 12),

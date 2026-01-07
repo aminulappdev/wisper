@@ -14,7 +14,7 @@ import 'package:wisper/gen/assets.gen.dart';
 
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({super.key});
-
+ 
   @override
   State<ChatListScreen> createState() => _ChatListScreenState();
 }
@@ -109,6 +109,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
             final int unread = item['unreadMessageCount'] ?? 0;
 
             return MemberListTile(
+              isOnline: item['receiverOnline'] ?? false,
               onTap: () {
                 if (type == 'GROUP') {
                   Get.to(
@@ -137,6 +138,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
                   Get.to(
                     () => ChatScreen(
+                      isOnline: item['receiverOnline'] ?? false,
                       isPerson: isPerson,
                       chatId: chatId,
                       receiverName: name,
@@ -153,6 +155,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
               message: lastMessage,
               time: formattedTime,
               unreadMessageCount: unread > 0 ? unread.toString() : '',
+
             );
           },
         );

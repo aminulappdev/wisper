@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "490742211308",
+    "project_id": "wisper-74d39",
+    "storage_bucket": "wisper-74d39.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:490742211308:android:01bc1cc1348b3dc7e43bc9",
+        "android_client_info": {
+          "package_name": "com.example.wisper"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxNZ0TrKbOx4GANA7xD396XcqpSFJoVDw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

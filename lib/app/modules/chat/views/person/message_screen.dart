@@ -16,6 +16,7 @@ class ChatScreen extends StatefulWidget {
   final String? receiverImage;
   final String? chatId;
   final bool? isPerson;
+  final bool? isOnline;
 
   const ChatScreen({
     super.key,
@@ -23,7 +24,7 @@ class ChatScreen extends StatefulWidget {
     this.receiverName,
     this.receiverImage,
     this.chatId,
-    this.isPerson,
+    this.isPerson, this.isOnline,
   });
 
   @override
@@ -239,7 +240,7 @@ class _ChatScreenState extends State<ChatScreen> {
             name: widget.receiverName,
             image: widget.receiverImage,
             memberId: widget.receiverId,
-            status: 'online',
+            status: widget.isOnline,
           ),
 
           Expanded(
