@@ -54,7 +54,11 @@ class MyFeedPostController extends GetxController {
       page++;
       print('Fetching assets for page: $page');
 
-      Map<String, dynamic> queryParams = {'limit': _limit, 'page': page};
+      Map<String, dynamic> queryParams = {
+        'limit': _limit,
+        'page': page,
+        'authorId': StorageUtil.getData(StorageUtil.userId),
+      };
       final effectiveCategoryId = categoryId ?? _selectedCategoryId.value;
       if (effectiveCategoryId.isNotEmpty) {
         queryParams['category'] = effectiveCategoryId;

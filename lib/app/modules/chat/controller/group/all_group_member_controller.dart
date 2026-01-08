@@ -17,7 +17,7 @@ class GroupMembersController extends GetxController {
     null,
   );
   List<GroupMembersItemModel>? get groupMemnersData =>
-      _groupMemnersModel.value!.data;
+      _groupMemnersModel.value!.data?.members ?? [];
 
   // @override
   // void onInit() {

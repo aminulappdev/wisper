@@ -226,9 +226,8 @@ class _ClassChatHeaderState extends State<ClassChatHeader> {
                       ),
                       widthBox10,
                       CircleAvatar(
-                        backgroundImage: AssetImage(
-                          Assets.images.image.keyName,
-                        ),
+                        backgroundColor: Colors.grey,
+                        backgroundImage: NetworkImage(widget.classImage),
                         radius: 20,
                       ),
                       widthBox10,
@@ -241,14 +240,6 @@ class _ClassChatHeaderState extends State<ClassChatHeader> {
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                               color: Colors.white,
-                            ),
-                          ),
-                          Text(
-                            'online',
-                            style: GoogleFonts.poppins(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400,
-                              color: LightThemeColors.themeGreyColor,
                             ),
                           ),
                         ],

@@ -13,7 +13,7 @@ class OthersPostSection extends StatefulWidget {
 
   @override
   State<OthersPostSection> createState() => _OthersPostSectionState();
-}
+} 
 
 class _OthersPostSectionState extends State<OthersPostSection> {
   final OthersFeedPostController controller = Get.put(

@@ -14,7 +14,7 @@ import 'package:wisper/gen/assets.gen.dart';
 
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({super.key});
- 
+
   @override
   State<ChatListScreen> createState() => _ChatListScreenState();
 }
@@ -115,16 +115,18 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   Get.to(
                     () => GroupChatScreen(
                       chatId: chatId,
+                      groupId: item['groupId'] ?? '',
                       groupName: item['group']?['name'] ?? 'Group Chat',
-                      groupId: item['group']?['id'] ?? '',
+                      groupImage: item['group']?['image'] ?? '',
                     ),
                   );
                 } else if (type == 'CLASS') {
                   Get.to(
                     () => ClassChatScreen(
                       chatId: chatId,
+                      classImage: item['chatClass']?['image'] ?? '',
                       className: item['chatClass']?['name'] ?? 'Class Chat',
-                      classId: item['chatClass']?['id'] ?? '',
+                      classId: item['classId'] ?? '',
                     ),
                   );
                 } else {
@@ -139,7 +141,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   Get.to(
                     () => ChatScreen(
                       isOnline: item['receiverOnline'] ?? false,
-                      isPerson: isPerson,
+                      isPerson: item['isPerson'] == true ? true : false,
                       chatId: chatId,
                       receiverName: name,
                       receiverId: item['receiverId'] ?? '',
@@ -155,7 +157,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
               message: lastMessage,
               time: formattedTime,
               unreadMessageCount: unread > 0 ? unread.toString() : '',
-
             );
           },
         );

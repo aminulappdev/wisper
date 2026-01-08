@@ -23,7 +23,7 @@ class EditPersonProfileScreen extends StatefulWidget {
 }
 
 class _EditPersonProfileScreenState extends State<EditPersonProfileScreen> {
-  final ProfileController profileController = Get.find<ProfileController>();
+  final ProfileController profileController = Get.put(ProfileController());
   final EditPersonProfileController editProfileController =
       EditPersonProfileController();
   final _formKey = GlobalKey<FormState>();

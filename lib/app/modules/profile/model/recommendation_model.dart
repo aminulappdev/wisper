@@ -11,7 +11,7 @@ class RecommendationModel {
 
   factory RecommendationModel.fromJson(Map<String, dynamic> json) {
     return RecommendationModel(
-      success: json["success"],
+      success: json["success"], 
       message: json["message"],
       data: json["data"] == null
           ? []

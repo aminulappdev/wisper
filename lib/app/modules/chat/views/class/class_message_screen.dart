@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
+import 'package:wisper/app/core/widgets/shimmer/chat_shimmer.dart';
 import 'package:wisper/app/modules/chat/controller/message_controller.dart';
+import 'package:wisper/app/modules/chat/controller/seen_message_controller.dart';
 import 'package:wisper/app/modules/chat/model/message_keys.dart';
 import 'package:wisper/app/modules/chat/views/person/message_input_bar.dart';
 import 'package:wisper/app/modules/chat/widgets/class_chatting_header.dart';
@@ -16,6 +18,7 @@ class ClassChatScreen extends StatefulWidget {
   final String? classImage;
   final String? chatId;
   final String? classId;
+  final bool? isOnline;
 
   const ClassChatScreen({
     super.key,
@@ -23,6 +26,7 @@ class ClassChatScreen extends StatefulWidget {
     this.classImage,
     this.chatId,
     this.classId,
+    this.isOnline,
   });
 
   @override
@@ -31,10 +35,12 @@ class ClassChatScreen extends StatefulWidget {
 
 class _ClassChatScreenState extends State<ClassChatScreen> {
   final MessageController ctrl = Get.put(MessageController());
+  final SeenMessageController seenMessageController = SeenMessageController();
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      seenMessageController.seenMessage(widget.chatId!);
       ctrl.setupChat(chatId: widget.chatId);
     });
     super.initState();
@@ -55,7 +61,7 @@ class _ClassChatScreenState extends State<ClassChatScreen> {
           Expanded(
             child: Obx(() {
               if (ctrl.isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(child: ChatShimmerEffectWidget());
               }
 
               if (ctrl.messages.isEmpty) {

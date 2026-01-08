@@ -328,12 +328,14 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
 
             SizedBox(height: 10.h),
 
-            // রেকমেন্ডেশন উইজেট - GetBuilder দিয়ে real-time update
             Obx(() {
               final int count =
                   recommendationController.recommendationData.length;
               if (controller.inProgress) return const Text('Loading...');
               return Recommendation(
+                images: recommendationController.recommendationData
+                    .map((e) => e.giver!)
+                    .toList(),
                 isEmpty: recommendationController.recommendationData.isEmpty
                     ? true
                     : false,

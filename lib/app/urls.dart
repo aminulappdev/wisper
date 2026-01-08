@@ -73,12 +73,12 @@ class Urls {
 
   // =========================================== Home Block ========================================== //
   static const String feedPostUrl = '$_baseUrl/posts/feed';
-  static const String myFeedPostUrl = '$_baseUrl/posts/my';
+  static const String myFeedPostUrl = '$_baseUrl/posts/all';
   static const String postUrl = '$_baseUrl/posts';
   static const String resumePostUrl = '$_baseUrl/resumes';
   static const String feedJobUrl = '$_baseUrl/jobs';
   static const String roleUrl = '$_baseUrl/persons/roles';
-
+ 
   static String editPostId(String id) {
     return '$_baseUrl/posts/$id';
   }
@@ -92,7 +92,7 @@ class Urls {
   }
 
   static String otherUserPostById(String id) {
-    return '$_baseUrl/posts/user/$id';
+    return '$_baseUrl/posts/user/$id'; 
   }
 
   static String otherUserJobById(String id) {
@@ -121,6 +121,10 @@ class Urls {
 
   static String groupInfoById(String id) {
     return '$_baseUrl/groups/$id';
+  }
+
+    static String seenMessageById(String id) {
+    return '$_baseUrl/messages/seen/$id';
   }
 
   static String changeGroupImageById(String id) {

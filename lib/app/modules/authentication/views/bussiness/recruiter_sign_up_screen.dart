@@ -116,11 +116,11 @@ class _RecruiterSignUpScreenState extends State<RecruiterSignUpScreen> {
                           Assets.images.gmail.keyName,
                           height: 30.h,
                         ),
-                        widthBox14,
-                        CrashSafeImage(
-                          Assets.images.facebook.keyName,
-                          height: 30.h,
-                        ),
+                        // widthBox14,
+                        // CrashSafeImage(
+                        //   Assets.images.facebook.keyName,
+                        //   height: 30.h,
+                        // ),
                       ],
                     ),
                   ],

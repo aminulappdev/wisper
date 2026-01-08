@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
@@ -30,7 +29,7 @@ class GroupChatHeader extends StatefulWidget {
   final String chatId;
 
   const GroupChatHeader({
-    super.key,
+    super.key, 
     required this.groupName,
     required this.groupImage,
     required this.groupId,
@@ -225,9 +224,8 @@ class _GroupChatHeaderState extends State<GroupChatHeader> {
                       ),
                       widthBox10,
                       CircleAvatar(
-                        backgroundImage: AssetImage(
-                          Assets.images.image.keyName,
-                        ),
+                        backgroundColor: Colors.grey,
+                        backgroundImage: NetworkImage(widget.groupImage),
                         radius: 20,
                       ),
                       widthBox10,
@@ -240,14 +238,6 @@ class _GroupChatHeaderState extends State<GroupChatHeader> {
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                               color: Colors.white,
-                            ),
-                          ),
-                          Text(
-                            'online',
-                            style: GoogleFonts.poppins(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400,
-                              color: LightThemeColors.themeGreyColor,
                             ),
                           ),
                         ],

@@ -169,11 +169,11 @@ class _SignInScreenState extends State<SignInScreen> {
                             height: 30.h,
                           ),
                         ),
-                        widthBox14,
-                        CrashSafeImage(
-                          Assets.images.facebook.keyName,
-                          height: 30.h,
-                        ),
+                        // widthBox14,
+                        // CrashSafeImage(
+                        //   Assets.images.facebook.keyName,
+                        //   height: 30.h,
+                        // ),
                       ],
                     ),
                   ],

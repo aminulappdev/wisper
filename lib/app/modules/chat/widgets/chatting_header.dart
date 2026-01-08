@@ -13,8 +13,6 @@ import 'package:wisper/app/core/widgets/circle_icon.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
 import 'package:wisper/app/core/widgets/custom_popup.dart';
 import 'package:wisper/app/core/widgets/details_card.dart';
-import 'package:wisper/app/modules/calls/views/audio_call_screen.dart';
-import 'package:wisper/app/modules/calls/views/video_call_screen.dart';
 import 'package:wisper/app/modules/chat/controller/block_user_controller.dart';
 import 'package:wisper/app/modules/profile/views/others_business_screen.dart';
 import 'package:wisper/app/modules/profile/views/others_person_screen.dart';
@@ -28,7 +26,7 @@ class ChatHeader extends StatefulWidget {
   final String? chatId;
   final bool? isPerson;
   const ChatHeader({
-    super.key,
+    super.key, 
     this.name,
     this.image,
     this.status,

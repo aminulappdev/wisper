@@ -10,7 +10,7 @@ class AllRecommendationController extends GetxController {
   final RxBool _inProgress = false.obs;
   bool get inProgress => _inProgress.value;
 
-  final RxString _errorMessage = ''.obs;
+  final RxString _errorMessage = ''.obs; 
   String get errorMessage => _errorMessage.value;
 
   // পরিবর্তন: RxList ব্যবহার করো — এটা real-time update-এর জন্য সবচেয়ে ভালো
@@ -54,7 +54,7 @@ class AllRecommendationController extends GetxController {
         );
 
         // মূল পরিবর্তন: RxList-এ assign করো
-        _recommendationList.assignAll(model.data ?? []);
+        _recommendationList.assignAll(model.data);
 
         // অতিরিক্ত নিশ্চিত করার জন্য (খুবই গুরুত্বপূর্ণ real-time-এর জন্য)
         _recommendationList.refresh();

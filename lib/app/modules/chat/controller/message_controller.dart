@@ -1,6 +1,4 @@
 // app/modules/chat/controller/message_controller.dart
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/get_storage.dart';
@@ -21,7 +19,6 @@ class MessageController extends GetxController {
 
   final ScrollController scrollController = ScrollController();
   final TextEditingController textController = TextEditingController();
-
   late String userAuthId;
 
   @override
@@ -38,13 +35,15 @@ class MessageController extends GetxController {
 
     // Socket listener (একবারই on করা)
     socketService.socket.off('newMessage');
+     socketService.socket.on('chatList', _handleIncomingChat);
     socketService.socket.on('newMessage', _handleIncomingMessage);
-    socketService.socket.on('chatList', _handleIncomingChat);
     socketService.socket.on('typingStatus', _handleTypingStatus);
   }
 
   void _handleIncomingChat(dynamic rawData) {
-    print('Real-time chatList event received from message controller: $rawData');
+    print(
+      'Real-time chatList event received from message controller: $rawData',
+    );
   }
 
   void _sortSocketList() {
@@ -66,6 +65,7 @@ class MessageController extends GetxController {
 
   void _handleIncomingMessage(dynamic data) {
     try {
+      print('Real-time message event received from message controller: $data');
       final String msgId = data['id'] ?? '';
       if (messages.any((e) => e[SocketMessageKeys.id] == msgId)) return;
 
@@ -140,7 +140,8 @@ class MessageController extends GetxController {
     };
 
     socketService.socket.emit('sendMessage', messageData);
-    print('File type********************************** : $fileType');
+    print('File type : $fileType');
+    print('Message Done sending message');
 
     // Clear everything
     textController.clear();

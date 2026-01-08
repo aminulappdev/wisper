@@ -75,105 +75,107 @@ class AllChatsController extends GetxController {
   // }
 
   void _handleIncomingChat(dynamic rawData) {
-  print('Real-time chatList event received: $rawData');
+    print('Real-time chatList event received from chat controller: $rawData');
 
-  try {
-    // rawData কে Map এ কনভার্ট
-    final Map<String, dynamic> payload = rawData is String
-        ? jsonDecode(rawData)
-        : rawData as Map<String, dynamic>;
+    try {
+      // rawData কে Map এ কনভার্ট
+      final Map<String, dynamic> payload = rawData is String
+          ? jsonDecode(rawData)
+          : rawData as Map<String, dynamic>;
 
-    // যদি full list আসে (meta + chats থাকে), তাহলে reload করো
-    if (payload.containsKey('chats') && payload['chats'] is List && payload.containsKey('meta')) {
-      getAllChats();
-      return;
-    }
-
-    // single chat বা multiple chats array
-    final List<dynamic> incomingChats = payload['chats'] is List
-        ? payload['chats']
-        : [payload];
-
-    for (var chatJson in incomingChats) {
-      final chat = chatJson as Map<String, dynamic>;
-
-      final String chatId = chat['id'] ?? '';
-      if (chatId.isEmpty) continue;
-
-      final String type = chat['type'] ?? 'INDIVIDUAL';
-
-      // last message
-      final String lastMessage = chat['messages'] != null && (chat['messages'] as List).isNotEmpty
-          ? (chat['messages'].first['text'] ?? 'No messages yet')
-          : 'No messages yet';
-
-      // latest time
-      final String latestMessageAt = chat['latestMessageAt'] ?? '';
-
-      // unread count
-      final int unreadCount = chat['_count']?['messages'] ?? 0;
-
-      // participant থেকে অন্যজন বের করা (ঠিক getAllChats-এর মতো)
-      final List<dynamic> participants = chat['participants'] ?? [];
-      final otherParticipant = participants.firstWhere(
-        (p) => p['auth']?['id'] != myAuthId,
-        orElse: () => participants.isNotEmpty ? participants.first : null,
-      );
-
-      // receiver এর তথ্য
-      final receiverAuth = otherParticipant?['auth'];
-
-      String receiverName = 'Unknown';
-     
-      String receiverId = '';
-      bool receiverOnline = false;
-
-      if (type == 'INDIVIDUAL' && receiverAuth != null) {
-        receiverName = receiverAuth['person']?['name'] ??
-            receiverAuth['business']?['name'] ??
-            'Unknown';
-      
-        receiverId = receiverAuth['id'] ?? '';
-        receiverOnline = otherParticipant['isOnline'] == true;
+      // যদি full list আসে (meta + chats থাকে), তাহলে reload করো
+      if (payload.containsKey('chats') &&
+          payload['chats'] is List &&
+          payload.containsKey('meta')) {
+        getAllChats();
+        return;
       }
 
-      // socketFriendList-এ খুঁজে দেখা
-      final int index = socketService.socketFriendList.indexWhere(
-        (element) => element['id'] == chatId,
-      );
+      // single chat বা multiple chats array
+      final List<dynamic> incomingChats = payload['chats'] is List
+          ? payload['chats']
+          : [payload];
 
-      if (index != -1) {
-        // Existing chat → শুধু আপডেট করো
-        socketService.socketFriendList[index]
-          ..['lastMessage'] = lastMessage
-          ..['latestMessageAt'] = latestMessageAt
-          ..['unreadMessageCount'] = unreadCount;
+      for (var chatJson in incomingChats) {
+        final chat = chatJson as Map<String, dynamic>;
 
-        // Individual হলে receiver info + online আপডেট করো
-        if (type == 'INDIVIDUAL') {
-          socketService.socketFriendList[index]
-            ..['receiverId'] = receiverId
-            ..['receiverOnline'] = receiverOnline; // নতুন ফিল্ড যোগ করলাম
+        final String chatId = chat['id'] ?? '';
+        if (chatId.isEmpty) continue;
+
+        final String type = chat['type'] ?? 'INDIVIDUAL';
+
+        // last message
+        final String lastMessage =
+            chat['messages'] != null && (chat['messages'] as List).isNotEmpty
+            ? (chat['messages'].first['text'] ?? 'No messages yet')
+            : 'No messages yet';
+
+        // latest time
+        final String latestMessageAt = chat['latestMessageAt'] ?? '';
+
+        // unread count
+        final int unreadCount = chat['_count']?['messages'] ?? 0;
+
+        // participant থেকে অন্যজন বের করা (ঠিক getAllChats-এর মতো)
+        final List<dynamic> participants = chat['participants'] ?? [];
+        final otherParticipant = participants.firstWhere(
+          (p) => p['auth']?['id'] != myAuthId,
+          orElse: () => participants.isNotEmpty ? participants.first : null,
+        );
+
+        // receiver এর তথ্য
+        final receiverAuth = otherParticipant?['auth'];
+
+        String receiverName = 'Unknown';
+
+        String receiverId = '';
+        bool receiverOnline = false;
+
+        if (type == 'INDIVIDUAL' && receiverAuth != null) {
+          receiverName =
+              receiverAuth['person']?['name'] ??
+              receiverAuth['business']?['name'] ??
+              'Unknown';
+
+          receiverId = receiverAuth['id'] ?? '';
+          receiverOnline = otherParticipant['isOnline'] == true;
         }
 
-       
+        // socketFriendList-এ খুঁজে দেখা
+        final int index = socketService.socketFriendList.indexWhere(
+          (element) => element['id'] == chatId,
+        );
 
-      } else {
-        // নতুন চ্যাট → যোগ করো (getAllChats-এর মতোই)
-        socketService.socketFriendList.add({
-          "lastMessage": lastMessage,    
-          "receiverOnline": type == 'INDIVIDUAL' ? receiverOnline : false, // এখানেও
-        });
+        if (index != -1) {
+          // Existing chat → শুধু আপডেট করো
+          socketService.socketFriendList[index]
+            ..['lastMessage'] = lastMessage
+            ..['latestMessageAt'] = latestMessageAt
+            ..['unreadMessageCount'] = unreadCount;
+
+          // Individual হলে receiver info + online আপডেট করো
+          if (type == 'INDIVIDUAL') {
+            socketService.socketFriendList[index]
+              ..['receiverId'] = receiverId
+              ..['receiverOnline'] = receiverOnline; // নতুন ফিল্ড যোগ করলাম
+          }
+        } else {
+          // নতুন চ্যাট → যোগ করো (getAllChats-এর মতোই)
+          socketService.socketFriendList.add({
+            "lastMessage": lastMessage,
+            "receiverOnline": type == 'INDIVIDUAL'
+                ? receiverOnline
+                : false, // এখানেও
+          });
+        }
       }
+
+      // সব শেষে sort করো যাতে নতুন মেসেজ উপরে আসে
+      _sortSocketList();
+    } catch (e) {
+      print('Error in _handleIncomingChat: $e');
     }
-
-    // সব শেষে sort করো যাতে নতুন মেসেজ উপরে আসে
-    _sortSocketList();
-
-  } catch (e) {
-    print('Error in _handleIncomingChat: $e');
   }
-}
 
   Future<void> getAllChats() async {
     if (inProgress.value) return;
@@ -211,6 +213,13 @@ class AllChatsController extends GetxController {
           String displayName = 'Unknown';
           String displayImage = '';
           String receiverId = '';
+          String groupId = '';
+          String classId = '';
+          bool isPerson = false;
+
+          if (type == 'INDIVIDUAL') {
+            receiverAuth?.person != null ? isPerson = true : isPerson = false;
+          }
 
           if (type == 'INDIVIDUAL') {
             displayName =
@@ -227,8 +236,10 @@ class AllChatsController extends GetxController {
           String tileName = '';
           if (type == 'GROUP') {
             tileName = chat.group?.name ?? 'Group Chat';
+            groupId = chat.groupId ?? '';
           } else if (type == 'CLASS') {
             tileName = chat.chatClass?.name ?? 'Class Chat';
+            classId = chat.classId ?? '';
           }
 
           print(
@@ -246,12 +257,15 @@ class AllChatsController extends GetxController {
             "group": chat.group != null
                 ? {"name": chat.group?.name, "image": chat.group?.image}
                 : null,
+            "groupId": groupId,
+            "classId": classId,
             "chatClass": chat.chatClass != null
                 ? {"name": chat.chatClass?.name, "image": chat.chatClass?.image}
                 : null,
             "receiverName": type == 'INDIVIDUAL' ? displayName : '',
             "receiverImage": type == 'INDIVIDUAL' ? displayImage : '',
             "receiverId": type == 'INDIVIDUAL' ? receiverId : '',
+            "isPerson": isPerson,
             "receiverOnline": type == 'INDIVIDUAL'
                 ? (otherParticipant?.isOnline ?? false)
                 : false,

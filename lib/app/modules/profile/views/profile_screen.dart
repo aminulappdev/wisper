@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
 import 'package:wisper/app/core/utils/image_picker.dart';
@@ -31,6 +32,7 @@ import 'package:wisper/app/modules/profile/widget/recommendation_widget.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class ProfileScreen extends StatefulWidget {
+
   const ProfileScreen({super.key});
 
   @override
@@ -237,9 +239,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       height: 31.h,
                       width: 116.w,
                       child: CustomElevatedButton(
-                        textSize: 12, 
+                        textSize: 12,
                         title: 'Share Profile',
-                        onPress: () {},
+                        onPress: () async {
+                          try {
+                            final String userId =
+                                StorageUtil.getData(StorageUtil.userId) ?? '';
+                            if (userId.isEmpty) {
+                              Get.snackbar('Error', 'User ID not found');
+                              return;
+                            }
+
+                            final Uri shareUri = Uri.https(
+                              'c9f1d48ba47f.ngrok-free.app',
+                              '/persons/$userId',
+                            );
+
+                            await Share.shareUri(shareUri);
+                          } catch (e) {
+                            debugPrint('Share error: $e');
+                            Get.snackbar('Error', 'Failed to share profile');
+                          }
+                        },
                         borderRadius: 50,
                       ),
                     ),
@@ -275,11 +296,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         builder: (controller) {
                           final int count =
                               controller.recommendationData.length;
-
                           return Recommendation(
+                            images: controller.recommendationData
+                                .map((e) => e.giver!)
+                                .toList(),
                             isEmpty: count == 0,
-                            onTap:
-                                _showCreateGroup, // লিস্ট পাস না করে ফাংশন কল
+                            onTap: _showCreateGroup,
                             count: count,
                           );
                         },

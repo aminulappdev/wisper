@@ -25,8 +25,8 @@ class FooterSection extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CrashSafeImage(Assets.images.gmail.keyName, height: 30.h),
-                widthBox14,
-                CrashSafeImage(Assets.images.facebook.keyName, height: 30.h),
+                // widthBox14,
+                // CrashSafeImage(Assets.images.facebook.keyName, height: 30.h),
               ],
             ),
           ],

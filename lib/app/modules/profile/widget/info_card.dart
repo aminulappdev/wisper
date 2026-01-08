@@ -17,7 +17,7 @@ class InfoCard extends StatelessWidget {
   final GlobalKey? trailingKey;
   final VoidCallback? showMember;
   final bool? isBack;
- 
+  
   const InfoCard({
     super.key,
     required this.imagePath,
@@ -33,36 +33,35 @@ class InfoCard extends StatelessWidget {
     this.isBack = false,
   });
 
-  // Helper to safely determine the correct ImageProvider
-  ImageProvider _getImageProvider(String path, String defaultAsset) {
+  // Helper to safely determine the correct ImageProvider and whether it's default
+  ({ImageProvider provider, bool isDefault}) _getImageInfo(String path, String defaultAsset) {
     if (path.isEmpty) {
-      return AssetImage(defaultAsset);
+      return (provider: AssetImage(defaultAsset), isDefault: true);
     }
-
-    // Local file path (from image picker)
+ 
+    // Local file path
     if (path.startsWith('/') ||
         path.contains('/storage/') ||
         path.contains('/data/')) { 
       final file = File(path);
       if (file.existsSync()) {
-        return FileImage(file);
+        return (provider: FileImage(file), isDefault: false);
       }
     }
 
     // Network URL
     if (path.startsWith('http://') || path.startsWith('https://')) {
-      return NetworkImage(path);
+      return (provider: NetworkImage(path), isDefault: false);
     }
 
     // Fallback to default asset
-    return AssetImage(defaultAsset);
+    return (provider: AssetImage(defaultAsset), isDefault: true);
   }
 
   @override
   Widget build(BuildContext context) {
-    // Determine default asset based on role if needed
-    // For now, using person as default — you can pass a parameter later
     final String defaultAsset = Assets.images.person.keyName;
+    final imageInfo = _getImageInfo(imagePath, defaultAsset);
 
     return Container(
       width: double.infinity,
@@ -85,7 +84,7 @@ class InfoCard extends StatelessWidget {
                       imagePath: Assets.images.cross.keyName,
                       onTap: () {
                         Navigator.pop(context);
-                      }, // Use passed callback
+                      },
                     )
                   : Container(),
               Column(
@@ -97,14 +96,19 @@ class InfoCard extends StatelessWidget {
                       CircleAvatar(
                         radius: 40.r,
                         backgroundColor: Colors.grey.shade800,
-                        backgroundImage: _getImageProvider(
-                          imagePath,
-                          defaultAsset,
+                        child: Padding(
+                          // যদি ডিফল্ট অ্যাসেট হয়, তাহলে padding যোগ করা হবে
+                          padding: EdgeInsets.all(imageInfo.isDefault ? 12.0.r : 0.0),
+                          child: CircleAvatar(
+                            radius: 40.r,
+                            backgroundImage: imageInfo.provider,
+                            backgroundColor: Colors.transparent,
+                          ),
                         ),
                       ),
                       if (isEditImage == true)
                         Positioned(
-                          bottom: 0,
+                          bottom: 0, 
                           right: 0,
                           child: CircleIconWidget(
                             color: const Color(0xff3C90CB),
@@ -152,14 +156,13 @@ class InfoCard extends StatelessWidget {
                   child,
                 ],
               ),
-              // Use the passed trailingKey and trailingOnTap
               isTrailing == true
                   ? CircleIconWidget(
-                      key: trailingKey, // ← Critical fix: use the parent's key
+                      key: trailingKey,
                       radius: 14,
                       iconRadius: 18,
                       imagePath: Assets.images.moreHor.keyName,
-                      onTap: trailingOnTap ?? () {}, // Use passed callback
+                      onTap: trailingOnTap ?? () {},
                     )
                   : Container(),
             ],

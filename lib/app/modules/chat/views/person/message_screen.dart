@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
 import 'package:wisper/app/core/widgets/shimmer/chat_shimmer.dart';
 import 'package:wisper/app/modules/chat/controller/message_controller.dart';
+import 'package:wisper/app/modules/chat/controller/seen_message_controller.dart';
 import 'package:wisper/app/modules/chat/model/message_keys.dart';
 import 'package:wisper/app/modules/chat/views/person/message_input_bar.dart';
 import 'package:wisper/app/modules/chat/widgets/chatting_header.dart';
@@ -24,7 +25,8 @@ class ChatScreen extends StatefulWidget {
     this.receiverName,
     this.receiverImage,
     this.chatId,
-    this.isPerson, this.isOnline,
+    this.isPerson,
+    this.isOnline,
   });
 
   @override
@@ -34,6 +36,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final MessageController ctrl = Get.put(MessageController());
   final ScrollController _scrollController = ScrollController();
+  final SeenMessageController seenMessageController = SeenMessageController(); 
   bool _showNewMessageIndicator = false;
   bool _isAtBottom = true;
   int _previousMessageCount = 0;
@@ -46,6 +49,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      seenMessageController.seenMessage(widget.chatId!);
       ctrl.setupChat(chatId: widget.chatId);
       // Scroll to bottom on initial load
       _scrollToBottom(animated: false);

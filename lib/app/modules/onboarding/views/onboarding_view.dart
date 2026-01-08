@@ -124,11 +124,11 @@ class _OnboardingViewState extends State<OnboardingView> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CrashSafeImage(Assets.images.gmail.keyName, height: 30.h),
-                    widthBox10,
-                    CrashSafeImage(
-                      Assets.images.facebook.keyName,
-                      height: 30.h,
-                    ),
+                    // widthBox10,
+                    // CrashSafeImage(
+                    //   Assets.images.facebook.keyName,
+                    //   height: 30.h,
+                    // ),
                   ],
                 ),
               ],

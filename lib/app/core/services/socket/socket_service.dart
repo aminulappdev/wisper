@@ -7,7 +7,7 @@ import 'package:wisper/app/urls.dart';
 class SocketService extends GetxController {
   late IO.Socket _socket;
 
-  // Observable variables
+  // Observable variables 
   RxBool isLoading = false.obs;
   RxBool isConnected = false.obs; // Tracks connection status
 

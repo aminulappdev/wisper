@@ -31,7 +31,8 @@ class RoleCard extends StatelessWidget {
     this.recommendations,
     this.addOnTap,
     this.messagesOnTap,
-    this.status, this.isEnable,
+    this.status,
+    this.isEnable,
   });
 
   @override

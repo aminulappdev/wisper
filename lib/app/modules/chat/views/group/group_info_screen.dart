@@ -18,7 +18,6 @@ import 'package:wisper/app/modules/chat/controller/group/add_group_member.dart';
 import 'package:wisper/app/modules/chat/controller/all_connection_controller.dart';
 import 'package:wisper/app/modules/chat/controller/group/all_group_member_controller.dart';
 import 'package:wisper/app/modules/chat/controller/group/group_info_controller.dart';
-import 'package:wisper/app/modules/chat/views/doc_info.dart';
 import 'package:wisper/app/modules/chat/views/group/edit_group_screen.dart';
 import 'package:wisper/app/modules/chat/views/link_info.dart';
 import 'package:wisper/app/modules/chat/views/media_info.dart';
@@ -46,7 +45,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
       Get.find<GroupMembersController>();
 
   final AllConnectionController allConnectionController =
-      Get.find<AllConnectionController>();
+      Get.put(AllConnectionController());
 
   final ProfilePhotoController photoController =
       Get.find<ProfilePhotoController>();
@@ -57,6 +56,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
   void initState() {
     _updateProfileImage();
     _getProfileImage();
+    print('Group ID from group info screen: ${widget.groupId}');
     groupInfoController.getGroupInfo(widget.groupId);
     groupMembersController.getGroupMembers(widget.groupId);
     allConnectionController.getAllConnection('ACCEPTED', '');

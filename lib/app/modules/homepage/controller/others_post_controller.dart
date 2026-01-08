@@ -9,8 +9,8 @@ import 'package:wisper/app/modules/homepage/model/feed_post_model.dart';
 import 'package:wisper/app/urls.dart';
 
 class OthersFeedPostController extends GetxController {
-  final NetworkCaller networkCaller = Get.find<NetworkCaller>();  
-  
+  final NetworkCaller networkCaller = Get.find<NetworkCaller>();
+
   final RxBool _inProgress = false.obs;
   bool get inProgress => _inProgress.value;
 
@@ -29,14 +29,14 @@ class OthersFeedPostController extends GetxController {
   String get selectedCategoryId => _selectedCategoryId.value;
   set selectedCategoryId(String value) {
     _selectedCategoryId.value = value;
-    resetPagination(); // Reset and fetch data when category changes
-    update(); // Ensure UI updates
+    resetPagination();
+    update();
   }
 
   Future<bool> getAllPost({String? userId}) async {
     print('User ID avobe getAllPost: $userId');
     if (_inProgress.value) {
-      print('Fetch already in progress, skipping'); 
+      print('Fetch already in progress, skipping');
       return false;
     }
 
@@ -55,7 +55,11 @@ class OthersFeedPostController extends GetxController {
       page++;
       print('Fetching assets for page: $page');
 
-      Map<String, dynamic> queryParams = {'limit': _limit, 'page': page};
+      Map<String, dynamic> queryParams = {
+        'limit': _limit,
+        'page': page,
+        'authorId': userId ?? '',
+      };
 
       print('Fetching assets with params: $queryParams');
 
@@ -64,7 +68,7 @@ class OthersFeedPostController extends GetxController {
       }
 
       final NetworkResponse response = await networkCaller.getRequest(
-        Urls.otherUserPostById(userId ?? ''),
+        Urls.myFeedPostUrl,
         queryParams: queryParams,
         accessToken: StorageUtil.getData(StorageUtil.userAccessToken),
       );
