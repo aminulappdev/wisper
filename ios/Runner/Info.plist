@@ -26,6 +26,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs camera access to allow users to take and upload photos.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs photo library access to let users select and upload images from their device.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -45,11 +49,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-
-	<!-- ✅ Added required permissions -->
-	<key>NSCameraUsageDescription</key>
-	<string>This app needs camera access to allow users to take and upload photos.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app needs photo library access to let users select and upload images from their device.</string>
 </dict>
 </plist>
