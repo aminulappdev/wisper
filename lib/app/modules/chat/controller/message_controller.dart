@@ -35,7 +35,7 @@ class MessageController extends GetxController {
 
     // Socket listener (একবারই on করা)
     socketService.socket.off('newMessage');
-     socketService.socket.on('chatList', _handleIncomingChat);
+    socketService.socket.on('chatList', _handleIncomingChat);
     socketService.socket.on('newMessage', _handleIncomingMessage);
     socketService.socket.on('typingStatus', _handleTypingStatus);
   }
@@ -100,6 +100,8 @@ class MessageController extends GetxController {
       };
 
       messages.insert(0, msg);
+      print('Senders Name: $senderName id : ${SocketMessageKeys.senderId}');
+
       scrollToBottom();
     } catch (e) {
       print("Socket parse error: $e");
@@ -126,6 +128,7 @@ class MessageController extends GetxController {
     final text = textController.text.trim();
     final fileUrl = imageDecodeController.imageUrl.trim();
     final fileType = imageDecodeController.currentFileType; // নতুন
+    final userId = StorageUtil.getData(StorageUtil.userId) ?? '';
 
     if (text.isEmpty && fileUrl.isEmpty) {
       Get.snackbar('Error', 'Message or attachment required');
@@ -141,6 +144,7 @@ class MessageController extends GetxController {
 
     socketService.socket.emit('sendMessage', messageData);
     print('File type : $fileType');
+    print('User Id : $userId');
     print('Message Done sending message');
 
     // Clear everything

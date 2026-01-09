@@ -18,7 +18,7 @@ class AllFeedPostController extends GetxController {
   final RxList<FeedPostItemModel> _allPostList = <FeedPostItemModel>[].obs;
   RxList<FeedPostItemModel> get allPostData => _allPostList;
 
-  final int _limit = 20;
+  final int _limit = 2000;
   int page = 0;
   int? lastPage;
 

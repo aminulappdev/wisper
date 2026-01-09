@@ -24,8 +24,7 @@ class _JobPostScreenState extends State<JobPostScreen> {
   final _titleC = TextEditingController();
   final _descC = TextEditingController();
   final _salaryC = TextEditingController();
-  final _locationC =
-      TextEditingController(); // নতুন: Location এর জন্য টেক্সট কন্ট্রোলার
+  final _locationC = TextEditingController();
   final _reqC = TextEditingController();
   final _resC = TextEditingController();
   final _linkC = TextEditingController();
@@ -60,6 +59,22 @@ class _JobPostScreenState extends State<JobPostScreen> {
     });
   }
 
+  // ফর্ম valid কিনা চেক করা
+  bool _isFormValid() {
+    return _titleC.text.trim().isNotEmpty &&
+        _descC.text.trim().isNotEmpty &&
+        _salaryC.text.trim().isNotEmpty &&
+        (double.tryParse(_salaryC.text) ?? 0.0) > 0 &&
+        type != null &&
+        experienceLevel != null &&
+        compensationType != null &&
+        qualification != null &&
+        applicationType != null &&
+        industry != null &&
+        locationType != null;
+    // external link optional
+  }
+
   void createJob() {
     showLoadingOverLay(
       asyncFunction: () async => await performCreateJob(context),
@@ -78,7 +93,7 @@ class _JobPostScreenState extends State<JobPostScreen> {
       salary: double.tryParse(_salaryC.text) ?? 0.0,
       location: _locationC.text.trim().isEmpty
           ? "Remote"
-          : _locationC.text.trim(), // টেক্সট থেকে নেয়া হবে
+          : _locationC.text.trim(),
       qualification: qualification!,
       industry: industry!,
       locationType: locationType!,
@@ -108,7 +123,7 @@ class _JobPostScreenState extends State<JobPostScreen> {
     _titleC.dispose();
     _descC.dispose();
     _salaryC.dispose();
-    _locationC.dispose(); // ডিসপোজ করা হলো
+    _locationC.dispose();
     _reqC.dispose();
     _resC.dispose();
     _linkC.dispose();
@@ -144,7 +159,8 @@ class _JobPostScreenState extends State<JobPostScreen> {
                       title: 'Post',
                       textSize: 14,
                       borderRadius: 50,
-                      onPress: createJob,
+                      // গুরুত্বপূর্ণ পরিবর্তন: onPress null হলে বাটন disabled (gray) হবে
+                      onPress: _isFormValid() ? createJob : null,
                     ),
                   ),
                 ],
@@ -158,87 +174,77 @@ class _JobPostScreenState extends State<JobPostScreen> {
               heightBox20,
 
               // 1. Job Title
-              const Label(label: 'Job Title'), heightBox6,
+              const Label(label: 'Job Title'),
+              heightBox6,
               CustomTextField(
                 controller: _titleC,
                 hintText: 'e.g. Frontend Developer',
+                onChanged: (_) => setState(() {}),
               ),
               heightBox16,
 
               // 2. Description
-              const Label(label: 'Description'), heightBox6,
+              const Label(label: 'Description'),
+              heightBox6,
               SizedBox(
                 height: 140.h,
                 child: CustomTextField(
                   controller: _descC,
                   maxLines: 8,
                   hintText: 'Describe the role...',
+                  onChanged: (_) => setState(() {}),
                 ),
               ),
               heightBox16,
 
               // 3. Job Type
-              const Label(label: 'Job Type'), heightBox6,
+              const Label(label: 'Job Type'),
+              heightBox6,
               CustomTextField(
                 hintText: 'Select job type',
                 value: type,
                 onChanged: (v) => setState(() => type = v),
                 items: const [
-                  DropdownMenuItem(
-                    value: 'FULL_TIME',
-                    child: Text('Full Time'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'PART_TIME',
-                    child: Text('Part Time'),
-                  ),
+                  DropdownMenuItem(value: 'FULL_TIME', child: Text('Full Time')),
+                  DropdownMenuItem(value: 'PART_TIME', child: Text('Part Time')),
                   DropdownMenuItem(value: 'CONTRACT', child: Text('Contract')),
                 ],
               ),
               heightBox16,
 
               // 4. Experience Level
-              const Label(label: 'Experience Level'), heightBox6,
+              const Label(label: 'Experience Level'),
+              heightBox6,
               CustomTextField(
                 hintText: 'Select experience level',
                 value: experienceLevel,
                 onChanged: (v) => setState(() => experienceLevel = v),
                 items: const [
-                  DropdownMenuItem(
-                    value: 'ENTRY_LEVEL',
-                    child: Text('Entry Level'),
-                  ),
+                  DropdownMenuItem(value: 'ENTRY_LEVEL', child: Text('Entry Level')),
                   DropdownMenuItem(value: 'JUNIOR', child: Text('Junior')),
-                  DropdownMenuItem(
-                    value: 'MID_LEVEL',
-                    child: Text('Mid Level'),
-                  ),
+                  DropdownMenuItem(value: 'MID_LEVEL', child: Text('Mid Level')),
                   DropdownMenuItem(value: 'SENIOR', child: Text('Senior')),
                 ],
               ),
               heightBox16,
 
               // 5. Compensation Type
-              const Label(label: 'Compensation Type'), heightBox6,
+              const Label(label: 'Compensation Type'),
+              heightBox6,
               CustomTextField(
                 hintText: 'Select compensation type',
                 value: compensationType,
                 onChanged: (v) => setState(() => compensationType = v),
                 items: const [
-                  DropdownMenuItem(
-                    value: 'MONTHLY',
-                    child: Text('Monthly Salary'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'ONE_OFF',
-                    child: Text('One-time Payment'),
-                  ),
+                  DropdownMenuItem(value: 'MONTHLY', child: Text('Monthly Salary')),
+                  DropdownMenuItem(value: 'ONE_OFF', child: Text('One-time Payment')),
                 ],
               ),
               heightBox16,
 
               // 6. Salary
-              const Label(label: 'Salary (USD)'), heightBox6,
+              const Label(label: 'Salary (USD)'),
+              heightBox6,
               Row(
                 children: [
                   Expanded(
@@ -246,6 +252,7 @@ class _JobPostScreenState extends State<JobPostScreen> {
                       controller: _salaryC,
                       hintText: '1800',
                       keyboardType: TextInputType.number,
+                      onChanged: (_) => setState(() {}),
                     ),
                   ),
                   widthBox10,
@@ -257,8 +264,9 @@ class _JobPostScreenState extends State<JobPostScreen> {
               ),
               heightBox16,
 
-              // 8. Industry
-              const Label(label: 'Location Type'), heightBox6,
+              // Location Type
+              const Label(label: 'Location Type'),
+              heightBox6,
               CustomTextField(
                 hintText: 'Select type',
                 value: locationType,
@@ -271,86 +279,57 @@ class _JobPostScreenState extends State<JobPostScreen> {
               ),
               heightBox16,
 
-              // // 7. Location → এখন টেক্সট ফিল্ড (ড্রপডাউন নয়)
-              // const Label(label: 'Location'), heightBox6,
-              // CustomTextField(
-              //   controller: _locationC,
-              //   hintText: 'e.g. Dhaka, Bangladesh | Remote | New York',
-              // ),
-              // heightBox16,
-
-              // 8. Industry
-              const Label(label: 'Industry'), heightBox6,
+              // Industry
+              const Label(label: 'Industry'),
+              heightBox6,
               CustomTextField(
                 hintText: 'Select industry',
                 value: industry,
                 onChanged: (v) => setState(() => industry = v),
                 items: const [
-                  DropdownMenuItem(
-                    value: 'Web Development',
-                    child: Text('Web Development'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Mobile Development',
-                    child: Text('Mobile Development'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'UI/UX Design',
-                    child: Text('UI/UX Design'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Data Science',
-                    child: Text('Data Science'),
-                  ),
-
-                  DropdownMenuItem(
-                    value: 'Marketing',
-                    child: Text('Marketing'),
-                  ),
+                  DropdownMenuItem(value: 'Web Development', child: Text('Web Development')),
+                  DropdownMenuItem(value: 'Mobile Development', child: Text('Mobile Development')),
+                  DropdownMenuItem(value: 'UI/UX Design', child: Text('UI/UX Design')),
+                  DropdownMenuItem(value: 'Data Science', child: Text('Data Science')),
+                  DropdownMenuItem(value: 'Marketing', child: Text('Marketing')),
                   DropdownMenuItem(value: 'Sales', child: Text('Sales')),
                   DropdownMenuItem(value: 'Other', child: Text('Other')),
                 ],
               ),
               heightBox16,
 
-              // 9. Qualification
-              const Label(label: 'Minimum Qualification'), heightBox6,
+              // Qualification
+              const Label(label: 'Minimum Qualification'),
+              heightBox6,
               CustomTextField(
                 hintText: 'Select qualification',
                 value: qualification,
                 onChanged: (v) => setState(() => qualification = v),
                 items: const [
-                  DropdownMenuItem(
-                    value: 'BSC',
-                    child: Text("Bachelor's Degree (BSc)"),
-                  ),
+                  DropdownMenuItem(value: 'BSC', child: Text("Bachelor's Degree (BSc)")),
                   DropdownMenuItem(value: 'PHD', child: Text('PhD')),
                 ],
               ),
               heightBox16,
 
-              // 10. Application Method
-              const Label(label: 'Application Method'), heightBox6,
+              // Application Method
+              const Label(label: 'Application Method'),
+              heightBox6,
               CustomTextField(
                 hintText: 'How should candidates apply?',
                 value: applicationType,
                 onChanged: (v) => setState(() => applicationType = v),
                 items: const [
-                  DropdownMenuItem(
-                    value: 'CHAT',
-                    child: Text('Via Wisper Chat'),
-                  ),
+                  DropdownMenuItem(value: 'CHAT', child: Text('Via Wisper Chat')),
                   DropdownMenuItem(value: 'EMAIL', child: Text('Via Email')),
-                  DropdownMenuItem(
-                    value: 'EXTERNAL',
-                    child: Text('External Link'),
-                  ),
+                  DropdownMenuItem(value: 'EXTERNAL', child: Text('External Link')),
                 ],
               ),
               heightBox16,
 
-              // 7. Location → এখন টেক্সট ফিল্ড (ড্রপডাউন নয়)
-              const Label(label: 'External Link (URL)'), heightBox6,
+              // External Link (optional)
+              const Label(label: 'External Link (URL)'),
+              heightBox6,
               CustomTextField(
                 controller: _linkC,
                 hintText: 'https://example.com',
@@ -358,17 +337,14 @@ class _JobPostScreenState extends State<JobPostScreen> {
               heightBox20,
 
               // Requirements
-              const Label(label: 'Requirements'), heightBox8,
+              const Label(label: 'Requirements'),
+              heightBox8,
               ...requirements.asMap().entries.map(
-                (e) => Padding(
+                    (e) => Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Row(
                     children: [
-                      const Icon(
-                        Icons.check_circle,
-                        color: Colors.green,
-                        size: 20,
-                      ),
+                      const Icon(Icons.check_circle, color: Colors.green, size: 20),
                       widthBox10,
                       Expanded(child: Text(e.value)),
                       GestureDetector(
@@ -397,17 +373,14 @@ class _JobPostScreenState extends State<JobPostScreen> {
               heightBox20,
 
               // Responsibilities
-              const Label(label: 'Responsibilities'), heightBox8,
+              const Label(label: 'Responsibilities'),
+              heightBox8,
               ...responsibilities.asMap().entries.map(
-                (e) => Padding(
+                    (e) => Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Row(
                     children: [
-                      const Icon(
-                        Icons.check_circle,
-                        color: Colors.green,
-                        size: 20,
-                      ),
+                      const Icon(Icons.check_circle, color: Colors.green, size: 20),
                       widthBox10,
                       Expanded(child: Text(e.value)),
                       GestureDetector(

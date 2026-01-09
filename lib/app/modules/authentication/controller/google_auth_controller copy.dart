@@ -93,7 +93,7 @@ class GoogleAuthController extends GetxController {
         'email': email,
         'idToken': idToken, // Renamed from fcmToken for clarity
         'provider': 'google',
-      };
+      }; 
 
       final NetworkResponse response = await Get.find<NetworkCaller>()
           .postRequest(Urls.googleAuthUrl, body: requestBody);

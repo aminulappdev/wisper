@@ -435,7 +435,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                         ),
                         SizedBox(
                           width: 100.w,
-                          height: 30.h,
+                          height: 30.h, 
                           child: CustomElevatedButton(
                             title: 'Add Member',
                             textSize: 10.sp,

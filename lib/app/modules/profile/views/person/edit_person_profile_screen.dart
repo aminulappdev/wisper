@@ -58,7 +58,7 @@ class _EditPersonProfileScreenState extends State<EditPersonProfileScreen> {
   void initState() {
     super.initState();
 
-    final user = profileController.profileData!.auth?.person;
+    final user = profileController.profileData?.auth?.person;
     _nameCtrl.text = user?.name ?? '';
     _emailCtrl.text = user?.email ?? '';
     _phoneCtrl.text = user?.phone ?? '';

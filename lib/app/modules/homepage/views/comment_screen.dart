@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/widgets/circle_icon.dart';
@@ -147,18 +148,24 @@ class _CommentScreenState extends State<CommentScreen> {
                   padding: EdgeInsets.zero,
                   itemBuilder: (context, index) {
                     final comment = commentController.commentData![index];
+                    final isPerson = comment.author?.person != null;
+                    var authorId = comment.author?.id ?? '';
+                    var authorName = isPerson
+                        ? comment.author?.person?.name
+                        : comment.author!.business?.name;
+                    var authorImage = isPerson
+                        ? comment.author?.person?.image
+                        : comment.author!.business?.image;
                     return SizedBox(
                       height: 70.h,
                       child: ListTile(
                         contentPadding: EdgeInsets.zero,
                         leading: CircleAvatar(
-                          backgroundImage: NetworkImage(
-                            comment.author?.person?.image ?? '',
-                          ),
+                          backgroundImage: NetworkImage(authorImage ?? ''),
                           radius: 20.r,
                         ),
                         title: Text(
-                          comment.author?.person?.name ?? '',
+                          authorName ?? '',
                           style: TextStyle(
                             fontSize: 12.sp,
                             fontWeight: FontWeight.w600,
@@ -175,37 +182,43 @@ class _CommentScreenState extends State<CommentScreen> {
                               style: const TextStyle(color: Colors.white),
                             ),
                             heightBox4,
-                            Row(
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    startEdit(comment.id!, comment.text ?? '');
-                                  },
-                                  child: Text(
-                                    'Edit',
-                                    style: TextStyle(
-                                      fontSize: 12.sp,
-                                      color: Colors.grey,
-                                      decoration: TextDecoration.underline,
-                                    ),
-                                  ),
-                                ),
-                                widthBox8,
-                                GestureDetector(
-                                  onTap: () {
-                                    _showDeleteComment(comment.id!);
-                                  },
-                                  child: Text(
-                                    'Delete',
-                                    style: TextStyle(
-                                      fontSize: 12.sp,
-                                      color: Colors.grey,
-                                      decoration: TextDecoration.underline,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                            authorId == StorageUtil.getData(StorageUtil.userId)
+                                ?  Row(
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          startEdit(
+                                            comment.id!,
+                                            comment.text ?? '',
+                                          );
+                                        },
+                                        child: Text(
+                                          'Edit',
+                                          style: TextStyle(
+                                            fontSize: 12.sp,
+                                            color: Colors.grey,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                        ),
+                                      ),
+                                      widthBox8,
+                                      GestureDetector(
+                                        onTap: () {
+                                          _showDeleteComment(comment.id!);
+                                        },
+                                        child: Text(
+                                          'Delete',
+                                          style: TextStyle(
+                                            fontSize: 12.sp,
+                                            color: Colors.grey,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ) : Container(),
                           ],
                         ),
                       ),

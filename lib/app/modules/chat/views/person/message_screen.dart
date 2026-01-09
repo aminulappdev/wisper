@@ -17,7 +17,7 @@ class ChatScreen extends StatefulWidget {
   final String? receiverImage;
   final String? chatId;
   final bool? isPerson;
-  final bool? isOnline;
+  final bool? isOnline; 
 
   const ChatScreen({
     super.key,

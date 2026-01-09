@@ -47,10 +47,13 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
 
   // Realtime character count
   final RxInt currentCaptionLength = 0.obs;
+  final RxBool isCaptionLimitExceeded =
+      false.obs; // নতুন: লিমিট ক্রস হয়েছে কিনা
 
   late final bool isPerson;
 
   static const int maxImages = 4;
+  static const int maxCaptionLength = 60;
 
   void _addImage(File image) {
     if (_selectedImages.length >= maxImages) {
@@ -70,7 +73,6 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
   }
 
   void createPost() {
-    // Check if at least one image is selected
     if (_selectedImages.isEmpty) {
       showSnackBarMessage(
         context,
@@ -79,8 +81,14 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
       );
       return;
     }
-
-    // Validate form (caption validation if any)
+    if (isCaptionLimitExceeded.value) {
+      showSnackBarMessage(
+        context,
+        "Caption exceeds maximum length of $maxCaptionLength characters!",
+        true,
+      );
+      return;
+    }
     if (!formKey.currentState!.validate()) {
       return;
     }
@@ -99,10 +107,12 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
     );
 
     if (isSuccess) {
-      final AllFeedPostController feedController =
-          Get.find<AllFeedPostController>();
-      final MyFeedPostController myFeedPostController =
-          Get.find<MyFeedPostController>();
+      final AllFeedPostController feedController = Get.put(
+        AllFeedPostController(),
+      );
+      final MyFeedPostController myFeedPostController = Get.put(
+        MyFeedPostController(),
+      );
       myFeedPostController.resetPagination();
       feedController.resetPagination();
       await myFeedPostController.getAllPost();
@@ -137,10 +147,11 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
 
     // Realtime caption length listener
     _captionCtrl.addListener(() {
-      currentCaptionLength.value = _captionCtrl.text.length;
+      final length = _captionCtrl.text.length;
+      currentCaptionLength.value = length;
+      isCaptionLimitExceeded.value = length > maxCaptionLength;
     });
 
-    // Initial fetch and update
     if (isPerson) {
       profileController.getMyProfile().then((_) {
         if (mounted) _updateUserInfo();
@@ -215,8 +226,7 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
                                 title: 'Post',
                                 textSize: 12,
                                 borderRadius: 50,
-                                onPress:
-                                    createPost, // Updated to use new validation
+                                onPress: createPost,
                               ),
                             ),
                     ],
@@ -274,7 +284,8 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
 
                   CustomTextField(
                     controller: _captionCtrl,
-                    maxLength: 60,
+                    maxLength:
+                        maxCaptionLength, // হার্ড লিমিট (ইনপুট বন্ধ করে দেয় ৬০ এর পর)
                     maxLines: 5,
                     hintText: 'Share your thoughts',
                     validator: ValidatorService.validateSimpleField,
@@ -284,15 +295,26 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
                     ),
                   ),
                   heightBox4,
-                  Obx(
-                    () => Text(
-                      'Maximum limit ${currentCaptionLength.value}/60',
-                      style: TextStyle(
-                        fontSize: 10.sp,
-                        color: const Color(0xff8C8C8C),
-                      ),
-                    ),
-                  ),
+
+                  Obx(() {
+                    final exceeded = isCaptionLimitExceeded.value;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          exceeded
+                              ? 'Max limit crossed'
+                              : 'Maximum limit ${currentCaptionLength.value}/60',
+                          style: TextStyle(
+                            fontSize: 10.sp,
+                            color: exceeded
+                                ? Colors.red
+                                : const Color(0xff8C8C8C),
+                          ),
+                        ),
+                      ],
+                    );
+                  }),
 
                   heightBox10,
                   StraightLiner(height: 0.5),
@@ -343,7 +365,6 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
 
                   heightBox20,
 
-                  // Add Gallery button - hidden when 4 images selected
                   if (_selectedImages.length < maxImages)
                     GestureDetector(
                       onTap: () => _imagePickerHelper.showAlertDialog(

@@ -256,7 +256,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             );
 
                             await Share.shareUri(shareUri);
-                          } catch (e) {
+                          } catch (e) { 
                             debugPrint('Share error: $e');
                             Get.snackbar('Error', 'Failed to share profile');
                           }

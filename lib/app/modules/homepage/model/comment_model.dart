@@ -18,7 +18,7 @@ class CommentModel {
     }
 
 }
-
+ 
 class Data {
     Data({
         required this.meta,
@@ -75,14 +75,14 @@ class Author {
     final String? id;
     final String? role;
     final Person? person;
-    final dynamic business;
+    final Business? business;
 
     factory Author.fromJson(Map<String, dynamic> json){ 
         return Author(
             id: json["id"],
             role: json["role"],
             person: json["person"] == null ? null : Person.fromJson(json["person"]),
-            business: json["business"],
+            business: json["business"] == null ? null : Business.fromJson(json["business"]),
         );
     }
 
@@ -101,6 +101,27 @@ class Person {
 
     factory Person.fromJson(Map<String, dynamic> json){ 
         return Person(
+            id: json["id"],
+            name: json["name"],
+            image: json["image"],
+        );
+    }
+
+}
+
+class Business {
+    Business({
+        required this.id,
+        required this.name,
+        required this.image,
+    });
+
+    final String? id;
+    final String? name;
+    final String? image;
+
+    factory Business.fromJson(Map<String, dynamic> json){ 
+        return Business(
             id: json["id"],
             name: json["name"],
             image: json["image"],

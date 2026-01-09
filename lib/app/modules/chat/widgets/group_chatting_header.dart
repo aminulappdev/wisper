@@ -32,7 +32,7 @@ class GroupChatHeader extends StatefulWidget {
     super.key, 
     required this.groupName,
     required this.groupImage,
-    required this.groupId,
+    required this.groupId, 
     required this.chatId,
   });
 
@@ -525,7 +525,7 @@ class _GroupChatHeaderState extends State<GroupChatHeader> {
       builder: (BuildContext context) {
         return Container(
           color: Colors.black,
-          height: 250,
+          height: 250, 
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(

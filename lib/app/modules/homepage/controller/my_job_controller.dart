@@ -19,7 +19,7 @@ class MyFeedJobController extends GetxController {
   final RxList<FeedJobItemModel> _allJobList = <FeedJobItemModel>[].obs;
   RxList<FeedJobItemModel> get allJobData => _allJobList;
 
-  final int _limit = 20;
+  final int _limit = 2000;
   int page = 0;
   int? lastPage;
 

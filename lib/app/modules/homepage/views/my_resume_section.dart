@@ -269,7 +269,7 @@ class _MyResumeSectionState extends State<MyResumeSection> {
                 title: resume.name ?? 'Untitled Resume',
                 isDownloaded: true,
                 onTap: () {
-                  _openResumeFile(resume);
+                  _openResumeFile(resume); 
                 },
               ),
             );

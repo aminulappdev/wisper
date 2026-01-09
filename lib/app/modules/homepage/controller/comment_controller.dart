@@ -10,7 +10,7 @@ class CommentController extends GetxController {
   final RxBool _inProgress = false.obs;
   bool get inProgress => _inProgress.value;
 
-  final RxString _errorMessage = ''.obs;
+  final RxString _errorMessage = ''.obs; 
   String get errorMessage => _errorMessage.value;
 
   final Rx<CommentModel?> _commentModel = Rx<CommentModel?>(null);

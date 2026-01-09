@@ -28,7 +28,7 @@ class Urls {
   static const String signUpUrlPerson = '$_baseUrl/auths/person/signup';
   static const String signUpUrlBussiness = '$_baseUrl/auths/business/signup';
   static const String refreshTokenUrl = '$_baseUrl/auth/refresh-token';
-  static const String googleAuthUrl = '$_baseUrl/auth/google-login';
+  static const String googleAuthUrl = '$_baseUrl/auths/google-login';
   static const String otpVerifyUrl = '$_baseUrl/otps/verify';
   static const String resendOtpUrl = '$_baseUrl/otps/send';
   static const String signInUrl = '$_baseUrl/auths/login';

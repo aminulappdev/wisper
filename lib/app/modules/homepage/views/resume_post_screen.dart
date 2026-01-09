@@ -158,16 +158,27 @@ class _ResumePostScreenState extends State<ResumePostScreen> {
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(
-                      height: 32.h,
-                      width: 66.w,
-                      child: CustomElevatedButton(
-                        title: 'Post',
-                        textSize: 12,
-                        borderRadius: 50,
-                        onPress: createPost,
-                      ),
-                    ),
+                    _selectedFiles.isEmpty
+                        ? SizedBox(
+                            height: 32.h,
+                            width: 66.w,
+                            child: CustomElevatedButton(
+                              title: 'Post',
+                              textSize: 12,
+                              borderRadius: 50,
+                              color: LightThemeColors.themeGreyColor,
+                            ),
+                          )
+                        : SizedBox(
+                            height: 32.h,
+                            width: 66.w,
+                            child: CustomElevatedButton(
+                              title: 'Post',
+                              textSize: 12,
+                              borderRadius: 50,
+                              onPress: createPost,
+                            ),
+                          ),
                   ],
                 ),
 

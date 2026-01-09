@@ -20,10 +20,10 @@ class MyFeedPostController extends GetxController {
   final RxList<FeedPostItemModel> _allPostList = <FeedPostItemModel>[].obs;
   List<FeedPostItemModel> get allPostData => _allPostList;
 
-  final int _limit = 20;
+  final int _limit = 2000;
   int page = 0;
   int? lastPage;
-
+ 
   // Category filter
   final RxString _selectedCategoryId = ''.obs;
   String get selectedCategoryId => _selectedCategoryId.value;

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/services/network_caller/network_caller.dart';
 import 'package:wisper/app/core/services/network_caller/network_response.dart';
@@ -38,7 +39,7 @@ class GoogleSignUpAuthController extends GetxController {
 
     try {
       // Step 1️⃣: Start Google Sign-In flow
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn(); 
 
       if (googleUser == null) {
         // User cancelled the sign-in process
@@ -67,6 +68,7 @@ class GoogleSignUpAuthController extends GetxController {
       // Optional: Log some details for debugging
       String? name = userCredential.user?.displayName ?? '';
       String? email = userCredential.user?.email ?? '';
+      String? imageUrl = userCredential.user?.photoURL ?? '';
       print('✅ Firebase ID Token: $idToken');
       print('👤 Name: $name');
       print('📧 Email: $email');
@@ -79,7 +81,13 @@ class GoogleSignUpAuthController extends GetxController {
       print('Issuer: ${payload['iss']}');
 
       // Step 6️⃣: Send the Firebase ID token to your backend for verification
-      final Map<String, dynamic> requestBody = {"idToken": newIdToken};
+      final Map<String, dynamic> requestBody = {
+        "email": email,
+        "name": name,
+        "image": imageUrl,
+        "fcmToken": newIdToken,
+        "role": "PERSON" // "PERSON", "BUSINESS"
+};
 
       final NetworkResponse response = await Get.find<NetworkCaller>()
           .postRequest(Urls.googleAuthUrl, body: requestBody);
@@ -91,6 +99,18 @@ class GoogleSignUpAuthController extends GetxController {
           StorageUtil.userAccessToken,
           response.responseData['data']['accessToken'],
         );
+
+        var token = response.responseData['data']['accessToken'];
+        Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+        print(decodedToken);
+        var role = decodedToken['role'];
+        StorageUtil.saveData(StorageUtil.userRole, role);
+        StorageUtil.saveData(
+          StorageUtil.userAccessToken,
+          response.responseData['data']['accessToken'],
+        );
+
+
 
         _errorMessage.value = '';
         _inProgress.value = false;

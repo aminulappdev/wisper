@@ -13,7 +13,6 @@ import 'package:wisper/app/core/widgets/label.dart';
 import 'package:wisper/app/modules/authentication/widget/auth_header.dart';
 import 'package:wisper/app/modules/profile/controller/buisness/buisness_controller.dart';
 import 'package:wisper/app/modules/profile/controller/buisness/edit_buisness_profile_controller.dart';
-import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
 
 class EditBusinessProfileScreen extends StatefulWidget {
   const EditBusinessProfileScreen({super.key});
@@ -40,7 +39,7 @@ class _EditBusinessProfileScreenState extends State<EditBusinessProfileScreen> {
   void initState() {
     super.initState();
 
-    final user = profileController.buisnessData!.auth?.business;
+    final user = profileController.buisnessData?.auth?.business;
     _nameCtrl.text = user?.name ?? '';
     _emailCtrl.text = user?.email ?? '';
     _phoneCtrl.text = user?.phone ?? '';
