@@ -16,7 +16,7 @@ class GetMuteInfoController extends GetxController {
   final Rx<MuteInfoModel?> _muteInfoModel = Rx<MuteInfoModel?>(null);
   MuteData? get muteInfoData => _muteInfoModel.value?.data;
 
-  Future<bool> getMuteInfo(String id) async {
+  Future<bool> getMuteInfo(String id) async { 
     _inProgress.value = true;
 
     try {
@@ -28,6 +28,7 @@ class GetMuteInfoController extends GetxController {
 
       if (response.isSuccess && response.responseData != null) {
         _errorMessage.value = '';
+        print('Mute Info Response data : ${response.responseData}');
 
         _muteInfoModel.value = MuteInfoModel.fromJson(response.responseData);
         _inProgress.value = false;

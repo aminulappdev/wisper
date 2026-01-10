@@ -37,14 +37,33 @@ class _SignInScreenState extends State<SignInScreen> {
 
   final formKey = GlobalKey<FormState>();
   final emailController = TextEditingController(
-    text: 'fositak321@moondyal.com',
+    // text: 'fositak321@moondyal.com',
   );
-  final passwordController = TextEditingController(text: 'Aminul@1234');
+  final passwordController = TextEditingController();
+  // final passwordController = TextEditingController(text: '12345678');
   void signIn() {
     showLoadingOverLay(
       asyncFunction: () async => await performSignIn(context),
       msg: 'Please wait...',
     );
+  }
+
+  void signInGoogle() {
+    showLoadingOverLay(
+      asyncFunction: () async => await performGoogleSignIn(context),
+      msg: 'Please wait...',
+    );
+  }
+
+  Future<void> performGoogleSignIn(BuildContext context) async {
+    final bool isSuccess = await googleAuthController.signUpWithGoogle(
+      'PERSON',
+    );
+
+    if (isSuccess) {
+    } else {
+      showSnackBarMessage(context, signInController.errorMessage, true);
+    }
   }
 
   Future<void> performSignIn(BuildContext context) async {
@@ -162,7 +181,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            googleAuthController.signUpWithGoogle();
+                            signInGoogle();
                           },
                           child: CrashSafeImage(
                             Assets.images.gmail.keyName,

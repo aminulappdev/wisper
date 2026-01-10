@@ -443,11 +443,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
               ),
-              heightBox30
+              heightBox30,
             ],
           ),
         ),
-      ), 
+      ),
     );
   }
 
@@ -498,7 +498,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         color: Color.fromARGB(255, 15, 15, 15),
                         borderColor: Color(0xff262629),
                         title: 'Discard',
-                        onPress: () {},
+                        onPress: () {
+                          Navigator.pop(context);
+                        },
                       ),
                     ),
                     widthBox12,
@@ -566,7 +568,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         color: Color.fromARGB(255, 15, 15, 15),
                         borderColor: Color(0xff262629),
                         title: 'Discard',
-                        onPress: () {},
+                        onPress: () {
+                          Navigator.pop(context);
+                        },
                       ),
                     ),
                     widthBox12,

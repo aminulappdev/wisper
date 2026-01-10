@@ -116,6 +116,7 @@
 //     debugPrint("🔄 FCM Token Refreshed: $newToken");
 //   });
 // }
+// main.dart - Updated version (ছোট পরিবর্তন + initialRoute সঠিক করা)
 
 import 'dart:io';
 
@@ -131,23 +132,24 @@ import 'package:wisper/app/core/config/translations/localization_service.dart';
 import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/services/deeplink_services.dart';
 import 'package:wisper/app/core/services/socket/socket_service.dart';
-import 'package:wisper/app/modules/dashboard/views/dashboard_screen.dart'; // তোমার MainButtonNavbarScreen
+import 'package:wisper/app/modules/dashboard/views/dashboard_screen.dart';
+import 'package:wisper/app/modules/onboarding/views/onboarding_view.dart';
 import 'package:wisper/app/modules/onboarding/views/splash_screen.dart';
+import 'package:wisper/app/modules/profile/views/others_business_screen.dart';
 import 'package:wisper/app/modules/profile/views/others_person_screen.dart';
-import 'package:wisper/app/modules/profile/views/profile_screen.dart';
 import 'package:wisper/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Socket & Firebase init
+  // Core initializations
   final SocketService socketService = Get.put(SocketService());
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await socketService.init();
   await StorageUtil.init();
   await _initFCMToken();
 
-  // 🔥 DeepLinkService কে GetX-এ inject করা
+  // DeepLink service
   Get.put(DeepLinkService());
 
   SystemChrome.setPreferredOrientations([
@@ -161,8 +163,10 @@ void main() async {
         splitScreenMode: true,
         useInheritedMediaQuery: true,
         builder: (context, widget) {
-          // 🔥 App চালু হওয়ার পর DeepLink init করা (context ready হলে)
-          WidgetsBinding.instance.addPostFrameCallback((_) {
+          // Deep links initialize করা
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            // ছোট ডিলে দিলে storage + getx আরও নিরাপদে প্রস্তুত হয়
+            await Future.delayed(const Duration(milliseconds: 100));
             Get.find<DeepLinkService>().initDeepLinks();
           });
 
@@ -181,39 +185,41 @@ void main() async {
                   : ThemeMode.dark,
               builder: (context, widget) {
                 return MediaQuery(
-                  data: MediaQuery.of(
-                    context,
-                  ).copyWith(textScaler: const TextScaler.linear(1.0)),
+                  data: MediaQuery.of(context).copyWith(
+                    textScaler: const TextScaler.linear(1.0),
+                  ),
                   child: widget!,
                 );
               },
 
-              // 🔥 Initial route GetX দিয়ে decide করা
-              initialRoute:
-                  StorageUtil.getData(StorageUtil.userAccessToken) != null
-                  ? '/dashboard'
-                  : '/',
+              // initialRoute এখানে শুধু Splash দেখাবে
+              // বাকি লজিক SplashScreen এর ভিতরে
+              initialRoute: '/',
 
-              // 🔥 সব Named Routes এখানে define করা
               getPages: [
                 GetPage(name: '/', page: () => const SplashScreen()),
                 GetPage(
                   name: '/dashboard',
                   page: () => const MainButtonNavbarScreen(),
                 ),
-
-                // 🔥 Deep Link এর জন্য Dynamic Route
                 GetPage(
-                  name: '/running/:id',
-                  page: () {
-                    final id = Get.parameters['id'];
-                    // এখানে তোমার RunDetailPage return করো
-                    // return RunDetailPage(runId: id!);
-                    return OthersPersonScreen(userId: id ?? '');
-                  },
+                  name: '/onboarding',
+                  page: () => const OnboardingView(),
                 ),
-
-                // তোমার প্রজেক্টের অন্যান্য routes এখানে যোগ করো
+                // Person profile deep link
+                GetPage(
+                  name: '/profile/person/:id',
+                  page: () => OthersPersonScreen(
+                    userId: Get.parameters['id'] ?? '',
+                  ),
+                ),
+                GetPage(
+                  name: '/profile/business/:id',
+                  page: () => OthersBusinessScreen(
+                    userId: Get.parameters['id'] ?? '',
+                  ),
+                ),
+                // অন্যান্য routes যোগ করতে পারো
               ],
 
               locale: StorageUtil.getLocale(),
@@ -233,21 +239,17 @@ Future<void> _initFCMToken() async {
   debugPrint("📡 Starting FCM token initialization...");
 
   if (Platform.isIOS) {
-    // Request notification permissions for iOS
     final permission = await FirebaseMessaging.instance.requestPermission(
       alert: true,
       badge: true,
       sound: true,
     );
-    debugPrint(
-      "📝 iOS Notification Permission: ${permission.authorizationStatus}",
-    );
+    debugPrint("iOS Notification Permission: ${permission.authorizationStatus}");
 
-    // Try to get APNs token with retries
     String? apnsToken;
     for (int i = 0; i < 3; i++) {
       apnsToken = await FirebaseMessaging.instance.getAPNSToken();
-      debugPrint("📡 Attempt ${i + 1} - APNs token: $apnsToken");
+      debugPrint("Attempt ${i + 1} - APNs token: $apnsToken");
       if (apnsToken != null) break;
       await Future.delayed(const Duration(seconds: 2));
     }
@@ -255,18 +257,16 @@ Future<void> _initFCMToken() async {
     if (apnsToken == null) {
       debugPrint("⚠️ Failed to get APNs token after retries");
       FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
-        debugPrint("📱 iOS FCM Token (via refresh): $newToken");
+        debugPrint("iOS FCM Token (via refresh): $newToken");
       });
       return;
     }
   }
 
-  // Get FCM token
   final fcmToken = await FirebaseMessaging.instance.getToken();
-  debugPrint("📱 FCM Token: $fcmToken");
+  debugPrint("FCM Token: $fcmToken");
 
-  // Listen for token refresh
   FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
-    debugPrint("🔄 FCM Token Refreshed: $newToken");
+    debugPrint("FCM Token Refreshed: $newToken");
   });
 }

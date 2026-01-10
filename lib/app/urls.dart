@@ -112,7 +112,7 @@ class Urls {
   static const String createClassUrl = '$_baseUrl/classes';
   static const String allChatsUrl = '$_baseUrl/chats/my';
   static const String createChatsUrl = '$_baseUrl/chats';
-  static const String blockChatUserUrl = '$_baseUrl/chats/block-participant';
+  static const String blockChatUserUrl = '$_baseUrl/chats/block-participant'; 
   static const String unblockChatUserUrl =
       '$_baseUrl/chats/unblock-participant';
   static const String muteChatUserUrl = '$_baseUrl/chats/mute';

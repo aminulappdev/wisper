@@ -9,7 +9,7 @@ class BlockUnblockMemberController extends GetxController {
   bool get inProgress => _inProgress.value;
 
   final RxString _errorMessage = ''.obs;
-  String get errorMessage => _errorMessage.value;
+  String get errorMessage => _errorMessage.value; 
 
   Future<bool> blockMember({String? chatId, String? memberId}) async {
     _inProgress.value = true;

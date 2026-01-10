@@ -216,6 +216,7 @@ class _OthersBusinessScreenState extends State<OthersBusinessScreen> {
             children: [
               SizedBox(height: 30.h),
               InfoCard(
+                isBack: true,
                 isEditImage: false,
                 isTrailing: false,
                 trailingOnTap: () {},

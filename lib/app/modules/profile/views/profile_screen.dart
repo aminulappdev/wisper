@@ -32,7 +32,6 @@ import 'package:wisper/app/modules/profile/widget/recommendation_widget.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class ProfileScreen extends StatefulWidget {
-
   const ProfileScreen({super.key});
 
   @override
@@ -77,13 +76,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _getProfileImage() async {
     print('Called get image');
     await personController.getMyProfile();
+    await businessController.getMyProfile();
     if (userRole == 'PERSON') {
       print(
         'Person image: ${personController.profileData?.auth?.person?.image}',
       );
       currentImagePath.value =
           personController.profileData?.auth?.person?.image ?? '';
-    } else {
+    } else if (userRole == 'BUSINESS') {
       print(
         'Business image: ${businessController.buisnessData?.auth?.business?.image}',
       );
@@ -250,13 +250,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               return;
                             }
 
+                            final String role =
+                                StorageUtil.getData(StorageUtil.userRole) ??
+                                'PERSON';
+                            final bool isPerson =
+                                role.toUpperCase() == 'PERSON';
+
+                            // 🔥 Production / Real base URL — এখানে তোমার আসল ডোমেইন দাও
+                            const String baseUrl =
+                                'https://c9f1d48ba47f.ngrok-free.app'; // ← এটা পরিবর্তন করো
+                            // অথবা development এর জন্য: 'https://c9f1d48ba47f.ngrok-free.app'
+
+                            // Universal / App Link style — সবচেয়ে ভালো
                             final Uri shareUri = Uri.https(
-                              'c9f1d48ba47f.ngrok-free.app',
-                              '/persons/$userId',
+                              baseUrl.replaceAll('https://', ''), // host only
+                              isPerson
+                                  ? '/persons/$userId'
+                                  : '/businesses/$userId',
                             );
 
+                            // অথবা custom scheme (যদি চাও)
+                            // final Uri shareUri = Uri(
+                            //   scheme: 'wisper',
+                            //   host: 'app',
+                            //   path: '/profile/${isPerson ? 'person' : 'business'}/$userId',
+                            // );
+
+                            debugPrint("Sharing profile link: $shareUri");
+
                             await Share.shareUri(shareUri);
-                          } catch (e) { 
+                          } catch (e) {
                             debugPrint('Share error: $e');
                             Get.snackbar('Error', 'Failed to share profile');
                           }

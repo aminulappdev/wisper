@@ -32,14 +32,14 @@ class OthersPersonScreen extends StatefulWidget {
 
   @override
   State<OthersPersonScreen> createState() => _OthersPersonScreenState();
-}
+} 
 
 class _OthersPersonScreenState extends State<OthersPersonScreen> {
   final OtherPersonController controller = Get.put(OtherPersonController());
   final CreateChatController createChatController = Get.put(
     CreateChatController(),
   );
-  final AllConnectionController connectionController = Get.put(
+  final AllConnectionController connectionController = Get.put( 
     AllConnectionController(),
   );
   final RemoveConnectionController removeConnectionController = Get.put(

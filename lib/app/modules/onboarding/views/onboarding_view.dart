@@ -7,7 +7,10 @@ import 'package:get/get.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/utils/show_over_loading.dart';
+import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/widgets/custom_button.dart';
+import 'package:wisper/app/modules/authentication/controller/google_sign_up_controller.dart';
 import 'package:wisper/app/modules/authentication/views/auth_screen.dart';
 import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
 import 'package:wisper/app/modules/onboarding/views/page_view.dart';
@@ -22,6 +25,27 @@ class OnboardingView extends StatefulWidget {
 
 class _OnboardingViewState extends State<OnboardingView> {
   final PageController _pageController = PageController();
+  final GoogleSignUpAuthController googleAuthController = Get.put(
+    GoogleSignUpAuthController(),
+  );
+
+  void signInGoogle() {
+    showLoadingOverLay(
+      asyncFunction: () async => await performGoogleSignIn(context),
+      msg: 'Please wait...',
+    );
+  }
+
+  Future<void> performGoogleSignIn(BuildContext context) async {
+    final bool isSuccess = await googleAuthController.signUpWithGoogle(
+      'PERSON',
+    );
+
+    if (isSuccess) {
+    } else {
+      showSnackBarMessage(context, 'Failed to sign in', true);
+    }
+  }
 
   int _currentPage = 0;
 
@@ -52,7 +76,7 @@ class _OnboardingViewState extends State<OnboardingView> {
               ),
             ),
             heightBox50,
-            Expanded( 
+            Expanded(
               child: PageView(
                 controller: _pageController,
                 onPageChanged: (index) {
@@ -123,7 +147,14 @@ class _OnboardingViewState extends State<OnboardingView> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CrashSafeImage(Assets.images.gmail.keyName, height: 30.h),
+                    GestureDetector(
+                      onTap: signInGoogle,
+
+                      child: CrashSafeImage(
+                        Assets.images.gmail.keyName,
+                        height: 30.h,
+                      ),
+                    ),
                     // widthBox10,
                     // CrashSafeImage(
                     //   Assets.images.facebook.keyName,

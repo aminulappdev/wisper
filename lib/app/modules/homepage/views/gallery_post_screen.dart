@@ -457,7 +457,7 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
   Widget _privacyBottomSheet() {
     final options = [
       {'title': 'Everyone', 'value': 'EVERYONE', 'icon': Icons.public},
-      {'title': 'Only me', 'value': 'FOLLOWERS', 'icon': Icons.lock_outline},
+      {'title': 'Followers', 'value': 'FOLLOWERS', 'icon': Icons.lock_outline},
     ];
 
     return SafeArea(
@@ -477,7 +477,7 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
             ),
             heightBox20,
             Text(
-              'Who can see this post?',
+              'Who can Comment on this post?',
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w600,

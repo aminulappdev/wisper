@@ -12,7 +12,7 @@ import 'package:wisper/app/modules/profile/views/others_person_screen.dart';
 class PostCard extends StatelessWidget {
   final Widget trailing;
   final String? ownerId;
-  final bool? isPerson; 
+  final bool? isPerson;  
   final String? ownerName;
   final String? ownerImage;
   final String? ownerProfession;

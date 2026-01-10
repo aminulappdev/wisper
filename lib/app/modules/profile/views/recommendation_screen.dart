@@ -12,7 +12,7 @@ import 'package:wisper/app/modules/profile/widget/reviewCard.dart';
 
 class RcommendationButtomSheet extends StatelessWidget {
   final String? recieverId;
-  final bool isCreateReview;
+  final bool isCreateReview; 
 
   const RcommendationButtomSheet({
     super.key,

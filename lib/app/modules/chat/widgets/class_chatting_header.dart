@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/custom_size.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
@@ -130,26 +129,6 @@ class _ClassChatHeaderState extends State<ClassChatHeader> {
             color: Colors.white,
           ),
         ),
-
-        Row(
-          children: [
-            CrashSafeImage(
-              Assets.images.alert.keyName,
-              height: 16.h,
-              width: 16,
-            ),
-            widthBox10,
-            Text(
-              'Block User',
-              style: TextStyle(
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w400,
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
-
         Row(
           children: [
             CrashSafeImage(
@@ -182,9 +161,6 @@ class _ClassChatHeaderState extends State<ClassChatHeader> {
           _showMutePopup();
         },
         '2': () {
-          _shoBlockUser();
-        },
-        '3': () {
           _shoDeleteConversation();
         },
       },
@@ -215,7 +191,7 @@ class _ClassChatHeaderState extends State<ClassChatHeader> {
                       ),
                     );
                   },
-                  child: Row( 
+                  child: Row(
                     children: [
                       CircleIconWidget(
                         imagePath: Assets.images.arrowBack.keyName,
@@ -297,9 +273,9 @@ class _ClassChatHeaderState extends State<ClassChatHeader> {
       builder: (BuildContext context) {
         return Container(
           color: Colors.black,
-          height: 290,
+          height: MediaQuery.of(context).size.height * 0.3,
           child: Padding(
-            padding:  EdgeInsets.all(20.0),
+            padding: EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -338,7 +314,9 @@ class _ClassChatHeaderState extends State<ClassChatHeader> {
                         color: Color.fromARGB(255, 15, 15, 15),
                         borderColor: Color(0xff262629),
                         title: 'Discard',
-                        onPress: () {},
+                        onPress: () {
+                          Navigator.pop(context);
+                        },
                       ),
                     ),
                     widthBox12,
@@ -367,7 +345,7 @@ class _ClassChatHeaderState extends State<ClassChatHeader> {
       builder: (BuildContext context) {
         return Container(
           color: Colors.black,
-          height: 260,
+          height: MediaQuery.of(context).size.height * 0.32,
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
@@ -422,7 +400,91 @@ class _ClassChatHeaderState extends State<ClassChatHeader> {
                         return Center(child: CircularProgressIndicator());
                       }
                       if (getMuteInfoController.muteInfoData == null) {
-                        return Center(child: Text('No data'));
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                muteChat('EIGHT_HOURS');
+                              },
+                              child: Row(
+                                children: [
+                                  Text(
+                                    '8 hour',
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  Spacer(),
+                                  getMuteInfoController.muteInfoData?.muteFor ==
+                                          'EIGHT_HOURS'
+                                      ? Icon(
+                                          Icons.check,
+                                          color: Colors.white,
+                                          size: 16,
+                                        )
+                                      : Container(),
+                                ],
+                              ),
+                            ),
+                            heightBox8,
+                            GestureDetector(
+                              onTap: () {
+                                muteChat('ONE_WEEK');
+                              },
+                              child: Row(
+                                children: [
+                                  Text(
+                                    '1 Week',
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  Spacer(),
+                                  getMuteInfoController.muteInfoData?.muteFor ==
+                                          'ONE_WEEK'
+                                      ? Icon(
+                                          Icons.check,
+                                          color: Colors.white,
+                                          size: 16,
+                                        )
+                                      : Container(),
+                                ],
+                              ),
+                            ),
+                            heightBox8,
+                            GestureDetector(
+                              onTap: () {
+                                muteChat('ALWAYS');
+                              },
+                              child: Row(
+                                children: [
+                                  Text(
+                                    'Always',
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  Spacer(),
+                                  getMuteInfoController.muteInfoData?.muteFor ==
+                                          'ALWAYS'
+                                      ? Icon(
+                                          Icons.check,
+                                          color: Colors.white,
+                                          size: 16,
+                                        )
+                                      : Container(),
+                                ],
+                              ),
+                            ),
+                          ],
+                        );
                       } else {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -512,74 +574,6 @@ class _ClassChatHeaderState extends State<ClassChatHeader> {
                       }
                     }),
                   ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _shoBlockUser() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          color: Colors.black,
-          height: 250,
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleIconWidget(
-                  imagePath: Assets.images.delete.keyName,
-                  onTap: () {},
-                  iconRadius: 22,
-                  radius: 24,
-                  color: Color(0xff312609),
-                  iconColor: Color(0xffDC8B44),
-                ),
-                heightBox20,
-                Text(
-                  'Block Sarah Chen?',
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-                heightBox8,
-                Text(
-                  'Sarah Chen wont be able to call or message you. They wont be notified that you blocked them.',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xff9FA3AA),
-                  ),
-                ),
-                heightBox12,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: CustomElevatedButton(
-                        color: Color.fromARGB(255, 15, 15, 15),
-                        borderColor: Color(0xff262629),
-                        title: 'Discard',
-                        onPress: () {},
-                      ),
-                    ),
-                    widthBox12,
-                    Expanded(
-                      child: CustomElevatedButton(
-                        color: Color(0xffE62047),
-                        title: 'Block',
-                        onPress: () {},
-                      ),
-                    ),
-                  ],
                 ),
               ],
             ),

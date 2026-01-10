@@ -357,7 +357,7 @@ class _EditGalleryPostScreenState extends State<EditGalleryPostScreen> {
             ),
             heightBox20,
             Text(
-              'Who can see this post?',
+              'Who can comment on this post?',
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.bold,
@@ -367,7 +367,7 @@ class _EditGalleryPostScreenState extends State<EditGalleryPostScreen> {
             heightBox20,
 
             _privacyOption('Everyone can comment', 'EVERYONE', Icons.public),
-            _privacyOption('Only me', 'FOLLOWERS', Icons.lock_outline),
+            _privacyOption('Followers ', 'FOLLOWERS', Icons.lock_outline),
 
             heightBox20,
           ],

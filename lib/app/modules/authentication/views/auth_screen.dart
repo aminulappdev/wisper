@@ -16,7 +16,7 @@ class AuthScreen extends StatefulWidget {
 
   @override
   State<AuthScreen> createState() => _AuthScreenState();
-}
+} 
 
 class _AuthScreenState extends State<AuthScreen> {
   @override

@@ -8,7 +8,9 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:wisper/app/core/get_storage.dart';
 import 'package:wisper/app/core/services/network_caller/network_caller.dart';
 import 'package:wisper/app/core/services/network_caller/network_response.dart';
+import 'package:wisper/app/modules/chat/model/message_model.dart';
 import 'package:wisper/app/modules/dashboard/views/dashboard_screen.dart';
+import 'package:wisper/app/modules/profile/controller/buisness/buisness_controller.dart';
 import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
 import 'package:wisper/app/urls.dart';
 
@@ -27,19 +29,16 @@ class GoogleSignUpAuthController extends GetxController {
   RxString _token = ''.obs;
   String? get token => _token.value.isEmpty ? null : _token.value;
 
-  final ProfileController profileController = Get.find<ProfileController>();
+  final ProfileController profileController = Get.put(ProfileController());
+  final BusinessController businessController = Get.put((BusinessController()));
 
   /// Main Google Sign-In Function
-  Future<bool> signUpWithGoogle(
-   
-  ) async {
+  Future<bool> signUpWithGoogle(String role) async {
     _inProgress.value = true; // ✅ No need for update(), RxBool auto-updates Obx
-
-   
 
     try {
       // Step 1️⃣: Start Google Sign-In flow
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn(); 
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
       if (googleUser == null) {
         // User cancelled the sign-in process
@@ -86,8 +85,8 @@ class GoogleSignUpAuthController extends GetxController {
         "name": name,
         "image": imageUrl,
         "fcmToken": newIdToken,
-        "role": "PERSON" // "PERSON", "BUSINESS"
-};
+        "role": role, // "PERSON", "BUSINESS"
+      };
 
       final NetworkResponse response = await Get.find<NetworkCaller>()
           .postRequest(Urls.googleAuthUrl, body: requestBody);
@@ -110,13 +109,12 @@ class GoogleSignUpAuthController extends GetxController {
           response.responseData['data']['accessToken'],
         );
 
-
-
         _errorMessage.value = '';
         _inProgress.value = false;
 
         // Fetch user profile data after login
         profileController.getMyProfile();
+        businessController.getMyProfile();
 
         // Navigate to main home screen
         Future.delayed(Duration.zero, () {

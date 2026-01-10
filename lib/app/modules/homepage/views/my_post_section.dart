@@ -139,7 +139,7 @@ class _MyPostSectionState extends State<MyPostSection> {
               onTapComment: () {
                 Get.to(CommentScreen(postId: post.id ?? ''));
               },
-              isComment: false,
+              isComment: true,
               ownerId: post.author?.id ?? '',
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,

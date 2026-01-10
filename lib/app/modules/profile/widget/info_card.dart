@@ -14,7 +14,7 @@ class InfoCard extends StatelessWidget {
   final Widget child;
   final bool isTrailing;
   final VoidCallback? trailingOnTap; 
-  final GlobalKey? trailingKey;
+  final GlobalKey? trailingKey; 
   final VoidCallback? showMember;
   final bool? isBack;
   
@@ -80,8 +80,8 @@ class InfoCard extends StatelessWidget {
               isBack == true
                   ? CircleIconWidget(
                       radius: 14,
-                      iconRadius: 18,
-                      imagePath: Assets.images.cross.keyName,
+                      iconRadius: 14,
+                      imagePath: Assets.images.arrowBack.keyName,
                       onTap: () {
                         Navigator.pop(context);
                       },
