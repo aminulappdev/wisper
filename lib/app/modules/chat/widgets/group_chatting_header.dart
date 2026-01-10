@@ -205,7 +205,7 @@ class _GroupChatHeaderState extends State<GroupChatHeader> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 GestureDetector(
-                  onTap: () {
+                  onTap: () { 
                     Get.to(
                       () => GroupInfoScreen(
                         groupId: widget.groupId,

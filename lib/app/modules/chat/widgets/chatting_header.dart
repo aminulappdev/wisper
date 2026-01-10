@@ -26,7 +26,7 @@ class ChatHeader extends StatefulWidget {
   final String? chatId;
   final bool? isPerson;
   const ChatHeader({
-    super.key, 
+    super.key,
     this.name,
     this.image,
     this.status,
@@ -288,7 +288,7 @@ class _ChatHeaderState extends State<ChatHeader> {
       builder: (BuildContext context) {
         return Container(
           color: Colors.black,
-          height: 250,
+          height: MediaQuery.of(context).size.height * 0.3,
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
@@ -356,7 +356,7 @@ class _ChatHeaderState extends State<ChatHeader> {
       builder: (BuildContext context) {
         return Container(
           color: Colors.black,
-          height: 260,
+          height: MediaQuery.of(context).size.height * 0.32,
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
@@ -453,7 +453,7 @@ class _ChatHeaderState extends State<ChatHeader> {
       builder: (BuildContext context) {
         return Container(
           color: Colors.black,
-          height: 250,
+          height: MediaQuery.of(context).size.height * 0.3,
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(

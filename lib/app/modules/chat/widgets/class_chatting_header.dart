@@ -215,7 +215,7 @@ class _ClassChatHeaderState extends State<ClassChatHeader> {
                       ),
                     );
                   },
-                  child: Row(
+                  child: Row( 
                     children: [
                       CircleIconWidget(
                         imagePath: Assets.images.arrowBack.keyName,
@@ -297,9 +297,9 @@ class _ClassChatHeaderState extends State<ClassChatHeader> {
       builder: (BuildContext context) {
         return Container(
           color: Colors.black,
-          height: 250,
+          height: 290,
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding:  EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
