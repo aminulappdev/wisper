@@ -3,7 +3,7 @@
 import 'dart:convert';
 
 import 'package:get/get.dart';
-import 'package:wisper/app/core/get_storage.dart';
+import 'package:wisper/app/core/others/get_storage.dart';
 import 'package:wisper/app/core/services/network_caller/network_caller.dart';
 import 'package:wisper/app/core/services/socket/socket_service.dart';
 import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';

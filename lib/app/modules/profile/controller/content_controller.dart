@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
-import 'package:wisper/app/core/get_storage.dart';
+import 'package:wisper/app/core/others/get_storage.dart';
 import 'package:wisper/app/core/services/network_caller/network_caller.dart';
 import 'package:wisper/app/core/services/network_caller/network_response.dart';
 import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
-import 'package:wisper/app/modules/profile/model/content_model.dart';
+import 'package:wisper/app/modules/settings/model/content_model.dart';
 import 'package:wisper/app/urls.dart';
 
 class ContentController extends GetxController {

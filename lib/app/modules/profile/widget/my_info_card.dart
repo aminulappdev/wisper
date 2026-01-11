@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
-import 'package:wisper/app/core/custom_size.dart';
-import 'package:wisper/app/core/get_storage.dart';
-import 'package:wisper/app/core/widgets/custom_button.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
+import 'package:wisper/app/core/others/get_storage.dart';
+import 'package:wisper/app/core/widgets/common/custom_button.dart';
 
 class MyInfoCard extends StatelessWidget {
   final VoidCallback ontap;

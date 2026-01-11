@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class ConnectedMember extends StatelessWidget {

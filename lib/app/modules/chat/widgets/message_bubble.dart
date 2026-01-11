@@ -5,10 +5,10 @@ import 'package:get/get.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
-import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/utils/video_player.dart';
-import 'package:wisper/app/core/widgets/circle_icon.dart';
+import 'package:wisper/app/core/widgets/common/circle_icon.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class MessageBubble extends StatelessWidget {

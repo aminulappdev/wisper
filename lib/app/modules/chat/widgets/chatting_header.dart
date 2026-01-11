@@ -5,20 +5,20 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
-import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
-import 'package:wisper/app/core/widgets/circle_icon.dart';
-import 'package:wisper/app/core/widgets/custom_button.dart';
-import 'package:wisper/app/core/widgets/custom_popup.dart';
-import 'package:wisper/app/core/widgets/details_card.dart';
+import 'package:wisper/app/core/widgets/common/circle_icon.dart';
+import 'package:wisper/app/core/widgets/common/custom_button.dart';
+import 'package:wisper/app/core/widgets/common/custom_popup.dart';
+import 'package:wisper/app/core/widgets/common/details_card.dart';
 import 'package:wisper/app/modules/chat/controller/block_user_controller.dart';
-import 'package:wisper/app/modules/chat/controller/delete_group_chat_controller.dart';
+import 'package:wisper/app/modules/chat/controller/group/delete_group_chat_controller.dart';
 import 'package:wisper/app/modules/chat/controller/mute_chat_controller.dart';
 import 'package:wisper/app/modules/chat/controller/mute_info_controller.dart';
 import 'package:wisper/app/modules/dashboard/views/dashboard_screen.dart';
-import 'package:wisper/app/modules/profile/views/others_business_screen.dart';
-import 'package:wisper/app/modules/profile/views/others_person_screen.dart';
+import 'package:wisper/app/modules/profile/views/business/others_business_screen.dart';
+import 'package:wisper/app/modules/profile/views/person/others_person_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class ChatHeader extends StatefulWidget {

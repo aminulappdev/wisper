@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
-import 'package:wisper/app/core/get_storage.dart';
-import 'package:wisper/app/core/services/deeplink_services.dart';
+import 'package:wisper/app/core/others/get_storage.dart';
+import 'package:wisper/app/core/services/others/deeplink_services.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class SplashScreen extends StatefulWidget {

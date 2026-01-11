@@ -6,7 +6,7 @@ import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
-import 'package:wisper/app/core/widgets/circle_icon.dart';
+import 'package:wisper/app/core/widgets/common/circle_icon.dart';
 import 'package:wisper/app/modules/chat/controller/all_chats_data_controller.dart';
 import 'package:wisper/app/modules/chat/views/doc_info.dart';
 import 'package:wisper/gen/assets.gen.dart';

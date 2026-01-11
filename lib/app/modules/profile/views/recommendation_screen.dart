@@ -3,11 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:wisper/app/core/custom_size.dart';
-import 'package:wisper/app/core/get_storage.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
+import 'package:wisper/app/core/others/get_storage.dart';
 import 'package:wisper/app/modules/profile/controller/recommendetion_controller.dart';
 import 'package:wisper/app/modules/profile/model/recommendation_model.dart';
-import 'package:wisper/app/modules/profile/views/create_review.dart';
+import 'package:wisper/app/modules/profile/views/create_recommendation.dart';
 import 'package:wisper/app/modules/profile/widget/reviewCard.dart';
 
 class RcommendationButtomSheet extends StatelessWidget {

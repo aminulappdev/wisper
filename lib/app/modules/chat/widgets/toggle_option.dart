@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
-import 'package:wisper/app/core/widgets/toogle_button.dart';
+import 'package:wisper/app/core/widgets/common/toogle_button.dart';
 
 class ToggleOption extends StatelessWidget {
   final String title;

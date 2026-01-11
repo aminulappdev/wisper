@@ -126,17 +126,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:wisper/app/core/app_binder.dart';
+import 'package:wisper/app/core/others/app_binder.dart';
 import 'package:wisper/app/core/config/theme/my_theme.dart';
 import 'package:wisper/app/core/config/translations/localization_service.dart';
-import 'package:wisper/app/core/get_storage.dart';
-import 'package:wisper/app/core/services/deeplink_services.dart';
+import 'package:wisper/app/core/others/get_storage.dart';
+import 'package:wisper/app/core/services/others/deeplink_services.dart';
 import 'package:wisper/app/core/services/socket/socket_service.dart';
 import 'package:wisper/app/modules/dashboard/views/dashboard_screen.dart';
 import 'package:wisper/app/modules/onboarding/views/onboarding_view.dart';
 import 'package:wisper/app/modules/onboarding/views/splash_screen.dart';
-import 'package:wisper/app/modules/profile/views/others_business_screen.dart';
-import 'package:wisper/app/modules/profile/views/others_person_screen.dart';
+import 'package:wisper/app/modules/profile/views/business/others_business_screen.dart';
+import 'package:wisper/app/modules/profile/views/person/others_person_screen.dart';
 import 'package:wisper/firebase_options.dart';
 
 void main() async {

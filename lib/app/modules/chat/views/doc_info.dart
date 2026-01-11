@@ -1,8 +1,8 @@
 import 'package:crash_safe_image/crash_safe_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wisper/app/core/custom_size.dart';
-import 'package:wisper/app/core/widgets/details_card.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
+import 'package:wisper/app/core/widgets/common/details_card.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class DocInfo extends StatelessWidget {

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:wisper/app/core/custom_size.dart';
-import 'package:wisper/app/core/utils/custom_size_button.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
+import 'package:wisper/app/core/widgets/common/custom_size_button.dart';
 
 class CustomDialog extends StatelessWidget {
   final VoidCallback yesOntap;

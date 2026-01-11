@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/utils/file_picker.dart';
 import 'package:wisper/app/core/utils/image_picker.dart';
-import 'package:wisper/app/core/widgets/circle_icon.dart';
+import 'package:wisper/app/core/widgets/common/circle_icon.dart';
 import 'package:wisper/app/modules/chat/controller/image_decode_controller.dart';
 import 'package:wisper/app/modules/chat/views/person/attach_buttom.dart';
 import 'package:wisper/gen/assets.gen.dart';

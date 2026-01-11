@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:wisper/app/core/widgets/circle_icon.dart';
+import 'package:wisper/app/core/widgets/common/circle_icon.dart';
 import 'package:wisper/app/modules/chat/widgets/chatting_field.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
