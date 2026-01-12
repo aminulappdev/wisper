@@ -1,25 +1,23 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:wisper/app/core/others/custom_size.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:dio/dio.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:wisper/app/core/others/get_storage.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/widgets/common/circle_icon.dart';
-import 'package:wisper/app/core/widgets/common/custom_button.dart';
 import 'package:wisper/app/modules/chat/views/doc_info.dart';
 import 'package:wisper/app/modules/homepage/controller/delete_reusme_controller.dart';
+import 'package:wisper/app/modules/homepage/controller/my_resume_controller.dart';
+import 'package:wisper/app/modules/post/views/my_post_section.dart';
 import 'package:wisper/gen/assets.gen.dart';
-import '../controller/my_resume_controller.dart';
 
-// প্রয়োজনীয় ইম্পোর্টস – open_filex ব্যবহার করা হয়েছে
-import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
-import 'package:open_filex/open_filex.dart'; // ← এখানে open_filex
-import 'package:dio/dio.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
-
-class MyResumeSection extends StatefulWidget { 
+class MyResumeSection extends StatefulWidget {
   final String userId;
   const MyResumeSection({super.key, required this.userId});
 
@@ -42,7 +40,6 @@ class _MyResumeSectionState extends State<MyResumeSection> {
     });
   }
 
-  // File open করার মেইন ফাংশন (open_filex দিয়ে)
   Future<void> _openResumeFile(dynamic resume) async {
     if (resume.file == null || resume.file!.isEmpty) {
       showSnackBarMessage(context, "No file attached", true);
@@ -54,13 +51,11 @@ class _MyResumeSectionState extends State<MyResumeSection> {
         resume.name ??
         'resume_${resume.id ?? DateTime.now().millisecondsSinceEpoch}';
 
-    // URL থেকে extension বের করা
     String extension = '';
     if (url.contains('.')) {
       extension = url.split('.').last.split('?').first.toLowerCase();
     }
 
-    // PDF হলে → in-app viewer (Syncfusion)
     if (extension == 'pdf') {
       Get.to(
         () => Scaffold(
@@ -70,9 +65,7 @@ class _MyResumeSectionState extends State<MyResumeSection> {
               child: CircleIconWidget(
                 iconRadius: 18.r,
                 imagePath: Assets.images.cross.keyName,
-                onTap: () {
-                  Get.back();
-                },
+                onTap: () => Get.back(),
               ),
             ),
             title: Text(fileName),
@@ -98,7 +91,6 @@ class _MyResumeSectionState extends State<MyResumeSection> {
     }
 
     try {
-      // fileName-এ extension যোগ করা
       if (extension.isNotEmpty && !fileName.endsWith('.$extension')) {
         fileName += '.$extension';
       }
@@ -106,17 +98,14 @@ class _MyResumeSectionState extends State<MyResumeSection> {
       final dir = await getTemporaryDirectory();
       final filePath = '${dir.path}/$fileName';
 
-      // Download
       await Dio().download(url, filePath);
 
-      Get.back(); // loading hide
+      Get.back();
 
-      // open_filex দিয়ে open করা
       final OpenResult result = await OpenFilex.open(filePath);
 
       switch (result.type) {
         case ResultType.done:
-          // Successfully opened
           break;
         case ResultType.fileNotFound:
           showSnackBarMessage(context, 'File not found', true);
@@ -128,9 +117,6 @@ class _MyResumeSectionState extends State<MyResumeSection> {
           showSnackBarMessage(context, 'Permission denied', true);
           break;
         case ResultType.error:
-        default:
-          showSnackBarMessage(context, 'Error: ${result.message}', true);
-          break;
       }
     } catch (e) {
       Get.back();
@@ -138,7 +124,6 @@ class _MyResumeSectionState extends State<MyResumeSection> {
     }
   }
 
-  // Delete resume functions
   void deleteResume(String resumeId) {
     showLoadingOverLay(
       asyncFunction: () async => await performDeleteResume(context, resumeId),
@@ -163,67 +148,13 @@ class _MyResumeSectionState extends State<MyResumeSection> {
     }
   }
 
-  void _showDeletePost(String resumeId) {
-    showModalBottomSheet(
+  void _showDeleteResume(String resumeId) {
+    ConfirmationBottomSheet.show(
       context: context,
-      backgroundColor: Colors.black,
-      builder: (context) {
-        return Container(
-          height: 250.h,
-          padding: EdgeInsets.all(20.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CircleIconWidget(
-                imagePath: Assets.images.delete.keyName,
-                onTap: () {},
-                iconRadius: 22.r,
-                radius: 24.r,
-                color: const Color(0xff312609),
-                iconColor: const Color(0xffDC8B44),
-              ),
-              heightBox20,
-              Text(
-                'Delete?',
-                style: TextStyle(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              ),
-              heightBox8,
-              Text(
-                'Are you sure you want to delete?',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: const Color(0xff9FA3AA),
-                ),
-              ),
-              heightBox12,
-              Row(
-                children: [
-                  Expanded(
-                    child: CustomElevatedButton(
-                      color: const Color.fromARGB(255, 15, 15, 15),
-                      borderColor: const Color(0xff262629),
-                      title: 'Discard',
-                      onPress: () => Get.back(),
-                    ),
-                  ),
-                  widthBox12,
-                  Expanded(
-                    child: CustomElevatedButton(
-                      color: const Color(0xffE62047),
-                      title: 'Delete',
-                      onPress: () => deleteResume(resumeId),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
+      title: "Delete Resume?",
+      message:
+          "This resume will be permanently removed.\nThis action cannot be undone.",
+      onDelete: () => deleteResume(resumeId),
     );
   }
 
@@ -239,12 +170,12 @@ class _MyResumeSectionState extends State<MyResumeSection> {
       final resumes = controller.myResumeData;
 
       if (resumes == null || resumes.isEmpty) {
-        return const SizedBox(
+        return SizedBox(
           height: 200,
           child: Center(
             child: Text(
               'No resumes yet',
-              style: TextStyle(color: Colors.white70, fontSize: 12),
+              style: TextStyle(color: Colors.white70, fontSize: 12.sp),
             ),
           ),
         );
@@ -256,21 +187,21 @@ class _MyResumeSectionState extends State<MyResumeSection> {
           itemCount: resumes.length,
           itemBuilder: (context, index) {
             final resume = resumes[index];
+            final isMyResume =
+                widget.userId == StorageUtil.getData(StorageUtil.userId);
+
             return Padding(
               padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 4.w),
               child: DocInfo(
-                isMyResume:
-                    widget.userId == StorageUtil.getData(StorageUtil.userId),
+                isMyResume: isMyResume,
                 onDelete: () {
                   if (resume.id != null) {
-                    _showDeletePost(resume.id!);
+                    _showDeleteResume(resume.id!);
                   }
                 },
                 title: resume.name ?? 'Untitled Resume',
                 isDownloaded: true,
-                onTap: () {
-                  _openResumeFile(resume); 
-                },
+                onTap: () => _openResumeFile(resume),
               ),
             );
           },

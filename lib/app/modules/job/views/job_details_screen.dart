@@ -19,7 +19,7 @@ import 'package:wisper/app/modules/payment/view/payment_webview_screen.dart';
 import 'package:wisper/app/modules/profile/views/business/others_business_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
-import 'package:open_mail_launcher/open_mail_launcher.dart';
+import 'package:open_mail_launcher/open_mail_launcher.dart'; 
 import 'package:url_launcher/url_launcher.dart';
 
 class JobDetailsScreen extends StatefulWidget {

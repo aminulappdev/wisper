@@ -8,14 +8,16 @@ import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/widgets/common/circle_icon.dart';
 import 'package:wisper/app/core/widgets/common/custom_button.dart';
+import 'package:wisper/app/core/widgets/common/custom_popup.dart';
 import 'package:wisper/app/core/widgets/common/line_widget.dart';
 import 'package:wisper/app/modules/chat/controller/create_chat_controller.dart';
 import 'package:wisper/app/modules/chat/views/person/message_screen.dart';
 import 'package:wisper/app/modules/chat/widgets/location_info.dart';
-import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart';
+import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart'; 
 import 'package:wisper/app/modules/homepage/controller/add_request_controller.dart';
 import 'package:wisper/app/modules/job/views/others_job_section.dart';
 import 'package:wisper/app/modules/post/model/feed_post_model.dart';
+import 'package:wisper/app/modules/post/views/my_post_section.dart';
 import 'package:wisper/app/modules/post/views/others_post_section.dart';
 import 'package:wisper/app/modules/profile/controller/buisness/buisness_controller.dart';
 import 'package:wisper/app/modules/profile/controller/buisness/other_business_controller.dart';
@@ -80,7 +82,7 @@ class _OthersBusinessScreenState extends State<OthersBusinessScreen> {
     if (isSuccess && mounted) {
       controller.getOthersProfile(widget.userId); // রিফ্রেশ প্রোফাইল
       showSnackBarMessage(context, 'Connection removed', false);
-      Navigator.pop(context); // bottom sheet বন্ধ
+      Get.back(); // bottom sheet বন্ধ
     } else if (mounted) {
       showSnackBarMessage(context, 'Failed to remove connection', true);
     }
@@ -99,7 +101,7 @@ class _OthersBusinessScreenState extends State<OthersBusinessScreen> {
     if (isSuccess) {
       var chatId = createChatController.chatId;
       Get.to(
-        ChatScreen(
+        () => ChatScreen(
           chatId: chatId,
           receiverId: memberId ?? '',
           receiverImage: memberImage ?? '',
@@ -133,64 +135,16 @@ class _OthersBusinessScreenState extends State<OthersBusinessScreen> {
 
   // রিমুভ কানেকশন কনফার্মেশন
   void _showRemoveConnection() {
-    showModalBottomSheet(
+    ConfirmationBottomSheet.show(
       context: context,
-      builder: (_) => Container(
-        color: Colors.black,
-        height: 250.h,
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CircleIconWidget(
-              imagePath: Assets.images.delete.keyName,
-              onTap: () {},
-              iconRadius: 22,
-              radius: 24,
-              color: const Color(0xff312609),
-              iconColor: const Color(0xffDC8B44),
-            ),
-            heightBox20,
-            Text(
-              'Remove Connection?',
-              style: TextStyle(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
-            ),
-            heightBox8,
-            Text(
-              'Are you sure you want to remove this connection?',
-              style: TextStyle(fontSize: 14.sp, color: const Color(0xff9FA3AA)),
-            ),
-            heightBox20,
-            Row(
-              children: [
-                Expanded(
-                  child: CustomElevatedButton(
-                    color: const Color.fromARGB(255, 15, 15, 15),
-                    borderColor: const Color(0xff262629),
-                    title: 'Discard',
-                    onPress: () => Navigator.pop(context),
-                  ),
-                ),
-                widthBox12,
-                Expanded(
-                  child: CustomElevatedButton(
-                    color: const Color(0xffE62047),
-                    title: 'Remove',
-                    onPress: () {
-                      Navigator.pop(context);
-                      removeConnection();
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+      title: "Remove Connection?",
+      message:
+          "Are you sure you want to remove this connection?\nThis action cannot be undone.",
+      onDelete: () {
+        removeConnection();
+      },
+      // deleteText: "Remove Now", // optional customization
+      // cancelText: "Keep",       // optional
     );
   }
 

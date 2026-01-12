@@ -13,7 +13,7 @@ import 'package:wisper/app/modules/homepage/controller/add_request_controller.da
 import 'package:wisper/app/modules/homepage/controller/all_role_controller.dart';
 import 'package:wisper/app/modules/homepage/widget/role_card.dart';
 
-class RoleSection extends StatefulWidget { 
+class RoleSection extends StatefulWidget {
   const RoleSection({super.key, this.searchQuery});
   final String? searchQuery;
 
@@ -33,7 +33,7 @@ class _RoleSectionState extends State<RoleSection> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      allRoleController.getAllRole(widget.searchQuery); 
+      allRoleController.getAllRole(widget.searchQuery);
     });
 
     super.initState();
@@ -47,61 +47,84 @@ class _RoleSectionState extends State<RoleSection> {
     }
   }
 
-  void addRequest(String? receiverId) {
+  Future<void> executeWithLoading({
+    required Future<bool> Function() action,
+    required String loadingMessage,
+    required Future<void> Function() onSuccess,
+    void Function(String error)? onError,
+  }) async {
     showLoadingOverLay(
-      asyncFunction: () async => await performAddRequest(context, receiverId),
-      msg: 'Please wait...',
+      asyncFunction: () async {
+        try {
+          final success = await action();
+          if (success) {
+            await onSuccess();
+          } else {
+            final errorMsg = "Operation failed. Please try again.";
+            if (onError != null) {
+              onError(errorMsg);
+            } else {
+              showSnackBarMessage(context, errorMsg, true);
+            }
+          }
+        } catch (e) {
+          final errorMsg = e.toString().replaceAll('Exception: ', '').trim();
+          if (onError != null) {
+            onError(errorMsg);
+          } else {
+            showSnackBarMessage(context, errorMsg, true);
+          }
+        }
+      },
+      msg: loadingMessage,
     );
   }
 
-  Future<void> performAddRequest(
-    BuildContext context,
-    String? receiverId,
-  ) async {
-    final bool isSuccess = await addRequestController.addRequest(
-      receiverId: receiverId,
-    );
+  void addRequest(String? receiverId) {
+    if (receiverId == null) return;
 
-    if (isSuccess) {
-      final AllRoleController allRoleController = Get.find<AllRoleController>();
-      await allRoleController.getAllRole('');
-      showSnackBarMessage(context, 'Request sent successfully', false);
-    } else {
-      showSnackBarMessage(context, addRequestController.errorMessage, true);
-    }
+    executeWithLoading(
+      loadingMessage: 'Please wait...',
+      action: () => addRequestController.addRequest(receiverId: receiverId),
+      onSuccess: () async {
+        await allRoleController.getAllRole('');
+        showSnackBarMessage(context, 'Request sent successfully', false);
+      },
+      onError: (error) {
+        showSnackBarMessage(
+          context,
+          addRequestController.errorMessage ?? error,
+          true,
+        );
+      },
+    );
   }
 
   void createChat(String? memberId, String? memberName, String? memberImage) {
-    showLoadingOverLay(
-      asyncFunction: () async =>
-          await performCreateChat(context, memberId, memberName, memberImage),
-      msg: 'Please wait...',
-    );
-  }
+    if (memberId == null) return;
 
-  Future<void> performCreateChat(
-    BuildContext context,
-    String? memberId,
-    String? memberName,
-    String? memberImage,
-  ) async {
-    final bool isSuccess = await createChatController.createChat(
-      memberId: memberId,
+    executeWithLoading(
+      loadingMessage: 'Please wait...',
+      action: () => createChatController.createChat(memberId: memberId),
+      onSuccess: () async {
+        var chatId = createChatController.chatId;
+        Get.to(
+          ChatScreen(
+            chatId: chatId,
+            receiverId: memberId,
+            receiverImage: memberImage ?? '',
+            receiverName: memberName ?? '',
+          ),
+        );
+      },
+      onError: (error) {
+        showSnackBarMessage(
+          context,
+          createChatController.errorMessage ?? error,
+          true,
+        );
+      },
     );
-
-    if (isSuccess) {
-      var chatId = createChatController.chatId;
-      Get.to(
-        ChatScreen(
-          chatId: chatId,
-          receiverId: memberId ?? '',
-          receiverImage: memberImage ?? '',
-          receiverName: memberName ?? '',
-        ),
-      );
-    } else {
-      showSnackBarMessage(context, createChatController.errorMessage, true);
-    }
   }
 
   @override
