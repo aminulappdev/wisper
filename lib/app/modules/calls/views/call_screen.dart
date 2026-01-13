@@ -1,18 +1,17 @@
-import 'package:crash_safe_image/crash_safe_image.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisper/app/core/others/custom_size.dart';
 import 'package:wisper/app/core/widgets/common/custom_text_filed.dart';
 import 'package:wisper/app/modules/calls/views/all_calls.dart';
 import 'package:wisper/app/modules/calls/views/missed_calls.dart';
-import 'package:wisper/app/modules/calls/widget/call_list_Tile.dart';
-import 'package:wisper/gen/assets.gen.dart';
+
 
 class CallScreen extends StatefulWidget {
   const CallScreen({super.key});
 
   @override
-  State<CallScreen> createState() => _CallScreenState();
+  State<CallScreen> createState() => _CallScreenState(); 
 }
 
 class _CallScreenState extends State<CallScreen> {

@@ -13,7 +13,7 @@ import 'package:wisper/app/modules/chat/widgets/member_list_title.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class ChatListScreen extends StatefulWidget {
-  const ChatListScreen({super.key});
+  const ChatListScreen({super.key}); 
 
   @override
   State<ChatListScreen> createState() => _ChatListScreenState();
