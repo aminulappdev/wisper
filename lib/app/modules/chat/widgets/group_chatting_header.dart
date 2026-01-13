@@ -64,10 +64,6 @@ class _GroupChatHeaderState extends State<GroupChatHeader> {
       cameras = availableCamerasList;
     });
   }
-
-  // ────────────────────────────────────────────────
-  //       Reusable helper: loading + success/error
-  // ────────────────────────────────────────────────
   Future<void> executeWithLoading({
     required Future<bool> Function() action,
     required String loadingMessage,
@@ -109,11 +105,7 @@ class _GroupChatHeaderState extends State<GroupChatHeader> {
         Get.to(() => MainButtonNavbarScreen());
       },
       onError: (error) {
-        showSnackBarMessage(
-          context,
-          deleteGroupController.errorMessage ?? error,
-          true,
-        );
+        showSnackBarMessage(context, deleteGroupController.errorMessage, true);
       },
     );
   }
@@ -132,11 +124,7 @@ class _GroupChatHeaderState extends State<GroupChatHeader> {
         }
       },
       onError: (error) {
-        showSnackBarMessage(
-          context,
-          muteChatController.errorMessage ?? error,
-          true,
-        );
+        showSnackBarMessage(context, muteChatController.errorMessage, true);
       },
     );
   }
