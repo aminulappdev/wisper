@@ -23,15 +23,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured  for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         return windows;
       case TargetPlatform.linux:
@@ -73,4 +67,27 @@ class DefaultFirebaseOptions {
     storageBucket: 'wisper-74d39.firebasestorage.app',
     measurementId: 'G-T08D5BY1M1',
   );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyBUxgxaNXle9z0BUSdToqE0-HNRBeJVhaI',
+    appId: '1:490742211308:ios:b5536bcae9072d68e43bc9',
+    messagingSenderId: '490742211308',
+    projectId: 'wisper-74d39',
+    storageBucket: 'wisper-74d39.firebasestorage.app',
+    androidClientId: '490742211308-643o4ef31gmvehmgt4anp4eak6krvcbj.apps.googleusercontent.com',
+    iosClientId: '490742211308-ahh388hkmqg0msnhg4ouf4jd98830vsb.apps.googleusercontent.com',
+    iosBundleId: 'com.example.wisper',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyBUxgxaNXle9z0BUSdToqE0-HNRBeJVhaI',
+    appId: '1:490742211308:ios:b5536bcae9072d68e43bc9',
+    messagingSenderId: '490742211308',
+    projectId: 'wisper-74d39',
+    storageBucket: 'wisper-74d39.firebasestorage.app',
+    androidClientId: '490742211308-643o4ef31gmvehmgt4anp4eak6krvcbj.apps.googleusercontent.com',
+    iosClientId: '490742211308-ahh388hkmqg0msnhg4ouf4jd98830vsb.apps.googleusercontent.com',
+    iosBundleId: 'com.example.wisper',
+  );
+
 }
