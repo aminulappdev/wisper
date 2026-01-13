@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:wisper/app/core/custom_size.dart';
-import 'package:wisper/app/core/widgets/circle_icon.dart';
-import 'package:wisper/app/core/widgets/line_widget.dart';
-import 'package:wisper/app/modules/homepage/views/job_section.dart';
-import 'package:wisper/app/modules/homepage/views/post_section.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
+import 'package:wisper/app/core/widgets/common/circle_icon.dart';
+import 'package:wisper/app/core/widgets/common/line_widget.dart';
+import 'package:wisper/app/modules/job/views/job_section.dart';
+import 'package:wisper/app/modules/post/views/post_section.dart';
 import 'package:wisper/app/modules/homepage/views/role_section.dart';
 import 'package:wisper/app/modules/homepage/views/search_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';

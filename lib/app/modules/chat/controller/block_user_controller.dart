@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:wisper/app/core/get_storage.dart';
+import 'package:wisper/app/core/others/get_storage.dart';
 import 'package:wisper/app/core/services/network_caller/network_caller.dart';
 import 'package:wisper/app/core/services/network_caller/network_response.dart';
 import 'package:wisper/app/urls.dart';
@@ -9,7 +9,7 @@ class BlockUnblockMemberController extends GetxController {
   bool get inProgress => _inProgress.value;
 
   final RxString _errorMessage = ''.obs;
-  String get errorMessage => _errorMessage.value;
+  String get errorMessage => _errorMessage.value; 
 
   Future<bool> blockMember({String? chatId, String? memberId}) async {
     _inProgress.value = true;

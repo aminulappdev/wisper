@@ -1,11 +1,10 @@
 // app/modules/chat/controller/message_controller.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:wisper/app/core/get_storage.dart';
+import 'package:wisper/app/core/others/get_storage.dart';
 import 'package:wisper/app/core/services/network_caller/network_caller.dart';
 import 'package:wisper/app/core/services/socket/socket_service.dart';
-import 'package:wisper/app/modules/chat/controller/all_chats_controller.dart';
-import 'package:wisper/app/modules/chat/controller/image_decode_controller.dart'; // Added for image handling
+import 'package:wisper/app/modules/chat/controller/image_decode_controller.dart';
 import 'package:wisper/app/modules/chat/model/message_keys.dart';
 import 'package:wisper/app/modules/chat/model/message_model.dart';
 import 'package:wisper/app/urls.dart';
@@ -20,7 +19,6 @@ class MessageController extends GetxController {
 
   final ScrollController scrollController = ScrollController();
   final TextEditingController textController = TextEditingController();
-
   late String userAuthId;
 
   @override
@@ -37,17 +35,27 @@ class MessageController extends GetxController {
 
     // Socket listener (একবারই on করা)
     socketService.socket.off('newMessage');
+    socketService.socket.on('chatList', _handleIncomingChat);
     socketService.socket.on('newMessage', _handleIncomingMessage);
-    socketService.socket.on('chatList', _updateData);
     socketService.socket.on('typingStatus', _handleTypingStatus);
-
   }
 
-  void _updateData(dynamic data) {
-    print('updateData called');
-    final AllChatsController _allChatsController =
-        Get.find<AllChatsController>();
-    _allChatsController.getAllChats();
+  void _handleIncomingChat(dynamic rawData) {
+    print(
+      'Real-time chatList event received from message controller: $rawData',
+    );
+  }
+
+  void _sortSocketList() {
+    socketService.socketFriendList.sort((a, b) {
+      final DateTime aTime =
+          DateTime.tryParse(a['latestMessageAt'] ?? '') ?? DateTime(1970);
+      final DateTime bTime =
+          DateTime.tryParse(b['latestMessageAt'] ?? '') ?? DateTime(1970);
+      return bTime.compareTo(aTime); // Latest first
+    });
+
+    socketService.socketFriendList.refresh(); // GetX UI update
   }
 
   void _handleTypingStatus(dynamic data) {
@@ -57,6 +65,7 @@ class MessageController extends GetxController {
 
   void _handleIncomingMessage(dynamic data) {
     try {
+      print('Real-time message event received from message controller: $data');
       final String msgId = data['id'] ?? '';
       if (messages.any((e) => e[SocketMessageKeys.id] == msgId)) return;
 
@@ -91,6 +100,8 @@ class MessageController extends GetxController {
       };
 
       messages.insert(0, msg);
+      print('Senders Name: $senderName id : ${SocketMessageKeys.senderId}');
+
       scrollToBottom();
     } catch (e) {
       print("Socket parse error: $e");
@@ -117,6 +128,7 @@ class MessageController extends GetxController {
     final text = textController.text.trim();
     final fileUrl = imageDecodeController.imageUrl.trim();
     final fileType = imageDecodeController.currentFileType; // নতুন
+    final userId = StorageUtil.getData(StorageUtil.userId) ?? '';
 
     if (text.isEmpty && fileUrl.isEmpty) {
       Get.snackbar('Error', 'Message or attachment required');
@@ -131,7 +143,9 @@ class MessageController extends GetxController {
     };
 
     socketService.socket.emit('sendMessage', messageData);
-    print('File type********************************** : $fileType');
+    print('File type : $fileType');
+    print('User Id : $userId');
+    print('Message Done sending message');
 
     // Clear everything
     textController.clear();
@@ -144,7 +158,7 @@ class MessageController extends GetxController {
       final token = await StorageUtil.getData(StorageUtil.userAccessToken);
       final response = await Get.find<NetworkCaller>().getRequest(
         Urls.messagesById(chatId),
-        accessToken: token,
+        accessToken: token, 
         queryParams: {"sort": "createdAt", "limit": "9999"},
       );
 
@@ -162,7 +176,7 @@ class MessageController extends GetxController {
                 senderName = msg.sender!.person!.name ?? 'Unknown';
                 senderImage = msg.sender!.person!.image;
               } else if (msg.sender!.business != null) {
-                senderName = msg.sender!.business!.name ?? 'Unknown'; 
+                senderName = msg.sender!.business!.name ?? 'Unknown';
                 senderImage = msg.sender!.business!.image;
               }
             }

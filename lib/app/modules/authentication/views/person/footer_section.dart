@@ -1,13 +1,43 @@
-
-
 import 'package:crash_safe_image/crash_safe_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wisper/app/core/custom_size.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
+import 'package:wisper/app/core/utils/show_over_loading.dart';
+import 'package:wisper/app/core/utils/snack_bar.dart';
+import 'package:wisper/app/modules/authentication/controller/google_sign_up_controller.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
-class FooterSection extends StatelessWidget {
+class FooterSection extends StatefulWidget {
   const FooterSection({super.key});
+
+  @override
+  State<FooterSection> createState() => _FooterSectionState();
+}
+
+class _FooterSectionState extends State<FooterSection> {
+  final GoogleSignUpAuthController googleAuthController = Get.put(
+    GoogleSignUpAuthController(),
+  );
+
+  void signInGoogle() {
+    showLoadingOverLay(
+      asyncFunction: () async => await performGoogleSignIn(context),
+      msg: 'Please wait...',
+    );
+  }
+
+  Future<void> performGoogleSignIn(BuildContext context) async {
+    final bool isSuccess = await googleAuthController.signUpWithGoogle(
+      'PERSON',
+    );
+
+    if (isSuccess) {
+    } else {
+      showSnackBarMessage(context, 'Failed to sign in', true);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +54,15 @@ class FooterSection extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CrashSafeImage(Assets.images.gmail.keyName, height: 30.h),
-                widthBox14,
-                CrashSafeImage(Assets.images.facebook.keyName, height: 30.h),
+                GestureDetector(
+                  onTap: signInGoogle,
+                  child: CrashSafeImage(
+                    Assets.images.gmail.keyName,
+                    height: 30.h,
+                  ),
+                ),
+                // widthBox14,
+                // CrashSafeImage(Assets.images.facebook.keyName, height: 30.h),
               ],
             ),
           ],

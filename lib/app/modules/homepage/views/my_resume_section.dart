@@ -1,24 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:wisper/app/core/custom_size.dart';
-import 'package:wisper/app/core/get_storage.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
+import 'package:wisper/app/core/others/get_storage.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
-import 'package:wisper/app/core/widgets/circle_icon.dart';
-import 'package:wisper/app/core/widgets/custom_button.dart';
+import 'package:wisper/app/core/widgets/common/circle_icon.dart';
+import 'package:wisper/app/core/widgets/common/custom_button.dart';
 import 'package:wisper/app/modules/chat/views/doc_info.dart';
 import 'package:wisper/app/modules/homepage/controller/delete_reusme_controller.dart';
-import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
 import 'package:wisper/gen/assets.gen.dart';
 import '../controller/my_resume_controller.dart';
 
-class MyResumeSection extends StatefulWidget {
+// প্রয়োজনীয় ইম্পোর্টস – open_filex ব্যবহার করা হয়েছে
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+import 'package:open_filex/open_filex.dart'; // ← এখানে open_filex
+import 'package:dio/dio.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+
+class MyResumeSection extends StatefulWidget { 
   final String userId;
   const MyResumeSection({super.key, required this.userId});
 
   @override
-  State<MyResumeSection> createState() => _MyResumeSectionState(); 
+  State<MyResumeSection> createState() => _MyResumeSectionState();
 }
 
 class _MyResumeSectionState extends State<MyResumeSection> {
@@ -26,19 +32,113 @@ class _MyResumeSectionState extends State<MyResumeSection> {
   final DeleteResumeController deleteResumeController =
       DeleteResumeController();
 
-
   @override
   void initState() {
     super.initState();
-
-    /// ✅ controller only once
     controller = Get.find<MyResumeController>();
- 
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.getAllResume(widget.userId);
     });
   }
 
+  // File open করার মেইন ফাংশন (open_filex দিয়ে)
+  Future<void> _openResumeFile(dynamic resume) async {
+    if (resume.file == null || resume.file!.isEmpty) {
+      showSnackBarMessage(context, "No file attached", true);
+      return;
+    }
+
+    String url = resume.file!;
+    String fileName =
+        resume.name ??
+        'resume_${resume.id ?? DateTime.now().millisecondsSinceEpoch}';
+
+    // URL থেকে extension বের করা
+    String extension = '';
+    if (url.contains('.')) {
+      extension = url.split('.').last.split('?').first.toLowerCase();
+    }
+
+    // PDF হলে → in-app viewer (Syncfusion)
+    if (extension == 'pdf') {
+      Get.to(
+        () => Scaffold(
+          appBar: AppBar(
+            leading: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CircleIconWidget(
+                iconRadius: 18.r,
+                imagePath: Assets.images.cross.keyName,
+                onTap: () {
+                  Get.back();
+                },
+              ),
+            ),
+            title: Text(fileName),
+            backgroundColor: Colors.black,
+            foregroundColor: Colors.white,
+            elevation: 0,
+          ),
+          backgroundColor: Colors.black,
+          body: SfPdfViewer.network(
+            url,
+            onDocumentLoadFailed: (PdfDocumentLoadFailedDetails details) {
+              Get.back();
+              showSnackBarMessage(
+                context,
+                "Failed to load PDF: ${details.description}",
+                true,
+              );
+            },
+          ),
+        ),
+      );
+      return;
+    }
+
+    try {
+      // fileName-এ extension যোগ করা
+      if (extension.isNotEmpty && !fileName.endsWith('.$extension')) {
+        fileName += '.$extension';
+      }
+
+      final dir = await getTemporaryDirectory();
+      final filePath = '${dir.path}/$fileName';
+
+      // Download
+      await Dio().download(url, filePath);
+
+      Get.back(); // loading hide
+
+      // open_filex দিয়ে open করা
+      final OpenResult result = await OpenFilex.open(filePath);
+
+      switch (result.type) {
+        case ResultType.done:
+          // Successfully opened
+          break;
+        case ResultType.fileNotFound:
+          showSnackBarMessage(context, 'File not found', true);
+          break;
+        case ResultType.noAppToOpen:
+          showSnackBarMessage(context, 'No app found to open this file', true);
+          break;
+        case ResultType.permissionDenied:
+          showSnackBarMessage(context, 'Permission denied', true);
+          break;
+        case ResultType.error:
+        default:
+          showSnackBarMessage(context, 'Error: ${result.message}', true);
+          break;
+      }
+    } catch (e) {
+      Get.back();
+      showSnackBarMessage(context, 'Error opening file: $e', true);
+    }
+  }
+
+  // Delete resume functions
   void deleteResume(String resumeId) {
     showLoadingOverLay(
       asyncFunction: () async => await performDeleteResume(context, resumeId),
@@ -55,75 +155,12 @@ class _MyResumeSectionState extends State<MyResumeSection> {
     );
 
     if (isSuccess) {
-      final MyResumeController myResumeController =
-          Get.find<MyResumeController>();
-
-      await myResumeController.getAllResume(
-        StorageUtil.getData(StorageUtil.userId),
-      );
+      await controller.getAllResume(StorageUtil.getData(StorageUtil.userId));
       Get.back();
-      showSnackBarMessage(context, "Post deleted successfully!", false);
+      showSnackBarMessage(context, "Resume deleted successfully!", false);
     } else {
       showSnackBarMessage(context, deleteResumeController.errorMessage, true);
     }
-  }
-
-  
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      // ================= LOADING =================
-      if (controller.inProgress) {
-        return const Center(
-          child: CircularProgressIndicator(color: Colors.white),
-        );
-      }
-
-      final resumes = controller.myResumeData;
-
-      // ================= EMPTY =================
-      if (resumes == null || resumes.isEmpty) {
-        return const SizedBox(
-          height: 200,
-          child: Center(
-            child: Text(
-              'No resumes yet',
-              style: TextStyle(color: Colors.white70, fontSize: 12),
-            ),
-          ),
-        );
-      }
-
-      // ================= LIST =================
-      /// 🔥 Expanded ensures bounded height
-      return Expanded(
-        child: ListView.builder(
-          padding: EdgeInsets.zero,
-          itemCount: resumes.length,
-          itemBuilder: (context, index) {
-            final resume = resumes[index];
-
-            return Padding(
-              padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 4.w),
-              child: DocInfo(
-                isMyResume:
-                    widget.userId ==
-                    StorageUtil.getData(StorageUtil.userId),
-                onDelete: () {
-                  _showDeletePost(resume.id!);
-                },
-                title: resume.name ?? '',
-                isDownloaded: true,
-                onTap: () {
-                  controller.downloadResume(resume);
-                },
-              ),
-            );
-          },
-        ),
-      );
-    });
   }
 
   void _showDeletePost(String resumeId) {
@@ -188,5 +225,57 @@ class _MyResumeSectionState extends State<MyResumeSection> {
         );
       },
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      if (controller.inProgress) {
+        return const Center(
+          child: CircularProgressIndicator(color: Colors.white),
+        );
+      }
+
+      final resumes = controller.myResumeData;
+
+      if (resumes == null || resumes.isEmpty) {
+        return const SizedBox(
+          height: 200,
+          child: Center(
+            child: Text(
+              'No resumes yet',
+              style: TextStyle(color: Colors.white70, fontSize: 12),
+            ),
+          ),
+        );
+      }
+
+      return Expanded(
+        child: ListView.builder(
+          padding: EdgeInsets.zero,
+          itemCount: resumes.length,
+          itemBuilder: (context, index) {
+            final resume = resumes[index];
+            return Padding(
+              padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 4.w),
+              child: DocInfo(
+                isMyResume:
+                    widget.userId == StorageUtil.getData(StorageUtil.userId),
+                onDelete: () {
+                  if (resume.id != null) {
+                    _showDeletePost(resume.id!);
+                  }
+                },
+                title: resume.name ?? 'Untitled Resume',
+                isDownloaded: true,
+                onTap: () {
+                  _openResumeFile(resume); 
+                },
+              ),
+            );
+          },
+        ),
+      );
+    });
   }
 }

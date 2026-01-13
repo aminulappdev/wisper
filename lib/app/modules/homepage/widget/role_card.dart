@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
-import 'package:wisper/app/core/custom_size.dart';
-import 'package:wisper/app/core/widgets/circle_icon.dart';
-import 'package:wisper/app/core/widgets/custom_button.dart';
-import 'package:wisper/app/core/widgets/line_widget.dart';
-import 'package:wisper/app/modules/profile/views/others_person_screen.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
+import 'package:wisper/app/core/widgets/common/circle_icon.dart';
+import 'package:wisper/app/core/widgets/common/custom_button.dart';
+import 'package:wisper/app/core/widgets/common/line_widget.dart';
+import 'package:wisper/app/modules/profile/views/person/others_person_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class RoleCard extends StatelessWidget {
@@ -31,7 +31,8 @@ class RoleCard extends StatelessWidget {
     this.recommendations,
     this.addOnTap,
     this.messagesOnTap,
-    this.status, this.isEnable,
+    this.status,
+    this.isEnable,
   });
 
   @override

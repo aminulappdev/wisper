@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
-import 'package:wisper/app/core/custom_size.dart';
-import 'package:wisper/app/core/widgets/custom_text_filed.dart';
-import 'package:wisper/app/core/widgets/line_widget.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
+import 'package:wisper/app/core/widgets/common/custom_text_filed.dart';
+import 'package:wisper/app/core/widgets/common/line_widget.dart';
 import 'package:wisper/app/modules/chat/controller/all_connection_controller.dart';
 import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart';
-import 'package:wisper/app/modules/homepage/controller/feed_job_controller.dart';
-import 'package:wisper/app/modules/homepage/views/job_section.dart';
+import 'package:wisper/app/modules/job/controller/feed_job_controller.dart';
+import 'package:wisper/app/modules/job/views/job_section.dart';
 import 'package:wisper/app/modules/homepage/views/role_section.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -62,7 +62,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     },
                   ),
                 ),
-                widthBox8,
+                widthBox8, 
                 CircleAvatar(
                   backgroundColor: const Color.fromARGB(255, 104, 104, 104),
                   child: GestureDetector(

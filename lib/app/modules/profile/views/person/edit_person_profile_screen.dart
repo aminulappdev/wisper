@@ -3,13 +3,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:wisper/app/core/custom_size.dart'; 
+import 'package:wisper/app/core/others/custom_size.dart'; 
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/utils/validator_service.dart';
-import 'package:wisper/app/core/widgets/custom_button.dart';
-import 'package:wisper/app/core/widgets/custom_text_filed.dart';
-import 'package:wisper/app/core/widgets/label.dart';
+import 'package:wisper/app/core/widgets/common/custom_button.dart';
+import 'package:wisper/app/core/widgets/common/custom_text_filed.dart';
+import 'package:wisper/app/core/widgets/common/label.dart';
 import 'package:wisper/app/modules/authentication/widget/auth_header.dart';
 import 'package:wisper/app/modules/profile/controller/person/edit_person_profile_controller.dart';
 import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
@@ -17,13 +17,13 @@ import 'package:wisper/app/modules/profile/controller/person/profile_controller.
 class EditPersonProfileScreen extends StatefulWidget {
   const EditPersonProfileScreen({super.key});
 
-  @override
+  @override 
   State<EditPersonProfileScreen> createState() =>
       _EditPersonProfileScreenState();
 }
 
 class _EditPersonProfileScreenState extends State<EditPersonProfileScreen> {
-  final ProfileController profileController = Get.find<ProfileController>();
+  final ProfileController profileController = Get.put(ProfileController());
   final EditPersonProfileController editProfileController =
       EditPersonProfileController();
   final _formKey = GlobalKey<FormState>();
@@ -58,7 +58,7 @@ class _EditPersonProfileScreenState extends State<EditPersonProfileScreen> {
   void initState() {
     super.initState();
 
-    final user = profileController.profileData!.auth?.person;
+    final user = profileController.profileData?.auth?.person;
     _nameCtrl.text = user?.name ?? '';
     _emailCtrl.text = user?.email ?? '';
     _phoneCtrl.text = user?.phone ?? '';
@@ -212,7 +212,7 @@ class _EditPersonProfileScreenState extends State<EditPersonProfileScreen> {
 
               Center(
                 child: CustomElevatedButton(
-                  height: 56.h,
+                  height: MediaQuery.of(context).size.height * 0.05,
                   title: 'Submit',
                   onPress: _submitProfile,
                   color: Colors.blue,

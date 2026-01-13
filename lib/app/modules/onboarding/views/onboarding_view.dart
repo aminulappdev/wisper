@@ -6,8 +6,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
-import 'package:wisper/app/core/custom_size.dart';
-import 'package:wisper/app/core/widgets/custom_button.dart';
+
+import 'package:wisper/app/core/others/custom_size.dart';
+import 'package:wisper/app/core/widgets/common/custom_button.dart';
+
 import 'package:wisper/app/modules/authentication/views/auth_screen.dart';
 import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
 import 'package:wisper/app/modules/onboarding/views/page_view.dart';
@@ -140,7 +142,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CustomElevatedButton(
-                    width: 152.w,
+                    width: MediaQuery.of(context).size.width * 0.39,
                     title: 'Login',
                     onPress: () {
                       Get.to(() => SignInScreen());
@@ -150,7 +152,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                     borderColor: Colors.white,
                   ),
                   CustomElevatedButton(
-                    width: 152.w,
+                    width: MediaQuery.of(context).size.width * 0.39,
                     title: 'Sign Up',
                     onPress: () {
                       Get.to(() => AuthScreen());

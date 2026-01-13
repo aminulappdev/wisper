@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/utils/validator_service.dart';
-import 'package:wisper/app/core/widgets/custom_button.dart';
-import 'package:wisper/app/core/widgets/custom_text_filed.dart';
-import 'package:wisper/app/core/widgets/label.dart';
+import 'package:wisper/app/core/widgets/common/custom_button.dart';
+import 'package:wisper/app/core/widgets/common/custom_text_filed.dart';
+import 'package:wisper/app/core/widgets/common/label.dart';
 import 'package:wisper/app/modules/authentication/controller/forgot_password_controller.dart';
 import 'package:wisper/app/modules/authentication/views/otp_verification_screen.dart';
 import 'package:wisper/app/modules/authentication/widget/auth_header.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
-
+ 
   @override
   State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
 }
@@ -72,11 +72,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 ),
                 heightBox30,
                 Label(label: 'Email'),
-                heightBox10,
+                heightBox10, 
                 CustomTextField(
                   controller: emailController,
                   hintText: 'example@gmail.com',
-                  keyboardType: TextInputType.name,
+                  keyboardType: TextInputType.emailAddress,
                   validator: (value) => ValidatorService.validateEmailAddress(
                     emailController.text,
                   ),

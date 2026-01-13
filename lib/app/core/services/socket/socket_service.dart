@@ -1,13 +1,13 @@
 // ignore_for_file: library_prefixes, avoid_print
 import 'package:get/get.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:wisper/app/core/get_storage.dart';
+import 'package:wisper/app/core/others/get_storage.dart';
 import 'package:wisper/app/urls.dart';
 
 class SocketService extends GetxController {
   late IO.Socket _socket;
 
-  // Observable variables
+  // Observable variables 
   RxBool isLoading = false.obs;
   RxBool isConnected = false.obs; // Tracks connection status
 

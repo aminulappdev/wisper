@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
-import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
-import 'package:wisper/app/core/widgets/custom_text_filed.dart';
+import 'package:wisper/app/core/widgets/common/custom_text_filed.dart';
 import 'package:wisper/app/modules/authentication/controller/sign_up_controller.dart';
 import 'package:wisper/app/modules/authentication/views/otp_verification_screen.dart';
 

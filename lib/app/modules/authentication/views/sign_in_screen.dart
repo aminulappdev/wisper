@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
-import 'package:wisper/app/core/custom_size.dart';
-import 'package:wisper/app/core/get_storage.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
+import 'package:wisper/app/core/others/get_storage.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/utils/validator_service.dart';
-import 'package:wisper/app/core/widgets/custom_button.dart';
-import 'package:wisper/app/core/widgets/custom_text_filed.dart';
-import 'package:wisper/app/core/widgets/label.dart';
+import 'package:wisper/app/core/widgets/common/custom_button.dart';
+import 'package:wisper/app/core/widgets/common/custom_text_filed.dart';
+import 'package:wisper/app/core/widgets/common/label.dart';
+import 'package:wisper/app/modules/authentication/controller/google_sign_up_controller.dart';
 import 'package:wisper/app/modules/authentication/controller/sign_in_controller.dart';
 import 'package:wisper/app/modules/authentication/views/auth_screen.dart';
 import 'package:wisper/app/modules/authentication/views/forgot_password.dart';
@@ -30,17 +31,39 @@ class _SignInScreenState extends State<SignInScreen> {
   final SignInController signInController = Get.put(SignInController());
   final ProfileController profileController = Get.put(ProfileController());
   final BusinessController businessController = Get.put(BusinessController());
+  final GoogleSignUpAuthController googleAuthController = Get.put(
+    GoogleSignUpAuthController(),
+  );
 
   final formKey = GlobalKey<FormState>();
   final emailController = TextEditingController(
-    text: 'fositak321@moondyal.com',
+    // text: 'fositak321@moondyal.com',
   );
-  final passwordController = TextEditingController(text: 'Aminul@1234');
+  final passwordController = TextEditingController();
+  // final passwordController = TextEditingController(text: '12345678');
   void signIn() {
     showLoadingOverLay(
       asyncFunction: () async => await performSignIn(context),
       msg: 'Please wait...',
     );
+  }
+
+  void signInGoogle() {
+    showLoadingOverLay(
+      asyncFunction: () async => await performGoogleSignIn(context),
+      msg: 'Please wait...',
+    );
+  }
+
+  Future<void> performGoogleSignIn(BuildContext context) async {
+    final bool isSuccess = await googleAuthController.signUpWithGoogle(
+      'PERSON',
+    );
+
+    if (isSuccess) {
+    } else {
+      showSnackBarMessage(context, signInController.errorMessage, true);
+    }
   }
 
   Future<void> performSignIn(BuildContext context) async {
@@ -156,15 +179,20 @@ class _SignInScreenState extends State<SignInScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        CrashSafeImage(
-                          Assets.images.gmail.keyName,
-                          height: 30.h,
+                        GestureDetector(
+                          onTap: () {
+                            signInGoogle();
+                          },
+                          child: CrashSafeImage(
+                            Assets.images.gmail.keyName,
+                            height: 30.h,
+                          ),
                         ),
-                        widthBox14,
-                        CrashSafeImage(
-                          Assets.images.facebook.keyName,
-                          height: 30.h,
-                        ),
+                        // widthBox14,
+                        // CrashSafeImage(
+                        //   Assets.images.facebook.keyName,
+                        //   height: 30.h,
+                        // ),
                       ],
                     ),
                   ],

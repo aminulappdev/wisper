@@ -2,8 +2,8 @@ import 'package:crash_safe_image/crash_safe_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:wisper/app/core/custom_size.dart';
-import 'package:wisper/app/core/widgets/circle_icon.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
+import 'package:wisper/app/core/widgets/common/circle_icon.dart';
 import 'package:wisper/app/modules/authentication/views/job_interest_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 

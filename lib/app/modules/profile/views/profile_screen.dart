@@ -6,27 +6,27 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:wisper/app/core/get_storage.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:wisper/app/core/others/get_storage.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
 import 'package:wisper/app/core/utils/image_picker.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
-import 'package:wisper/app/core/widgets/custom_button.dart';
-import 'package:wisper/app/core/widgets/custom_popup.dart';
-import 'package:wisper/app/core/widgets/line_widget.dart';
+import 'package:wisper/app/core/widgets/common/custom_button.dart';
+import 'package:wisper/app/core/widgets/common/custom_popup.dart';
+import 'package:wisper/app/core/widgets/common/line_widget.dart';
 import 'package:wisper/app/modules/chat/widgets/location_info.dart';
 import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart';
-import 'package:wisper/app/modules/homepage/views/my_job_section.dart';
-import 'package:wisper/app/modules/homepage/views/my_post_section.dart';
+import 'package:wisper/app/modules/job/views/my_job_section.dart';
+import 'package:wisper/app/modules/post/views/my_post_section.dart';
 import 'package:wisper/app/modules/homepage/views/my_resume_section.dart';
 import 'package:wisper/app/modules/profile/controller/buisness/buisness_controller.dart';
 import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
 import 'package:wisper/app/modules/profile/controller/recommendetion_controller.dart';
 import 'package:wisper/app/modules/profile/controller/upload_photo_controller.dart';
-import 'package:wisper/app/modules/profile/model/recommendation_model.dart';
 import 'package:wisper/app/modules/profile/views/business/edit_business_profile_screen.dart';
 import 'package:wisper/app/modules/profile/views/person/edit_person_profile_screen.dart';
 import 'package:wisper/app/modules/profile/views/recommendation_screen.dart';
-import 'package:wisper/app/modules/profile/views/settings_screen.dart';
+import 'package:wisper/app/modules/settings/views/settings_screen.dart';
 import 'package:wisper/app/modules/profile/widget/info_card.dart';
 import 'package:wisper/app/modules/profile/widget/recommendation_widget.dart';
 import 'package:wisper/gen/assets.gen.dart';
@@ -76,13 +76,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _getProfileImage() async {
     print('Called get image');
     await personController.getMyProfile();
+    await businessController.getMyProfile();
     if (userRole == 'PERSON') {
       print(
         'Person image: ${personController.profileData?.auth?.person?.image}',
       );
       currentImagePath.value =
           personController.profileData?.auth?.person?.image ?? '';
-    } else {
+    } else if (userRole == 'BUSINESS') {
       print(
         'Business image: ${businessController.buisnessData?.auth?.business?.image}',
       );
@@ -127,13 +128,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  void _showCreateGroup(List<RecommendationItemModel> model) {
+  void _showCreateGroup() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
         return RcommendationButtomSheet(
-          recommendationItemModel: model,
           isCreateReview: false,
           recieverId: StorageUtil.getData(StorageUtil.userId),
         );
@@ -153,11 +153,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       // BUSINESS
       if (index == 0) return MyPostSection();
       if (index == 1) return MyJobSection();
-      if (index == 2) {
-        return MyResumeSection(
-          userId: StorageUtil.getData(StorageUtil.userAuthId)!,
-        );
-      }
     }
     return const SizedBox.shrink();
   }
@@ -246,7 +241,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: CustomElevatedButton(
                         textSize: 12,
                         title: 'Share Profile',
-                        onPress: () {},
+                        onPress: () async {
+                          try {
+                            final String userId =
+                                StorageUtil.getData(StorageUtil.userId) ?? '';
+                            if (userId.isEmpty) {
+                              Get.snackbar('Error', 'User ID not found');
+                              return;
+                            }
+
+                            final String role =
+                                StorageUtil.getData(StorageUtil.userRole) ??
+                                'PERSON';
+                            final bool isPerson =
+                                role.toUpperCase() == 'PERSON';
+
+                            // 🔥 Production / Real base URL — এখানে তোমার আসল ডোমেইন দাও
+                            const String baseUrl =
+                                'https://c9f1d48ba47f.ngrok-free.app'; // ← এটা পরিবর্তন করো
+                            // অথবা development এর জন্য: 'https://c9f1d48ba47f.ngrok-free.app'
+
+                            // Universal / App Link style — সবচেয়ে ভালো
+                            final Uri shareUri = Uri.https(
+                              baseUrl.replaceAll('https://', ''), // host only
+                              isPerson
+                                  ? '/persons/$userId'
+                                  : '/businesses/$userId',
+                            );
+
+                            // অথবা custom scheme (যদি চাও)
+                            // final Uri shareUri = Uri(
+                            //   scheme: 'wisper',
+                            //   host: 'app',
+                            //   path: '/profile/${isPerson ? 'person' : 'business'}/$userId',
+                            // );
+
+                            debugPrint("Sharing profile link: $shareUri");
+
+                            await Share.shareUri(shareUri);
+                          } catch (e) {
+                            debugPrint('Share error: $e');
+                            Get.snackbar('Error', 'Failed to share profile');
+                          }
+                        },
                         borderRadius: 50,
                       ),
                     ),
@@ -278,24 +315,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
               userRole == 'PERSON'
                   ? SizedBox(
                       height: 30.h,
-                      child: Obx(() {
-                        // Safely get the list, default to empty if null
-                        final List<RecommendationItemModel> recList =
-                            recommendationController.recommendationData ?? [];
-
-                        if (recommendationController.inProgress) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
+                      child: GetBuilder<AllRecommendationController>(
+                        builder: (controller) {
+                          final int count =
+                              controller.recommendationData.length;
+                          return Recommendation(
+                            images: controller.recommendationData
+                                .map((e) => e.giver!)
+                                .toList(),
+                            isEmpty: count == 0,
+                            onTap: _showCreateGroup,
+                            count: count,
                           );
-                        }
-
-                        return Recommendation(
-                          onTap: () {
-                            _showCreateGroup(recList);
-                          },
-                          count: recList.length,
-                        );
-                      }),
+                        },
+                      ),
                     )
                   : const SizedBox.shrink(),
 
@@ -303,7 +336,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               LocationInfo(
                 location: displayAddress ?? 'Location not set',
-                date: dateFormatter.getFullDateFormat(),
+                date: dateFormatter.getShortDateFormat(),
               ),
 
               SizedBox(height: 20.h),
@@ -328,7 +361,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           lineColor: Colors.white,
                         ),
                       ),
-                      if (idx < tabs.length - 1) SizedBox(width: 30.w),
+                      if (idx < tabs.length - 1) SizedBox(width: 100.w),
                     ],
                   );
                 }).toList(),

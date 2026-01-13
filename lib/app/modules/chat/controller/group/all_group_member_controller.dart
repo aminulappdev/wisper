@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:wisper/app/core/get_storage.dart';
+import 'package:wisper/app/core/others/get_storage.dart';
 import 'package:wisper/app/core/services/network_caller/network_caller.dart';
 import 'package:wisper/app/core/services/network_caller/network_response.dart';
 import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
@@ -17,7 +17,7 @@ class GroupMembersController extends GetxController {
     null,
   );
   List<GroupMembersItemModel>? get groupMemnersData =>
-      _groupMemnersModel.value!.data;
+      _groupMemnersModel.value!.data?.members ?? [];
 
   // @override
   // void onInit() {

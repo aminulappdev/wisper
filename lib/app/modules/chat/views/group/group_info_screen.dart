@@ -5,20 +5,19 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
 import 'package:wisper/app/core/utils/image_picker.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
-import 'package:wisper/app/core/widgets/circle_icon.dart';
-import 'package:wisper/app/core/widgets/custom_button.dart';
-import 'package:wisper/app/core/widgets/custom_popup.dart';
-import 'package:wisper/app/core/widgets/line_widget.dart';
+import 'package:wisper/app/core/widgets/common/circle_icon.dart';
+import 'package:wisper/app/core/widgets/common/custom_button.dart';
+import 'package:wisper/app/core/widgets/common/custom_popup.dart';
+import 'package:wisper/app/core/widgets/common/line_widget.dart';
 import 'package:wisper/app/modules/chat/controller/group/add_group_member.dart';
 import 'package:wisper/app/modules/chat/controller/all_connection_controller.dart';
 import 'package:wisper/app/modules/chat/controller/group/all_group_member_controller.dart';
 import 'package:wisper/app/modules/chat/controller/group/group_info_controller.dart';
-import 'package:wisper/app/modules/chat/views/doc_info.dart';
 import 'package:wisper/app/modules/chat/views/group/edit_group_screen.dart';
 import 'package:wisper/app/modules/chat/views/link_info.dart';
 import 'package:wisper/app/modules/chat/views/media_info.dart';
@@ -46,7 +45,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
       Get.find<GroupMembersController>();
 
   final AllConnectionController allConnectionController =
-      Get.find<AllConnectionController>();
+      Get.put(AllConnectionController());
 
   final ProfilePhotoController photoController =
       Get.find<ProfilePhotoController>();
@@ -57,6 +56,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
   void initState() {
     _updateProfileImage();
     _getProfileImage();
+    print('Group ID from group info screen: ${widget.groupId}');
     groupInfoController.getGroupInfo(widget.groupId);
     groupMembersController.getGroupMembers(widget.groupId);
     allConnectionController.getAllConnection('ACCEPTED', '');
@@ -435,7 +435,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                         ),
                         SizedBox(
                           width: 100.w,
-                          height: 30.h,
+                          height: 30.h, 
                           child: CustomElevatedButton(
                             title: 'Add Member',
                             textSize: 10.sp,

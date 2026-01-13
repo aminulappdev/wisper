@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
-import 'package:wisper/app/core/get_storage.dart';
+import 'package:wisper/app/core/others/get_storage.dart';
 import 'package:wisper/app/core/services/network_caller/network_caller.dart';
 import 'package:wisper/app/core/services/network_caller/network_response.dart';
 import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
-import 'package:wisper/app/modules/profile/model/all_connection_model.dart';
+import 'package:wisper/app/modules/settings/model/all_connection_model.dart';
 import 'package:wisper/app/urls.dart';
 
 class AllConnectionController extends GetxController { 
@@ -19,7 +19,7 @@ class AllConnectionController extends GetxController {
   List<AllConnectionItemModel>? get allConnectionData =>
       _allConnectionModel.value!.data?.connections;
 
-  // @override
+  // @override 
   // void onInit() {
   //   super.onInit();
   //   getMyProfile();

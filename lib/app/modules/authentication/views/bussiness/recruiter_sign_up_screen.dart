@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
-import 'package:wisper/app/core/custom_size.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
+import 'package:wisper/app/core/utils/show_over_loading.dart';
+import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/utils/validator_service.dart';
-import 'package:wisper/app/core/widgets/custom_button.dart';
-import 'package:wisper/app/core/widgets/custom_text_filed.dart';
-import 'package:wisper/app/core/widgets/label.dart';
+import 'package:wisper/app/core/widgets/common/custom_button.dart';
+import 'package:wisper/app/core/widgets/common/custom_text_filed.dart';
+import 'package:wisper/app/core/widgets/common/label.dart';
+import 'package:wisper/app/modules/authentication/controller/google_sign_up_controller.dart';
 import 'package:wisper/app/modules/authentication/views/job_interest_screen.dart';
 import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
@@ -23,7 +26,28 @@ class _RecruiterSignUpScreenState extends State<RecruiterSignUpScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final GoogleSignUpAuthController googleAuthController = Get.put(
+    GoogleSignUpAuthController(),
+  );
   final formKey = GlobalKey<FormState>();
+
+  void signInGoogle() {
+    showLoadingOverLay(
+      asyncFunction: () async => await performGoogleSignIn(context),
+      msg: 'Please wait...',
+    );
+  }
+
+  Future<void> performGoogleSignIn(BuildContext context) async {
+    final bool isSuccess = await googleAuthController.signUpWithGoogle(
+      'BUSINESS',
+    );
+
+    if (isSuccess) {
+    } else {
+      showSnackBarMessage(context, 'Failed to sign in', true);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,15 +136,18 @@ class _RecruiterSignUpScreenState extends State<RecruiterSignUpScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        CrashSafeImage(
-                          Assets.images.gmail.keyName,
-                          height: 30.h,
+                        GestureDetector(
+                          onTap: signInGoogle,
+                          child: CrashSafeImage(
+                            Assets.images.gmail.keyName,
+                            height: 30.h,
+                          ),
                         ),
-                        widthBox14,
-                        CrashSafeImage(
-                          Assets.images.facebook.keyName,
-                          height: 30.h,
-                        ),
+                        // widthBox14,
+                        // CrashSafeImage(
+                        //   Assets.images.facebook.keyName,
+                        //   height: 30.h,
+                        // ),
                       ],
                     ),
                   ],

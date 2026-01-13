@@ -4,17 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
+import 'package:wisper/app/core/widgets/shimmer/chat_shimmer.dart';
 import 'package:wisper/app/modules/chat/controller/message_controller.dart';
+import 'package:wisper/app/modules/chat/controller/seen_message_controller.dart';
 import 'package:wisper/app/modules/chat/model/message_keys.dart';
 import 'package:wisper/app/modules/chat/views/person/message_input_bar.dart';
 import 'package:wisper/app/modules/chat/widgets/empty_group_card.dart';
 import 'package:wisper/app/modules/chat/widgets/group_chatting_header.dart';
 import 'package:wisper/app/modules/chat/widgets/message_bubble.dart';
-import 'package:wisper/app/modules/chat/widgets/option.dart';
-import 'package:wisper/gen/assets.gen.dart';
 
 class GroupChatScreen extends StatefulWidget {
-  final String? groupName;
+  final String? groupName; 
   final String? groupImage;
   final String? chatId;
   final String? groupId;
@@ -33,12 +33,15 @@ class GroupChatScreen extends StatefulWidget {
 
 class _GroupChatScreenState extends State<GroupChatScreen> {
   final MessageController ctrl = Get.put(MessageController());
+  final SeenMessageController seenMessageController = SeenMessageController();
+  
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      seenMessageController.seenMessage(widget.chatId!);
       ctrl.setupChat(chatId: widget.chatId);
-    });
+    }); 
     super.initState();
   }
 
@@ -48,6 +51,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
       body: Column(
         children: [
           GroupChatHeader(
+           
             chatId: widget.chatId ?? '',
             groupName: widget.groupName ?? '',
             groupImage: widget.groupImage ?? '',
@@ -57,7 +61,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
           Expanded(
             child: Obx(() {
               if (ctrl.isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(child: ChatShimmerEffectWidget());
               }
 
               if (ctrl.messages.isEmpty) {

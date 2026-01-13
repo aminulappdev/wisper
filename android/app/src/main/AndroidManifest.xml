@@ -28,10 +28,38 @@
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme"/>
 
+            <!-- App Launcher Intent Filter -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
+            <!-- Existing Profile Deep Link -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
+     
+            </intent-filter>
+
+            <!-- New: Running Deep Link (for ngrok testing) -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- http scheme --> 
+                <data android:scheme="https"
+                      android:host="c9f1d48ba47f.ngrok-free.app"
+                      android:pathPrefix="/businesses/" />
+
+                <!-- https scheme -->
+                <data android:scheme="https"
+                      android:host="c9f1d48ba47f.ngrok-free.app"
+                      android:pathPrefix="/persons/" />
+            </intent-filter>
+
         </activity>
 
         <meta-data

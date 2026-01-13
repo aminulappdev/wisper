@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:wisper/app/core/custom_size.dart';
-import 'package:wisper/app/core/get_storage.dart';
-import 'package:wisper/app/modules/homepage/views/gallery_post_screen.dart';
-import 'package:wisper/app/modules/homepage/views/job_post_screen.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
+import 'package:wisper/app/core/others/get_storage.dart';
+import 'package:wisper/app/modules/post/views/gallery_post_screen.dart';
+import 'package:wisper/app/modules/job/views/job_post_screen.dart';
 import 'package:wisper/app/modules/homepage/views/resume_post_screen.dart';
-import 'package:wisper/app/modules/homepage/widget/post_option_card.dart';
+import 'package:wisper/app/modules/post/widgets/post_option_card.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class CreatePostScreen extends StatefulWidget {

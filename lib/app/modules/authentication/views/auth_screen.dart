@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
-import 'package:wisper/app/core/custom_size.dart';
-import 'package:wisper/app/core/widgets/circle_icon.dart';
-import 'package:wisper/app/core/widgets/details_card.dart';
-import 'package:wisper/app/core/widgets/line_widget.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
+import 'package:wisper/app/core/widgets/common/circle_icon.dart';
+import 'package:wisper/app/core/widgets/common/details_card.dart';
+import 'package:wisper/app/core/widgets/common/line_widget.dart';
 import 'package:wisper/app/modules/authentication/views/bussiness/recruiter_sign_up_screen.dart';
 import 'package:wisper/app/modules/authentication/views/person/user_sign_up_screen.dart';
 import 'package:wisper/app/modules/authentication/widget/auth_header.dart';
@@ -16,7 +16,7 @@ class AuthScreen extends StatefulWidget {
 
   @override
   State<AuthScreen> createState() => _AuthScreenState();
-}
+} 
 
 class _AuthScreenState extends State<AuthScreen> {
   @override

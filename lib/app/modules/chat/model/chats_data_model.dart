@@ -17,7 +17,7 @@ class ChatsDataModel {
         );
     }
 
-}
+} 
 
 class ChatsDataItemModel {
     ChatsDataItemModel({

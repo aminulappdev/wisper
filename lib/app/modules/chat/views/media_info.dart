@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/utils/video_player.dart';
-import 'package:wisper/app/core/widgets/image_container_widget.dart';
+import 'package:wisper/app/core/widgets/common/image_container_widget.dart';
 import 'package:wisper/app/modules/chat/controller/all_chats_data_controller.dart';
 
 class MediaInfo extends StatefulWidget {
@@ -98,7 +98,9 @@ class _MediaInfoState extends State<MediaInfo> {
                       ),
                     )
                   : ImageContainer(
-                      image: controller.chatsData![index].file ?? '',
+                      images: controller.chatsData![index].file != null
+                          ? [controller.chatsData![index].file!]
+                          : [],
                       height: 164,
                       width: 177,
                       borderRadius: 10,

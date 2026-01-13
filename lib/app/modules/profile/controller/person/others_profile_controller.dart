@@ -1,22 +1,24 @@
 import 'package:get/get.dart';
-import 'package:wisper/app/core/get_storage.dart';
+import 'package:wisper/app/core/others/get_storage.dart';
 import 'package:wisper/app/core/services/network_caller/network_caller.dart';
 import 'package:wisper/app/core/services/network_caller/network_response.dart';
 import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
-import 'package:wisper/app/modules/profile/model/profile_model.dart';
+import 'package:wisper/app/modules/profile/model/others_profile_model.dart';
 import 'package:wisper/app/urls.dart';
 
-class OtherPersonController extends GetxController { 
+class OtherPersonController extends GetxController {
   final RxBool _inProgress = false.obs;
   bool get inProgress => _inProgress.value;
 
   final RxString _errorMessage = ''.obs;
   String get errorMessage => _errorMessage.value;
 
-  final Rx<ProfileModel?> _profileDetailsModel = Rx<ProfileModel?>(null);
-  ProfileData? get profileData => _profileDetailsModel.value?.data;
+  final Rx<OthersProfileModel?> _othersProfileModel = Rx<OthersProfileModel?>(
+    null,
+  );
+  Data? get othersProfileData => _othersProfileModel.value?.data;
 
-  Future<bool> getOthersProfile(String id) async { 
+  Future<bool> getOthersProfile(String id) async {
     _inProgress.value = true;
 
     try {
@@ -29,7 +31,7 @@ class OtherPersonController extends GetxController {
       if (response.isSuccess && response.responseData != null) {
         _errorMessage.value = '';
 
-        _profileDetailsModel.value = ProfileModel.fromJson(
+        _othersProfileModel.value = OthersProfileModel.fromJson(
           response.responseData,
         );
 

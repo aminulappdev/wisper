@@ -2,15 +2,15 @@ import 'package:crash_safe_image/crash_safe_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:wisper/app/core/custom_size.dart';
-import 'package:wisper/app/core/get_storage.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
+import 'package:wisper/app/core/others/get_storage.dart';
 import 'package:wisper/app/modules/calls/views/call_screen.dart';
 import 'package:wisper/app/modules/chat/views/chat_list_screen.dart';
 import 'package:wisper/app/modules/homepage/controller/all_role_controller.dart';
-import 'package:wisper/app/modules/homepage/controller/feed_job_controller.dart';
-import 'package:wisper/app/modules/homepage/controller/feed_post_controller.dart';
-import 'package:wisper/app/modules/homepage/controller/my_job_controller.dart';
-import 'package:wisper/app/modules/homepage/controller/my_post_controller.dart';
+import 'package:wisper/app/modules/job/controller/feed_job_controller.dart';
+import 'package:wisper/app/modules/post/controller/feed_post_controller.dart';
+import 'package:wisper/app/modules/job/controller/my_job_controller.dart';
+import 'package:wisper/app/modules/post/controller/my_post_controller.dart';
 import 'package:wisper/app/modules/homepage/views/create_post_screen.dart';
 import 'package:wisper/app/modules/homepage/views/home_screen.dart';
 import 'package:wisper/app/modules/profile/controller/buisness/buisness_controller.dart';
@@ -44,7 +44,7 @@ class _MainButtonNavbarScreenState extends State<MainButtonNavbarScreen> {
   final MyFeedPostController myFeedPostController = Get.put(
     MyFeedPostController(),
   );
-
+  
   final AllRoleController allRoleController = Get.put(AllRoleController());
 
   final List<Widget> screens = const [
@@ -200,7 +200,7 @@ class _MainButtonNavbarScreenState extends State<MainButtonNavbarScreen> {
 
     return GestureDetector(
       onTap: () {
-        if (selectedKey != index) {
+        if (selectedKey != index) { 
           setState(() => selectedKey = index);
         }
       },

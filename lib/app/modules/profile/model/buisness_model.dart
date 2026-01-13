@@ -19,38 +19,31 @@ class BusinessModel {
 }
 
 class BusinessData {
-  BusinessData({required this.auth, required this.recommendations});
+  BusinessData({required this.auth, required this.connection});
 
   final Auth? auth;
-  final List<dynamic> recommendations;
+  final Connection? connection;
 
   factory BusinessData.fromJson(Map<String, dynamic> json) {
     return BusinessData(
       auth: json["auth"] == null ? null : Auth.fromJson(json["auth"]),
-      recommendations: json["recommendations"] == null
-          ? []
-          : List<dynamic>.from(json["recommendations"]!.map((x) => x)),
+      connection: json["connection"] == null
+          ? null
+          : Connection.fromJson(json["connection"]),
     );
   }
 }
 
 class Auth {
-  Auth({
-    required this.id,
-    required this.role,
-    required this.createdAt,
-    required this.business,
-  });
+  Auth({required this.id, required this.createdAt, required this.business});
 
   final String? id;
-  final String? role;
   final DateTime? createdAt;
   final Business? business;
 
   factory Auth.fromJson(Map<String, dynamic> json) {
     return Auth(
       id: json["id"],
-      role: json["role"],
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
       business: json["business"] == null
           ? null
@@ -87,6 +80,32 @@ class Business {
       phone: json["phone"],
       industry: json["industry"],
       address: json["address"],
+    );
+  }
+}
+
+class Connection {
+  Connection({
+    required this.id,
+    required this.requesterId,
+    required this.receiverId,
+    required this.status,
+    required this.createdAt,
+  });
+
+  final String? id;
+  final String? requesterId;
+  final String? receiverId;
+  final String? status;
+  final DateTime? createdAt;
+
+  factory Connection.fromJson(Map<String, dynamic> json) {
+    return Connection(
+      id: json["id"],
+      requesterId: json["requesterId"],
+      receiverId: json["receiverId"],
+      status: json["status"],
+      createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
     );
   }
 }

@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
-import 'package:wisper/app/core/custom_size.dart';
-import 'package:wisper/app/core/get_storage.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
+import 'package:wisper/app/core/others/get_storage.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
-import 'package:wisper/app/core/widgets/custom_button.dart';
-import 'package:wisper/app/core/widgets/details_card.dart';
+import 'package:wisper/app/core/widgets/common/custom_button.dart';
+import 'package:wisper/app/core/widgets/common/details_card.dart';
 import 'package:wisper/app/modules/homepage/controller/create_resume_controller.dart';
 import 'package:wisper/app/modules/homepage/controller/my_resume_controller.dart';
 import 'package:wisper/app/modules/profile/controller/buisness/buisness_controller.dart';
@@ -158,16 +158,27 @@ class _ResumePostScreenState extends State<ResumePostScreen> {
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(
-                      height: 32.h,
-                      width: 66.w,
-                      child: CustomElevatedButton(
-                        title: 'Post',
-                        textSize: 12,
-                        borderRadius: 50,
-                        onPress: createPost,
-                      ),
-                    ),
+                    _selectedFiles.isEmpty
+                        ? SizedBox(
+                            height: 32.h,
+                            width: 66.w,
+                            child: CustomElevatedButton(
+                              title: 'Post',
+                              textSize: 12,
+                              borderRadius: 50,
+                              color: LightThemeColors.themeGreyColor,
+                            ),
+                          )
+                        : SizedBox(
+                            height: 32.h,
+                            width: 66.w,
+                            child: CustomElevatedButton(
+                              title: 'Post',
+                              textSize: 12,
+                              borderRadius: 50,
+                              onPress: createPost,
+                            ),
+                          ),
                   ],
                 ),
 
@@ -225,37 +236,39 @@ class _ResumePostScreenState extends State<ResumePostScreen> {
                 heightBox20,
 
                 // Add Resume Button
-                GestureDetector(
-                  onTap: () {
-                    _filePickerHelper.showAlertDialog(context, _addFile);
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: const Color(0xFF60606B)),
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                    height: 80.h,
-                    width: double.infinity,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CrashSafeImage(
-                          Assets.images.gallery02.keyName,
-                          height: 24.h,
-                        ),
-                        widthBox10,
-                        Text(
-                          'Add Resume',
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w400,
-                            color: LightThemeColors.blueColor,
+                _selectedFiles.isNotEmpty
+                    ? const SizedBox.shrink()
+                    : GestureDetector(
+                        onTap: () {
+                          _filePickerHelper.showAlertDialog(context, _addFile);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: const Color(0xFF60606B)),
+                            borderRadius: BorderRadius.circular(10.r),
+                          ),
+                          height: 80.h,
+                          width: double.infinity,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CrashSafeImage(
+                                Assets.images.gallery02.keyName,
+                                height: 24.h,
+                              ),
+                              widthBox10,
+                              Text(
+                                'Add Resume',
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w400,
+                                  color: LightThemeColors.blueColor,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
+                      ),
 
                 heightBox20,
 

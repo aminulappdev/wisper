@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
-import 'package:wisper/app/core/custom_size.dart';
-import 'package:wisper/app/core/widgets/custom_button.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
+import 'package:wisper/app/core/others/get_storage.dart';
+import 'package:wisper/app/core/widgets/common/custom_button.dart';
 
 class MyInfoCard extends StatelessWidget {
   final VoidCallback ontap;
   final String imagePath;
   final String name;
   final String job;
-  const MyInfoCard({ 
+  const MyInfoCard({
     super.key,
     required this.imagePath,
     required this.name,
@@ -64,7 +65,9 @@ class MyInfoCard extends StatelessWidget {
           child: CustomElevatedButton(
             textSize: 10,
             borderRadius: 50,
-            title: 'Personal',
+            title: StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
+                ? 'Personal'
+                : 'Business',
             onPress: () {},
           ),
         ),
