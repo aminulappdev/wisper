@@ -5,8 +5,8 @@ class Urls {
 
   // static const String _baseUrl = 'http://10.10.10.17:5000/api/v1';
   // static const String _baseUrl = 'https://wisper.up.railway.app/api/v1';
-  static const String _baseUrl = 'https://c9f1d48ba47f.ngrok-free.app/api/v1';
-  static const String socketUrl = 'https://c9f1d48ba47f.ngrok-free.app';
+  static const String _baseUrl = 'https://cd234531fe15.ngrok-free.app/api/v1';
+  static const String socketUrl = 'https://cd234531fe15.ngrok-free.app';
   // static const String socketUrl = 'http://10.10.10.17:5000';
   
   
@@ -161,5 +161,5 @@ class Urls {
 
   static String messagesById(String id) {
     return '$_baseUrl/messages/$id';
-  }
+  } 
 }
