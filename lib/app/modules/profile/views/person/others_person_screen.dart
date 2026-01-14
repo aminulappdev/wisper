@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
-import 'package:wisper/app/core/others/custom_size.dart';
+import 'package:wisper/app/core/others/get_storage.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart' show DateFormatter;
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
@@ -17,6 +17,7 @@ import 'package:wisper/app/modules/chat/widgets/location_info.dart';
 import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart';
 import 'package:wisper/app/modules/homepage/controller/add_request_controller.dart';
 import 'package:wisper/app/modules/homepage/views/my_resume_section.dart';
+import 'package:wisper/app/modules/post/views/my_post_section.dart';
 import 'package:wisper/app/modules/post/views/others_post_section.dart';
 import 'package:wisper/app/modules/profile/controller/person/others_profile_controller.dart';
 import 'package:wisper/app/modules/profile/controller/recommendetion_controller.dart';
@@ -32,14 +33,14 @@ class OthersPersonScreen extends StatefulWidget {
 
   @override
   State<OthersPersonScreen> createState() => _OthersPersonScreenState();
-} 
+}
 
 class _OthersPersonScreenState extends State<OthersPersonScreen> {
   final OtherPersonController controller = Get.put(OtherPersonController());
   final CreateChatController createChatController = Get.put(
     CreateChatController(),
   );
-  final AllConnectionController connectionController = Get.put( 
+  final AllConnectionController connectionController = Get.put(
     AllConnectionController(),
   );
   final RemoveConnectionController removeConnectionController = Get.put(
@@ -126,7 +127,7 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
     if (isSuccess && mounted) {
       controller.getOthersProfile(widget.userId); // রিফ্রেশ প্রোফাইল
       showSnackBarMessage(context, 'Connection removed', false);
-      Navigator.pop(context); // bottom sheet বন্ধ
+      Get.back(); // bottom sheet বন্ধ
     } else if (mounted) {
       showSnackBarMessage(context, 'Failed to remove connection', true);
     }
@@ -168,64 +169,16 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
 
   // রিমুভ কানেকশন কনফার্মেশন
   void _showRemoveConnection() {
-    showModalBottomSheet(
+    ConfirmationBottomSheet.show(
       context: context,
-      builder: (_) => Container(
-        color: Colors.black,
-        height: 250.h,
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CircleIconWidget(
-              imagePath: Assets.images.delete.keyName,
-              onTap: () {},
-              iconRadius: 22,
-              radius: 24,
-              color: const Color(0xff312609),
-              iconColor: const Color(0xffDC8B44),
-            ),
-            heightBox20,
-            Text(
-              'Remove Connection?',
-              style: TextStyle(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
-            ),
-            heightBox8,
-            Text(
-              'Are you sure you want to remove this connection?',
-              style: TextStyle(fontSize: 14.sp, color: const Color(0xff9FA3AA)),
-            ),
-            heightBox20,
-            Row(
-              children: [
-                Expanded(
-                  child: CustomElevatedButton(
-                    color: const Color.fromARGB(255, 15, 15, 15),
-                    borderColor: const Color(0xff262629),
-                    title: 'Discard',
-                    onPress: () => Navigator.pop(context),
-                  ),
-                ),
-                widthBox12,
-                Expanded(
-                  child: CustomElevatedButton(
-                    color: const Color(0xffE62047),
-                    title: 'Remove',
-                    onPress: () {
-                      Navigator.pop(context); // কনফার্মেশন শিট বন্ধ
-                      removeConnection();
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+      title: "Remove Connection?",
+      message:
+          "Are you sure you want to remove this connection?\nThis action cannot be undone.",
+      onDelete: () {
+        removeConnection();
+      },
+      // deleteText: "Remove Now", // optional customization
+      // cancelText: "Keep",       // optional
     );
   }
 
@@ -274,53 +227,65 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
                       iconColor: Colors.white,
                     ),
                     SizedBox(width: 10.w),
-                    SizedBox(
-                      height: 31.h,
-                      width: 116.w,
-                      child: CustomElevatedButton(
-                        color:
-                            controller.othersProfileData!.connection?.status ==
-                                null
-                            ? LightThemeColors.blueColor
-                            : LightThemeColors.themeGreyColor,
-                        textSize: 12,
-                        title:
-                            controller.othersProfileData!.connection?.status ==
-                                'ACCEPTED'
-                            ? 'Added'
-                            : controller
-                                      .othersProfileData!
-                                      .connection
-                                      ?.status ==
-                                  'PENDING'
-                            ? 'Pending'
-                            : controller
-                                      .othersProfileData!
-                                      .connection
-                                      ?.status ==
-                                  'REJECTED'
-                            ? 'Rejected'
-                            : controller
-                                      .othersProfileData!
-                                      .connection
-                                      ?.status ==
-                                  'BLOCKED'
-                            ? 'Blocked'
-                            : 'Add',
-                        onPress:
-                            controller.othersProfileData!.connection?.status ==
-                                'ACCEPTED'
-                            ? _showRemoveConnection
-                            : controller
-                                      .othersProfileData!
-                                      .connection
-                                      ?.status ==
-                                  null
-                            ? addRequest
-                            : null,
-                        borderRadius: 50,
-                      ),
-                    ),
+                    controller.othersProfileData?.auth?.id ==
+                            StorageUtil.getData(StorageUtil.userId)
+                        ? SizedBox()
+                        : SizedBox(
+                            height: 31.h,
+                            width: 116.w,
+                            child: CustomElevatedButton(
+                              color:
+                                  controller
+                                          .othersProfileData!
+                                          .connection
+                                          ?.status ==
+                                      null
+                                  ? LightThemeColors.blueColor
+                                  : LightThemeColors.themeGreyColor,
+                              textSize: 12,
+                              title:
+                                  controller
+                                          .othersProfileData!
+                                          .connection
+                                          ?.status ==
+                                      'ACCEPTED'
+                                  ? 'Added'
+                                  : controller
+                                            .othersProfileData!
+                                            .connection
+                                            ?.status ==
+                                        'PENDING'
+                                  ? 'Pending'
+                                  : controller
+                                            .othersProfileData!
+                                            .connection
+                                            ?.status ==
+                                        'REJECTED'
+                                  ? 'Rejected'
+                                  : controller
+                                            .othersProfileData!
+                                            .connection
+                                            ?.status ==
+                                        'BLOCKED'
+                                  ? 'Blocked'
+                                  : 'Add',
+                              onPress:
+                                  controller
+                                          .othersProfileData!
+                                          .connection
+                                          ?.status ==
+                                      'ACCEPTED'
+                                  ? _showRemoveConnection
+                                  : controller
+                                            .othersProfileData!
+                                            .connection
+                                            ?.status ==
+                                        null
+                                  ? addRequest
+                                  : null,
+                              borderRadius: 50,
+                            ),
+                          ),
                   ],
                 ),
               );

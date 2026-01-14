@@ -11,7 +11,7 @@ import 'package:wisper/app/core/widgets/shimmer/member_list_shimmer.dart';
 import 'package:wisper/app/modules/chat/controller/all_connection_controller.dart';
 import 'package:wisper/app/modules/chat/controller/update_connection_controller.dart';
 
-class ConnectionScreen extends StatefulWidget {
+class ConnectionScreen extends StatefulWidget { 
   const ConnectionScreen({super.key});
 
   @override

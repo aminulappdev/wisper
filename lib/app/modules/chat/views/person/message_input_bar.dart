@@ -8,7 +8,6 @@ class MessageInputBar extends StatelessWidget {
   final TextEditingController controller;
   final VoidCallback onSend;
 
-  // isSendEnabled RxBool
   final RxBool isSendEnabled = false.obs;
 
   MessageInputBar({
@@ -22,13 +21,14 @@ class MessageInputBar extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: const EdgeInsets.all(4),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         child: Card(
           color: Colors.black,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           child: Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
                   child: ChattingFieldWidget(
@@ -36,18 +36,19 @@ class MessageInputBar extends StatelessWidget {
                     isSendEnabled: isSendEnabled,
                   ),
                 ),
-                const SizedBox(width: 6),
-                Obx(() => CircleIconWidget(
-                      imagePath: Assets.images.send.keyName,
-                      radius: 20,
-                      iconRadius: 24,
-                      iconColor: isSendEnabled.value ? Colors.blue : Colors.grey,
-                      // onTap cannot be null, use empty fn if disabled
-                      onTap: isSendEnabled.value ? onSend : () {},
-                    )),
+                const SizedBox(width: 8),
+                Obx(
+                  () => CircleIconWidget(
+                    imagePath: Assets.images.send.keyName,
+                    radius: 22,
+                    iconRadius: 22,
+                    iconColor: isSendEnabled.value ? Colors.blue : Colors.grey[600]!,
+                    onTap: isSendEnabled.value ? onSend : () {},
+                  ),
+                ),
               ],
             ),
-          ), 
+          ),
         ),
       ),
     );

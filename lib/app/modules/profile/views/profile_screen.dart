@@ -16,9 +16,9 @@ import 'package:wisper/app/core/widgets/common/custom_popup.dart';
 import 'package:wisper/app/core/widgets/common/line_widget.dart';
 import 'package:wisper/app/modules/chat/widgets/location_info.dart';
 import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart';
+import 'package:wisper/app/modules/homepage/views/my_resume_section.dart';
 import 'package:wisper/app/modules/job/views/my_job_section.dart';
 import 'package:wisper/app/modules/post/views/my_post_section.dart';
-import 'package:wisper/app/modules/homepage/views/my_resume_section.dart';
 import 'package:wisper/app/modules/profile/controller/buisness/buisness_controller.dart';
 import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
 import 'package:wisper/app/modules/profile/controller/recommendetion_controller.dart';
@@ -26,9 +26,9 @@ import 'package:wisper/app/modules/profile/controller/upload_photo_controller.da
 import 'package:wisper/app/modules/profile/views/business/edit_business_profile_screen.dart';
 import 'package:wisper/app/modules/profile/views/person/edit_person_profile_screen.dart';
 import 'package:wisper/app/modules/profile/views/recommendation_screen.dart';
-import 'package:wisper/app/modules/settings/views/settings_screen.dart';
 import 'package:wisper/app/modules/profile/widget/info_card.dart';
 import 'package:wisper/app/modules/profile/widget/recommendation_widget.dart';
+import 'package:wisper/app/modules/settings/views/settings_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class ProfileScreen extends StatefulWidget {

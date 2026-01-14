@@ -6,13 +6,14 @@ import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/others/custom_size.dart';
 import 'package:wisper/app/core/others/get_storage.dart';
 import 'package:wisper/app/core/widgets/common/circle_icon.dart';
-import 'package:wisper/app/core/widgets/common/custom_button.dart';
+import 'package:wisper/app/core/widgets/common/custom_popup.dart';
 import 'package:wisper/app/core/widgets/common/details_card.dart';
 import 'package:wisper/app/core/widgets/common/line_widget.dart';
 import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
 import 'package:wisper/app/modules/chat/widgets/toggle_option.dart';
 import 'package:wisper/app/modules/homepage/views/connection_screen.dart';
 import 'package:wisper/app/modules/job/views/favorite_job_screen.dart';
+import 'package:wisper/app/modules/post/views/my_post_section.dart';
 import 'package:wisper/app/modules/profile/controller/buisness/buisness_controller.dart';
 import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
 import 'package:wisper/app/modules/settings/views/change_password_screen.dart';
@@ -36,13 +37,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final ProfileController profileController = Get.put(ProfileController());
   final BusinessController businessController = Get.put(BusinessController());
 
-  @override
-  // void initState() {
-  //   super.initState();
-  //   StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
-  //       ? profileController.getMyProfile()
-  //       : businessController.getMyProfile();
-  // }
   @override
   Widget build(BuildContext context) {
     var profileImage = StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
@@ -70,7 +64,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     iconRadius: 14.r,
                     imagePath: Assets.images.arrowBack.keyName,
                     onTap: () {
-                      Navigator.pop(context);
+                      Get.back();
                     },
                   ),
                   widthBox12,
@@ -267,23 +261,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     heightBox20,
-                    // ToggleOption(
-                    //   title: 'Contact List Visibility',
-                    //   subtitle: 'Show your contacts to others',
-                    //   onToggle: (bool p1) {},
-                    // ),
-                    // heightBox10,
-                    // ToggleOption(
-                    //   title: 'Last Seen',
-                    //   subtitle: 'Show when you were last online',
-                    //   onToggle: (bool p1) {},
-                    // ),
-                    // heightBox10,
-                    // ToggleOption(
-                    //   title: 'Read Receipts',
-                    //   subtitle: 'Show when you\'ve read messages',
-                    //   onToggle: (bool p1) {},
-                    // ),
                     StraightLiner(height: 0.5),
                     heightBox10,
                     SettingsFeatureRow(
@@ -422,7 +399,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     children: [
                       SeetingsButton(
                         onTap: () {
-                          _shoDeleteUser();
+                          _showDeleteUser();
                         },
                         title: 'Delete Account',
                         bgColor: Color(0xffE62047).withValues(alpha: 0.16),
@@ -451,151 +428,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _shoDeleteUser() {
-    showModalBottomSheet(
+  void _showDeleteUser() {
+    ConfirmationBottomSheet.show(
       context: context,
-      builder: (BuildContext context) {
-        return Container(
-          color: Colors.black,
-          height: 250,
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleIconWidget(
-                  imagePath: Assets.images.delete.keyName,
-                  onTap: () {},
-                  iconRadius: 22,
-                  radius: 24,
-                  color: Color(0xff312609),
-                  iconColor: Color(0xffDC8B44),
-                ),
-                heightBox20,
-                Text(
-                  'Delete Account?',
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-                heightBox8,
-                Text(
-                  'Are you sure you want to delete your account?',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xff9FA3AA),
-                  ),
-                ),
-                heightBox12,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: CustomElevatedButton(
-                        color: Color.fromARGB(255, 15, 15, 15),
-                        borderColor: Color(0xff262629),
-                        title: 'Discard',
-                        onPress: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
-                    widthBox12,
-                    Expanded(
-                      child: CustomElevatedButton(
-                        color: Color(0xffE62047),
-                        title: 'Delete',
-                        onPress: () {},
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
+      title: "Delete Account?",
+      message:
+          "Are you sure you want to delete your account?\nThis action cannot be undone.",
+      onDelete: () {
+        // Add your delete account logic here
       },
+      // deleteText: "Delete Account", // optional
+      // cancelText: "Keep Account",   // optional
     );
   }
 
   void _showLogout() {
-    showModalBottomSheet(
+    ConfirmationBottomSheet.show(
       context: context,
-      builder: (BuildContext context) {
-        return Container(
-          color: Colors.black,
-          height: 250,
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleIconWidget(
-                  imagePath: Assets.images.logout.keyName,
-                  onTap: () {},
-                  iconRadius: 22,
-                  radius: 24,
-                  color: Color(0xff312609),
-                  iconColor: Color(0xffDC8B44),
-                ),
-                heightBox20,
-                Text(
-                  'Logout?',
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-                heightBox8,
-                Text(
-                  'Are you sure you want to logout?',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xff9FA3AA),
-                  ),
-                ),
-                heightBox12,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: CustomElevatedButton(
-                        color: Color.fromARGB(255, 15, 15, 15),
-                        borderColor: Color(0xff262629),
-                        title: 'Discard',
-                        onPress: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
-                    widthBox12,
-                    Expanded(
-                      child: CustomElevatedButton(
-                        color: Color(0xffE62047),
-                        title: 'Logout',
-                        onPress: () {
-                          Get.delete<ProfileController>(force: true);
-                          StorageUtil.deleteData(StorageUtil.userAccessToken);
-                          StorageUtil.deleteData(StorageUtil.userId);
-                          StorageUtil.deleteData(StorageUtil.userRole);
-                          StorageUtil.deleteData(StorageUtil.userAuthId);
-                          StorageUtil.clear();
+      title: "Logout?",
+      message: "Are you sure you want to logout from your account?",
+      onDelete: () {
+        Get.delete<ProfileController>(force: true);
+        StorageUtil.deleteData(StorageUtil.userAccessToken);
+        StorageUtil.deleteData(StorageUtil.userId);
+        StorageUtil.deleteData(StorageUtil.userRole);
+        StorageUtil.deleteData(StorageUtil.userAuthId);
+        StorageUtil.clear();
 
-                          Get.offAll(() => SignInScreen());
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
+        Get.offAll(() => SignInScreen());
       },
     );
   }

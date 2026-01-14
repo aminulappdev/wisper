@@ -26,7 +26,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   );
   final formKey = GlobalKey<FormState>();
 
-  void forgotPassword() {
+  void forgotPassword() { 
     showLoadingOverLay(
       asyncFunction: () async => await performForgotPassword(context),
       msg: 'Please wait...',

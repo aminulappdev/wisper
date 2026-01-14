@@ -23,15 +23,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured  for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         return windows;
       case TargetPlatform.linux:
@@ -47,30 +41,49 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAgkPEqiL1xp1MMzgkpzEo-VeAJDjG50qk',
-    appId: '1:490742211308:web:fb44d07e42ac85ffe43bc9',
-    messagingSenderId: '490742211308',
-    projectId: 'wisper-74d39',
-    authDomain: 'wisper-74d39.firebaseapp.com',
-    storageBucket: 'wisper-74d39.firebasestorage.app',
-    measurementId: 'G-VSKRQYTX85',
+    apiKey: 'AIzaSyCCM2f6hoq-NhBpV3taZ7JVpiAFq744OPk',
+    appId: '1:667291069508:web:e2e31ff4e7d600296ce011',
+    messagingSenderId: '667291069508',
+    projectId: 'wisper-9f2ab',
+    authDomain: 'wisper-9f2ab.firebaseapp.com',
+    storageBucket: 'wisper-9f2ab.firebasestorage.app',
+    measurementId: 'G-GG6W7RF8V0',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAxNZ0TrKbOx4GANA7xD396XcqpSFJoVDw',
-    appId: '1:490742211308:android:01bc1cc1348b3dc7e43bc9',
-    messagingSenderId: '490742211308',
-    projectId: 'wisper-74d39',
-    storageBucket: 'wisper-74d39.firebasestorage.app',
+    apiKey: 'AIzaSyBx3M0QY83BaEtLmSfyaFYAeV_king70Bc',
+    appId: '1:667291069508:android:273d05d9473148596ce011',
+    messagingSenderId: '667291069508',
+    projectId: 'wisper-9f2ab',
+    storageBucket: 'wisper-9f2ab.firebasestorage.app',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyAgkPEqiL1xp1MMzgkpzEo-VeAJDjG50qk',
-    appId: '1:490742211308:web:f370e1d01473a331e43bc9',
-    messagingSenderId: '490742211308',
-    projectId: 'wisper-74d39',
-    authDomain: 'wisper-74d39.firebaseapp.com',
-    storageBucket: 'wisper-74d39.firebasestorage.app',
-    measurementId: 'G-T08D5BY1M1',
+    apiKey: 'AIzaSyCCM2f6hoq-NhBpV3taZ7JVpiAFq744OPk',
+    appId: '1:667291069508:web:5b70019c537537096ce011',
+    messagingSenderId: '667291069508',
+    projectId: 'wisper-9f2ab',
+    authDomain: 'wisper-9f2ab.firebaseapp.com',
+    storageBucket: 'wisper-9f2ab.firebasestorage.app',
+    measurementId: 'G-02Z30YV0M0',
   );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyDuFfTzsfs_EQtwCQRAoRNbgPO8WXxrKfw',
+    appId: '1:667291069508:ios:7dd105f3322a77da6ce011',
+    messagingSenderId: '667291069508',
+    projectId: 'wisper-9f2ab',
+    storageBucket: 'wisper-9f2ab.firebasestorage.app',
+    iosBundleId: 'com.example.wisper',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyDuFfTzsfs_EQtwCQRAoRNbgPO8WXxrKfw',
+    appId: '1:667291069508:ios:bfa161b2712e65d06ce011',
+    messagingSenderId: '667291069508',
+    projectId: 'wisper-9f2ab',
+    storageBucket: 'wisper-9f2ab.firebasestorage.app',
+    iosBundleId: 'com.new.wisper.user',
+  );
+
 }

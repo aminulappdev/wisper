@@ -139,6 +139,7 @@ import 'package:wisper/app/modules/profile/views/business/others_business_screen
 import 'package:wisper/app/modules/profile/views/person/others_person_screen.dart';
 import 'package:wisper/firebase_options.dart';
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -165,7 +166,7 @@ void main() async {
         builder: (context, widget) {
           // Deep links initialize করা
           WidgetsBinding.instance.addPostFrameCallback((_) async {
-            // ছোট ডিলে দিলে storage + getx আরও নিরাপদে প্রস্তুত হয়
+           
             await Future.delayed(const Duration(milliseconds: 100));
             Get.find<DeepLinkService>().initDeepLinks();
           });

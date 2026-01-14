@@ -1,4 +1,3 @@
-// Updated ChattingFieldWidget.dart (gap fully removed, no extra space even on scroll)
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -24,12 +23,10 @@ class ChattingFieldWidget extends StatefulWidget {
 }
 
 class _ChattingFieldWidgetState extends State<ChattingFieldWidget> {
-  final FileDecodeController fileDecodeController =
-      Get.find<FileDecodeController>();
+  final FileDecodeController fileDecodeController = Get.find<FileDecodeController>();
 
   final ImagePickerHelper _imagePickerHelper = ImagePickerHelper();
-  final AttachmentPickerHelper _attachmentPickerHelper =
-      AttachmentPickerHelper();
+  final AttachmentPickerHelper _attachmentPickerHelper = AttachmentPickerHelper();
 
   late FocusNode _focusNode;
 
@@ -37,14 +34,12 @@ class _ChattingFieldWidgetState extends State<ChattingFieldWidget> {
   void initState() {
     super.initState();
     _focusNode = FocusNode();
-
     widget.controller.addListener(_updateSendButton);
     ever(fileDecodeController.imageUrlRx, (_) => _updateSendButton());
   }
 
   void _updateSendButton() {
-    widget.isSendEnabled.value =
-        widget.controller.text.trim().isNotEmpty ||
+    widget.isSendEnabled.value = widget.controller.text.trim().isNotEmpty ||
         fileDecodeController.imageUrl.isNotEmpty;
   }
 
@@ -55,17 +50,10 @@ class _ChattingFieldWidgetState extends State<ChattingFieldWidget> {
     super.dispose();
   }
 
-  void _onImagePicked(File image) async {
-    await fileDecodeController.imageDecode(image: image);
-  }
-
-  void _onVideoPicked(File video) async {
-    await fileDecodeController.videoDecode(image: video);
-  }
-
-  void _onDocumentsPicked(List<File> documents) async {
-    if (documents.isEmpty) return;
-    await fileDecodeController.fileDecode(image: documents.first);
+  void _onImagePicked(File image) async => await fileDecodeController.imageDecode(image: image);
+  void _onVideoPicked(File video) async => await fileDecodeController.videoDecode(image: video);
+  void _onDocumentsPicked(List<File> docs) async {
+    if (docs.isNotEmpty) await fileDecodeController.fileDecode(image: docs.first);
   }
 
   void _clearAllAttachments() {
@@ -77,13 +65,10 @@ class _ChattingFieldWidgetState extends State<ChattingFieldWidget> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => AttachmentBottomSheet(
-        onImageSelected: () =>
-            _imagePickerHelper.showAlertDialog(context, _onImagePicked),
-        onVideoSelected: () =>
-            _attachmentPickerHelper.pickVideo(context, _onVideoPicked),
-        onFileSelected: () =>
-            _attachmentPickerHelper.pickDocument(context, _onDocumentsPicked),
+      builder: (_) => AttachmentBottomSheet(
+        onImageSelected: () => _imagePickerHelper.showAlertDialog(context, _onImagePicked),
+        onVideoSelected: () => _attachmentPickerHelper.pickVideo(context, _onVideoPicked),
+        onFileSelected: () => _attachmentPickerHelper.pickDocument(context, _onDocumentsPicked),
       ),
     );
   }
@@ -91,142 +76,130 @@ class _ChattingFieldWidgetState extends State<ChattingFieldWidget> {
   @override
   Widget build(BuildContext context) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // Plus button
+        // Plus button – centered vertically
         CircleIconWidget(
           imagePath: Assets.images.plus.keyName,
-          radius: 18,
-          iconRadius: 15,
+          radius: 20,
+          iconRadius: 18,
           onTap: _showAttachmentBottomSheet,
         ),
         const SizedBox(width: 8),
 
-        // Input + preview (stacked tightly)
+        // Main input area with preview
         Expanded(
           child: Stack(
             clipBehavior: Clip.none,
+            alignment: Alignment.bottomLeft,
             children: [
-              // Text input (always at bottom)
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.06,
-                  child: TextFormField(
-                    controller: widget.controller,
-                    focusNode: _focusNode,
-                    minLines: 1,
-                    maxLines: 5,
-                    decoration: InputDecoration(
-                      hintText: 'Type here...',
-                      hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
-                      filled: true,
-                      fillColor: Colors.grey.shade800,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                    style: const TextStyle(color: Colors.white),
+              // Text field – always visible at bottom
+              TextFormField(
+                controller: widget.controller,
+                focusNode: _focusNode,
+                minLines: 1,
+                maxLines: 5,
+                textAlignVertical: TextAlignVertical.center,
+                decoration: InputDecoration(
+                  hintText: 'Type here...',
+                  hintStyle: TextStyle(color: Colors.grey[400], fontSize: 15),
+                  filled: true,
+                  fillColor: Colors.grey.shade800,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
                   ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(999),
+                    borderSide: BorderSide.none,
+                  ),
+                  isDense: true,
                 ),
+                style: const TextStyle(color: Colors.white, fontSize: 16),
               ),
 
-              // Attachment preview (positioned above input, only if exists)
+              // Attachment preview – floating above the text field
               Positioned(
                 left: 0,
-                bottom: MediaQuery.of(context).size.height * 0.06 - 4, // Overlap slightly to avoid gap
+                bottom: 56, // ≈ text field height + small overlap
                 child: Obx(() {
                   if (fileDecodeController.inProgress) {
-                    return Container(
-                      height: 90,
-                      width: 90,
-                      margin: const EdgeInsets.only(bottom: 4),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: Colors.grey.shade800,
+                    return _buildPreviewContainer(
+                      child: const SizedBox(
+                        width: 80,
+                        height: 80,
+                        child: Center(child: CircularProgressIndicator(strokeWidth: 3)),
                       ),
-                      child: const Center(child: CircularProgressIndicator()),
                     );
                   }
 
-                  if (fileDecodeController.imageUrl.isNotEmpty) {
-                    String fileType;
-                    if (fileDecodeController.imageUrl.contains('mp4')) {
-                      fileType = 'video';
-                    } else if (fileDecodeController.imageUrl.contains('pdf')) {
-                      fileType = 'doc';
-                    } else {
-                      fileType = 'image';
-                    }
+                  if (fileDecodeController.imageUrl.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
 
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade800,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      margin: const EdgeInsets.only(bottom: 4),
-                      child: Padding(
-                        padding: const EdgeInsets.all(6),
-                        child: Stack(
-                          children: [
-                            Container(
-                              height: 90,
-                              width: 90,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                image: fileType == 'image'
-                                    ? DecorationImage(
-                                        image: NetworkImage(
-                                          fileDecodeController.imageUrl,
-                                        ),
-                                        fit: BoxFit.cover,
-                                      )
-                                    : null,
-                              ),
-                              child: fileType == 'video'
-                                  ? const Padding(
-                                      padding: EdgeInsets.all(10.0),
-                                      child: CircleAvatar(
-                                        backgroundColor: Colors.grey,
-                                        child: Icon(Icons.play_arrow,
-                                            color: Colors.white, size: 40),
-                                      ),
-                                    )
-                                  : fileType == 'doc'
-                                      ? const Padding(
-                                          padding: EdgeInsets.all(10.0),
-                                          child: CircleAvatar(
-                                            backgroundColor: Colors.grey,
-                                            child: Icon(Icons.picture_as_pdf),
-                                          ),
-                                        )
-                                      : null,
-                            ),
-                            Positioned(
-                              right: 0,
-                              top: 0,
-                              child: CircleIconWidget(
-                                imagePath: Assets.images.cross.keyName,
-                                radius: 14,
-                                iconRadius: 13,
-                                onTap: _clearAllAttachments,
-                              ),
-                            ),
-                          ],
+                  final url = fileDecodeController.imageUrl;
+                  String type = 'image';
+                  if (url.contains('.mp4')) type = 'video';
+                  if (url.contains('.pdf')) type = 'pdf';
+
+                  return _buildPreviewContainer(
+                    child: Stack(
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: Colors.grey.shade700,
+                          ),
+                          child: type == 'image'
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.network(
+                                    url,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+                                  ),
+                                )
+                              : Center(
+                                  child: Icon(
+                                    type == 'video' ? Icons.play_circle_fill : Icons.picture_as_pdf,
+                                    size: 40,
+                                    color: Colors.white70,
+                                  ),
+                                ),
                         ),
-                      ),
-                    );
-                  }
-
-                  return const SizedBox.shrink();
+                        Positioned(
+                          top: -6,
+                          right: -6,
+                          child: CircleIconWidget(
+                            imagePath: Assets.images.cross.keyName,
+                            radius: 14,
+                            iconRadius: 12,
+                            onTap: _clearAllAttachments,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
                 }),
               ),
             ],
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildPreviewContainer({required Widget child}) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade800,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.all(6),
+      child: child,
     );
   }
 }

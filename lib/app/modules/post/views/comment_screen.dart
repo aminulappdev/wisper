@@ -5,12 +5,10 @@ import 'package:wisper/app/core/others/custom_size.dart';
 import 'package:wisper/app/core/others/get_storage.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
-import 'package:wisper/app/core/widgets/common/circle_icon.dart';
-import 'package:wisper/app/core/widgets/common/custom_button.dart';
 import 'package:wisper/app/core/widgets/common/custom_text_filed.dart';
 import 'package:wisper/app/modules/post/controller/comment_controller.dart';
 import 'package:wisper/app/modules/post/controller/edit_comment_controller.dart';
-import 'package:wisper/gen/assets.gen.dart';
+import 'package:wisper/app/modules/post/views/my_post_section.dart';
 
 class CommentScreen extends StatefulWidget {
   final String postId;
@@ -113,6 +111,20 @@ class _CommentScreenState extends State<CommentScreen> {
     });
   }
 
+  void _showDeleteComment(String commentId) {
+    ConfirmationBottomSheet.show(
+      context: context,
+      title: "Delete Comment?",
+      message:
+          "This comment will be permanently removed.\nThis action cannot be undone.",
+      onDelete: () {
+        deleteComment(commentId);
+      },
+      // deleteText: "Delete Now", // optional customization
+      // cancelText: "Keep it",   // optional
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -183,7 +195,7 @@ class _CommentScreenState extends State<CommentScreen> {
                             ),
                             heightBox4,
                             authorId == StorageUtil.getData(StorageUtil.userId)
-                                ?  Row(
+                                ? Row(
                                     children: [
                                       GestureDetector(
                                         onTap: () {
@@ -218,7 +230,8 @@ class _CommentScreenState extends State<CommentScreen> {
                                         ),
                                       ),
                                     ],
-                                  ) : Container(),
+                                  )
+                                : Container(),
                           ],
                         ),
                       ),
@@ -253,73 +266,6 @@ class _CommentScreenState extends State<CommentScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  void _showDeleteComment(String commentId) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.black,
-      builder: (context) {
-        return Container(
-          height: 250.h,
-          padding: EdgeInsets.all(20.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CircleIconWidget(
-                imagePath: Assets.images.delete.keyName,
-                onTap: () {},
-                iconRadius: 22.r,
-                radius: 24.r,
-                color: const Color(0xff312609),
-                iconColor: const Color(0xffDC8B44),
-              ),
-              heightBox20,
-              Text(
-                'Delete?',
-                style: TextStyle(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              ),
-              heightBox8,
-              Text(
-                'Are you sure you want to delete?',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: const Color(0xff9FA3AA),
-                ),
-              ),
-              heightBox12,
-              Row(
-                children: [
-                  Expanded(
-                    child: CustomElevatedButton(
-                      color: const Color.fromARGB(255, 15, 15, 15),
-                      borderColor: const Color(0xff262629),
-                      title: 'Discard',
-                      onPress: () => Get.back(),
-                    ),
-                  ),
-                  widthBox12,
-                  Expanded(
-                    child: CustomElevatedButton(
-                      color: const Color(0xffE62047),
-                      title: 'Delete',
-                      onPress: () {
-                        Get.back();
-                        deleteComment(commentId);
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 }

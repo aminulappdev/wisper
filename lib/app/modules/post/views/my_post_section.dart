@@ -1,7 +1,8 @@
-// my_post_section.dart
+// lib/app/modules/post/views/my_post_section.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/others/custom_size.dart';
 import 'package:wisper/app/core/others/get_storage.dart';
@@ -30,72 +31,81 @@ class MyPostSection extends StatefulWidget {
 
 class _MyPostSectionState extends State<MyPostSection> {
   final MyFeedPostController controller = Get.find<MyFeedPostController>();
-  final DeletePostController deletePostController = DeletePostController();
+  final DeletePostController deletePostController = Get.put(
+    DeletePostController(),
+  );
 
   @override
   void initState() {
     super.initState();
-    // যদি onInit()-এ না করা থাকে, তাহলে এখানে রাখতে পারো
-    // কিন্তু ভালো প্র্যাকটিস: controller-এ onInit()-এ করা
     controller.getAllPost();
   }
 
-  void deletePost(String postId) {
+  Future<void> _handleDeletePost(String postId) async {
     showLoadingOverLay(
-      asyncFunction: () async => await performDeletePost(context, postId),
-      msg: 'Please wait...',
+      asyncFunction: () async {
+        final bool success = await deletePostController.deletePost(
+          postId: postId,
+        );
+
+        if (success) {
+          final myFeedCtrl = Get.find<MyFeedPostController>();
+          final allFeedCtrl = Get.find<AllFeedPostController>();
+
+          allFeedCtrl.resetPagination();
+          myFeedCtrl.resetPagination();
+          await myFeedCtrl.getAllPost();
+
+          showSnackBarMessage(context, "Post deleted successfully!", false);
+        } else {
+          showSnackBarMessage(context, deletePostController.errorMessage, true);
+        }
+      },
+      msg: 'Deleting post...',
     );
   }
 
-  Future<void> performDeletePost(BuildContext context, String postId) async {
-    final bool isSuccess = await deletePostController.deletePost(
-      postId: postId,
+  void _showDeleteConfirmation(String postId) {
+    ConfirmationBottomSheet.show(
+      context: context,
+      title: "Delete Post?",
+      message:
+          "This post will be permanently removed.\nThis action cannot be undone.",
+      onDelete: () {
+        _handleDeletePost(postId);
+      },
+      // deleteText: "Delete Now", // optional customization
+      // cancelText: "Keep it",   // optional
     );
-
-    if (isSuccess) {
-      final MyFeedPostController myFeedPostController =
-          Get.find<MyFeedPostController>();
-      final AllFeedPostController allFeedPostController =
-          Get.find<AllFeedPostController>();
-
-      allFeedPostController.resetPagination();
-      myFeedPostController.resetPagination();
-      await myFeedPostController.getAllPost();
-      Get.back();
-      showSnackBarMessage(context, "Post deleted successfully!", false);
-    } else {
-      showSnackBarMessage(context, deletePostController.errorMessage, true);
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       if (controller.inProgress) {
-        return PostShimmerEffectWidget();
+        return const PostShimmerEffectWidget();
       }
 
       if (controller.allPostData.isEmpty) {
-        return const Center(
+        return Center(
           child: Text(
             'No posts yet',
-            style: TextStyle(color: Colors.white70, fontSize: 12),
+            style: TextStyle(color: Colors.white70, fontSize: 14.sp),
           ),
         );
       }
 
-      // ← এখানে Expanded সরিয়ে Flexible বা direct ListView দিলাম
       return ListView.builder(
         padding: EdgeInsets.zero,
         itemCount: controller.allPostData.length,
         itemBuilder: (context, index) {
           final post = controller.allPostData[index];
-          final DateFormatter formattedTime = DateFormatter(post.createdAt!);
+          final formattedTime = DateFormatter(post.createdAt ?? DateTime.now());
 
-          final GlobalKey suffixButtonKey = GlobalKey();
+          final GlobalKey suffixKey = GlobalKey();
 
-          final CustomPopupMenu customPopupMenu = CustomPopupMenu(
-            targetKey: suffixButtonKey,
+          final popup = CustomPopupMenu(
+            targetKey: suffixKey,
             options: [
               Text(
                 'Boost Post',
@@ -126,57 +136,42 @@ class _MyPostSectionState extends State<MyPostSection> {
               '0': () => Get.to(() => BoostScreen(feedPostItemModel: post)),
               '1': () =>
                   Get.to(() => EditGalleryPostScreen(feedPostItemModel: post)),
-              '2': () => _showDeletePost(post.id!),
+              '2': () => _showDeleteConfirmation(post.id ?? ''),
             },
             menuWidth: 180.w,
-            menuHeight: 48.h,
+            menuHeight: 48.h * 3, // approximate for 3 items
           );
 
           return Padding(
-            padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 4.w),
+            padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 4.w),
             child: PostCard(
               isPerson: post.author?.person != null,
               onTapComment: () {
-                Get.to(CommentScreen(postId: post.id ?? ''));
+                if (post.id != null) {
+                  Get.to(() => CommentScreen(postId: post.id!));
+                }
               },
               isComment: true,
               ownerId: post.author?.id ?? '',
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // SizedBox(
-                  //   height: 36.h,
-                  //   width: 90.w,
-                  //   child: CustomElevatedButton(
-                  //     title: 'Boost Post',
-                  //     textSize: 12,
-                  //     borderRadius: 50,
-                  //     onPress: () =>
-                  //         Get.to(() => BoostScreen(feedPostItemModel: post)),
-                  //   ),
-                  // ),
-                  // SizedBox(width: 12.w),
-                  GestureDetector(
-                    key: suffixButtonKey,
-                    onTap: () => customPopupMenu.showMenuAtPosition(context),
-                    child: const Icon(
-                      Icons.more_vert_rounded,
-                      color: Color(0xff8C8C8C),
-                      size: 24,
-                    ),
-                  ),
-                ],
+              trailing: GestureDetector(
+                key: suffixKey,
+                onTap: () => popup.showMenuAtPosition(context),
+                child: const Icon(
+                  Icons.more_vert_rounded,
+                  color: Color(0xff8C8C8C),
+                  size: 26,
+                ),
               ),
               ownerName: StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
-                  ? post.author?.person?.name ?? 'Unknown User'
-                  : post.author?.business?.name ?? 'Unknown Business',
+                  ? post.author?.person?.name ?? 'Unknown'
+                  : post.author?.business?.name ?? 'Unknown',
               ownerImage: StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
                   ? post.author?.person?.image ?? ''
                   : post.author?.business?.image ?? '',
               ownerProfession:
                   StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
-                  ? post.author?.person?.title ?? 'Professional'
-                  : post.author?.business?.name ?? 'Business',
+                  ? post.author?.person?.title ?? ''
+                  : post.author?.business?.industry ?? '',
               postImage: post.images.isNotEmpty ? post.images : [],
               postDescription: post.caption ?? '',
               postTime: formattedTime.getRelativeTimeFormat(),
@@ -187,68 +182,108 @@ class _MyPostSectionState extends State<MyPostSection> {
       );
     });
   }
+}
 
-  void _showDeletePost(String postId) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.black,
-      builder: (context) {
-        return Container(
-          height: 250.h,
-          padding: EdgeInsets.all(20.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+// lib/app/core/widgets/common/delete_confirmation_bottomsheet.dart
+
+class ConfirmationBottomSheet extends StatelessWidget {
+  final String title;
+  final String message;
+  final VoidCallback onTap;
+  final String? deleteButtonText;
+  final String? cancelButtonText;
+
+  const ConfirmationBottomSheet({
+    super.key,
+    this.title = 'Delete?',
+    this.message = 'Are you sure you want to delete?',
+    required this.onTap,
+    this.deleteButtonText = 'Delete',
+    this.cancelButtonText = 'Discard',
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.3,
+      padding: EdgeInsets.all(20.w),
+      decoration: const BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CircleIconWidget(
+            imagePath: Assets.images.delete.keyName,
+            onTap: () {},
+            iconRadius: 22.r,
+            radius: 24.r,
+            color: const Color(0xff312609),
+            iconColor: const Color(0xffDC8B44),
+          ),
+          heightBox20,
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 18.sp,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+          heightBox8,
+          Text(
+            message,
+            style: TextStyle(fontSize: 14.sp, color: const Color(0xff9FA3AA)),
+          ),
+          const Spacer(),
+          Row(
             children: [
-              CircleIconWidget(
-                imagePath: Assets.images.delete.keyName,
-                onTap: () {},
-                iconRadius: 22.r,
-                radius: 24.r,
-                color: const Color(0xff312609),
-                iconColor: const Color(0xffDC8B44),
-              ),
-              heightBox20,
-              Text(
-                'Delete?',
-                style: TextStyle(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
+              Expanded(
+                child: CustomElevatedButton(
+                  color: const Color.fromARGB(255, 15, 15, 15),
+                  borderColor: const Color(0xff262629),
+                  title: cancelButtonText!,
+                  onPress: () => Get.back(),
                 ),
               ),
-              heightBox8,
-              Text(
-                'Are you sure you want to delete?',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: const Color(0xff9FA3AA),
+              widthBox12,
+              Expanded(
+                child: CustomElevatedButton(
+                  color: const Color(0xffE62047),
+                  title: deleteButtonText!,
+                  onPress: () {
+                    onTap(); // delete action
+                  },
                 ),
-              ),
-              heightBox12,
-              Row(
-                children: [
-                  Expanded(
-                    child: CustomElevatedButton(
-                      color: const Color.fromARGB(255, 15, 15, 15),
-                      borderColor: const Color(0xff262629),
-                      title: 'Discard',
-                      onPress: () => Get.back(),
-                    ),
-                  ),
-                  widthBox12,
-                  Expanded(
-                    child: CustomElevatedButton(
-                      color: const Color(0xffE62047),
-                      title: 'Delete',
-                      onPress: () => deletePost(postId),
-                    ),
-                  ),
-                ],
               ),
             ],
           ),
-        );
-      },
+        ],
+      ),
     );
   }
+
+  // Static method for easy usage
+  static void show({
+    required BuildContext context,
+    String title = 'Delete?',
+    String message = 'Are you sure you want to delete?',
+    required VoidCallback onDelete,
+    String deleteButtonText = 'Delete',
+    String cancelButtonText = 'Discard',
+  }) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => ConfirmationBottomSheet(
+        title: title,
+        message: message,
+        onTap: onDelete,
+        deleteButtonText: deleteButtonText,
+        cancelButtonText: cancelButtonText,
+      ),
+    );
+  } 
 }

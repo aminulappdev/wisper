@@ -86,7 +86,7 @@ class _MainButtonNavbarScreenState extends State<MainButtonNavbarScreen> {
 
   String _getProfileImageUrl() {
     final role = StorageUtil.getData(StorageUtil.userRole);
-    String? url;
+    String? url; 
 
     if (role == 'PERSON') {
       url = profileController.profileData?.auth?.person?.image;
