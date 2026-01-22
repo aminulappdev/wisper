@@ -1,4 +1,4 @@
-package com.new.wisper.user
+package com.wisperuser.app
 
 import io.flutter.embedding.android.FlutterActivity
 

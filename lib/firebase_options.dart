@@ -83,7 +83,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '667291069508',
     projectId: 'wisper-9f2ab',
     storageBucket: 'wisper-9f2ab.firebasestorage.app',
-    iosBundleId: 'com.new.wisper.user',
+    iosBundleId: 'com.wisperuser.app',
   );
 
 }

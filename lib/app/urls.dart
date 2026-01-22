@@ -5,9 +5,11 @@ class Urls {
 
   // static const String _baseUrl = 'http://10.10.10.17:5000/api/v1';
   // static const String _baseUrl = 'https://wisper.up.railway.app/api/v1';
-  static const String _baseUrl = 'https://cd234531fe15.ngrok-free.app/api/v1';
-  static const String socketUrl = 'https://cd234531fe15.ngrok-free.app';
-  // static const String socketUrl = 'http://10.10.10.17:5000';
+//  static const String _baseUrl = 'https://cd234531fe15.ngrok-free.app/api/v1';
+ // static const String socketUrl = 'https://cd234531fe15.ngrok-free.app';
+  static const String _baseUrl = 'http://72.244.153.29:5008/api/v1';
+  static const String socketUrl = 'http://72.244.153.29:5008';
+
   
   
   // =========================================== Common ============================================== //

@@ -75,6 +75,7 @@ void main() async {
                 );
               },
 
+
               initialRoute: '/',
               getPages: [
                 GetPage(name: '/', page: () => const SplashScreen()),
