@@ -51,7 +51,11 @@ class RoleCard extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 30.r,
-                    backgroundImage: AssetImage(Assets.images.image.keyName),
+                    backgroundColor: Colors.grey.shade800,
+                    backgroundImage: NetworkImage(imagePath ?? ''),
+                    child: imagePath == null || imagePath == ''
+                        ? const Icon(Icons.person, size: 40)
+                        : null,
                   ),
                   widthBox8,
                   Column(

@@ -167,6 +167,7 @@ class _RoleSectionState extends State<RoleSection> {
                             : 'N/A',
                         title: data[index].person?.name ?? 'N/A',
                         post: data[index].count?.posts ?? 0,
+                        imagePath: data[index].person?.image ?? '',
                         recommendations:
                             data[index].count?.receivedRecommendations ?? 0,
                         messagesOnTap: () {

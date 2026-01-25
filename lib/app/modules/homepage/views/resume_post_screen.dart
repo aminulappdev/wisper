@@ -300,7 +300,7 @@ class _ResumePostScreenState extends State<ResumePostScreen> {
                                     Expanded(
                                       child: Text(
                                         fileName,
-                                        style: TextStyle(
+                                        style: TextStyle( 
                                           fontSize: 12.sp,
                                           fontWeight: FontWeight.w400,
                                           color: Colors.white,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
 import 'package:wisper/app/core/others/get_storage.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart' show DateFormatter;
 import 'package:wisper/app/core/utils/show_over_loading.dart';
@@ -12,6 +13,7 @@ import 'package:wisper/app/core/widgets/common/line_widget.dart';
 import 'package:wisper/app/core/widgets/shimmer/info_card_shimmer.dart';
 import 'package:wisper/app/modules/chat/controller/all_connection_controller.dart';
 import 'package:wisper/app/modules/chat/controller/create_chat_controller.dart';
+import 'package:wisper/app/modules/chat/controller/update_connection_controller.dart';
 import 'package:wisper/app/modules/chat/views/person/message_screen.dart';
 import 'package:wisper/app/modules/chat/widgets/location_info.dart';
 import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart';
@@ -52,6 +54,8 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
   final AddRequestController addRequestController = Get.put(
     AddRequestController(),
   );
+  UpdateConnectionController updateConnectionController =
+      UpdateConnectionController();
 
   int selectedIndex = 0;
 
@@ -64,6 +68,10 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       recommendationController.getAllRecommendations(widget.userId);
+      connectionController.getAllConnection(
+        'PENDING',
+        StorageUtil.getData(StorageUtil.userId),
+      );
     });
   }
 
@@ -154,6 +162,38 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
     }
   }
 
+  void changeStatus(String userId, String status) {
+    showLoadingOverLay(
+      asyncFunction: () async => await performSubmit(context, userId, status),
+      msg: 'Please wait...',
+    );
+  }
+
+  Future<void> performSubmit(
+    BuildContext context,
+    String userId,
+    String status,
+  ) async {
+    bool isSuccess = false;
+
+    // Edit mode
+    isSuccess = await updateConnectionController.updateConnection(
+      userId: userId,
+      status: status,
+    );
+
+    if (isSuccess) {
+      controller.getOthersProfile(widget.userId);
+      showSnackBarMessage(context, 'Request sent successfully', false);
+    } else {
+      showSnackBarMessage(
+        context,
+        updateConnectionController.errorMessage,
+        true,
+      );
+    }
+  }
+
   // রেকমেন্ডেশন বটম শিট দেখানো (লিস্ট পাস না করে!)
   void _showRecommendationSheet() {
     showModalBottomSheet(
@@ -183,6 +223,7 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
@@ -198,6 +239,9 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
               }
 
               final person = controller.othersProfileData?.auth?.person;
+              // এখান থেকে সরাসরি connection ID নেয়া হচ্ছে – এটাই সবচেয়ে নির্ভরযোগ্য
+              final String? connectionId =
+                  controller.othersProfileData?.connection?.id;
 
               return InfoCard(
                 isBack: true,
@@ -211,14 +255,6 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CircleIconWidget(
-                      imagePath: Assets.images.call.keyName,
-                      onTap: () {},
-                      radius: 15,
-                      color: LightThemeColors.blueColor,
-                      iconColor: Colors.white,
-                    ),
-                    SizedBox(width: 10.w),
-                    CircleIconWidget(
                       imagePath: Assets.images.unselectedChat.keyName,
                       onTap: () =>
                           createChat(person?.id, person?.name, person?.image),
@@ -227,65 +263,109 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
                       iconColor: Colors.white,
                     ),
                     SizedBox(width: 10.w),
-                    controller.othersProfileData?.auth?.id ==
-                            StorageUtil.getData(StorageUtil.userId)
-                        ? SizedBox()
-                        : SizedBox(
+
+                    // নিজের প্রোফাইল হলে কোনো বাটন দেখাবে না
+                    if (controller.othersProfileData?.auth?.id ==
+                        StorageUtil.getData(StorageUtil.userId))
+                      const SizedBox()
+                    // incoming request আছে কিনা চেক
+                    else if (controller.othersProfileData?.connection?.status ==
+                            'PENDING' &&
+                        controller.othersProfileData?.connection?.requesterId !=
+                            StorageUtil.getData(StorageUtil.userId))
+                      Row(
+                        children: [
+                          SizedBox(
                             height: 31.h,
-                            width: 116.w,
+                            width: 90.w,
                             child: CustomElevatedButton(
-                              color:
-                                  controller
-                                          .othersProfileData!
-                                          .connection
-                                          ?.status ==
-                                      null
-                                  ? LightThemeColors.blueColor
-                                  : LightThemeColors.themeGreyColor,
+                              color: Colors.green,
                               textSize: 12,
-                              title:
-                                  controller
-                                          .othersProfileData!
-                                          .connection
-                                          ?.status ==
-                                      'ACCEPTED'
-                                  ? 'Added'
-                                  : controller
-                                            .othersProfileData!
-                                            .connection
-                                            ?.status ==
-                                        'PENDING'
-                                  ? 'Pending'
-                                  : controller
-                                            .othersProfileData!
-                                            .connection
-                                            ?.status ==
-                                        'REJECTED'
-                                  ? 'Rejected'
-                                  : controller
-                                            .othersProfileData!
-                                            .connection
-                                            ?.status ==
-                                        'BLOCKED'
-                                  ? 'Blocked'
-                                  : 'Add',
-                              onPress:
-                                  controller
-                                          .othersProfileData!
-                                          .connection
-                                          ?.status ==
-                                      'ACCEPTED'
-                                  ? _showRemoveConnection
-                                  : controller
-                                            .othersProfileData!
-                                            .connection
-                                            ?.status ==
-                                        null
-                                  ? addRequest
-                                  : null,
-                              borderRadius: 50,
+                              title: 'Accept',
+                              onPress: () {
+                                changeStatus(
+                                  connectionId ?? '', // ← এখন সঠিক ID আসবে
+                                  'ACCEPTED',
+                                );
+                              },
                             ),
                           ),
+                          widthBox10,
+                          SizedBox(
+                            height: 31.h,
+                            width: 90.w,
+                            child: CustomElevatedButton(
+                              color: Colors.red,
+                              textSize: 12,
+                              title: 'Reject',
+                              onPress: () {
+                                changeStatus(
+                                  connectionId ?? '', // ← এখন সঠিক ID আসবে
+                                  'REJECTED',
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      )
+                    // Add / Added / Pending / Remove বাটন
+                    else
+                      SizedBox(
+                        height: 31.h,
+                        width: 116.w,
+                        child: CustomElevatedButton(
+                          color:
+                              controller
+                                      .othersProfileData!
+                                      .connection
+                                      ?.status ==
+                                  null
+                              ? LightThemeColors.blueColor
+                              : LightThemeColors.themeGreyColor,
+                          textSize: 12,
+                          title:
+                              controller
+                                      .othersProfileData!
+                                      .connection
+                                      ?.status ==
+                                  'ACCEPTED'
+                              ? 'Added'
+                              : controller
+                                        .othersProfileData!
+                                        .connection
+                                        ?.status ==
+                                    'PENDING'
+                              ? 'Pending'
+                              : controller
+                                        .othersProfileData!
+                                        .connection
+                                        ?.status ==
+                                    'REJECTED'
+                              ? 'Rejected'
+                              : controller
+                                        .othersProfileData!
+                                        .connection
+                                        ?.status ==
+                                    'BLOCKED'
+                              ? 'Blocked'
+                              : 'Add',
+                          onPress:
+                              controller
+                                      .othersProfileData!
+                                      .connection
+                                      ?.status ==
+                                  'ACCEPTED'
+                              ? _showRemoveConnection
+                              : controller
+                                        .othersProfileData!
+                                        .connection
+                                        ?.status ==
+                                    null
+                              ? addRequest
+                              : null,
+                          borderRadius: 50,
+                        ),
+                      ),
                   ],
                 ),
               );
@@ -304,7 +384,7 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
                 isEmpty: recommendationController.recommendationData.isEmpty
                     ? true
                     : false,
-                onTap: _showRecommendationSheet, // live sheet খুলবে
+                onTap: _showRecommendationSheet,
                 count: count,
               );
             }),

@@ -178,7 +178,7 @@ class _MyPostSectionState extends State<MyPostSection> {
               views: post.views?.toString() ?? '0',
             ),
           );
-        },
+        }, 
       );
     });
   }
