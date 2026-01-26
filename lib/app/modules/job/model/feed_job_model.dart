@@ -32,7 +32,7 @@ class Data {
           : List<FeedJobItemModel>.from(
               json["jobs"]!.map((x) => FeedJobItemModel.fromJson(x)),
             ),
-    );
+    ); 
   }
 }
 

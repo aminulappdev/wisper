@@ -16,7 +16,7 @@ import 'package:wisper/app/modules/homepage/widget/role_card.dart';
 class RoleSection extends StatefulWidget {
   const RoleSection({super.key, this.searchQuery});
   final String? searchQuery;
-
+ 
   @override
   State<RoleSection> createState() => _RoleSectionState();
 }

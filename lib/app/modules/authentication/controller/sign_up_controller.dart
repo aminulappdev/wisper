@@ -17,7 +17,7 @@ class SignUpController extends GetxController {
     String? bussinessName,
     String? industry,
     String? firstName,
-    String? lastName,
+    String? lastName, 
     String? email,
     String? phone,
     String? password,

@@ -3,20 +3,21 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/others/custom_size.dart';
+import 'package:wisper/app/core/others/get_storage.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/widgets/common/circle_icon.dart';
 import 'package:wisper/app/core/widgets/common/custom_button.dart';
-import 'package:wisper/app/core/widgets/common/custom_popup.dart';
 import 'package:wisper/app/core/widgets/common/line_widget.dart';
+import 'package:wisper/app/modules/chat/controller/all_connection_controller.dart';
 import 'package:wisper/app/modules/chat/controller/create_chat_controller.dart';
+import 'package:wisper/app/modules/chat/controller/update_connection_controller.dart';
 import 'package:wisper/app/modules/chat/views/person/message_screen.dart';
 import 'package:wisper/app/modules/chat/widgets/location_info.dart';
-import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart'; 
+import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart';
 import 'package:wisper/app/modules/homepage/controller/add_request_controller.dart';
 import 'package:wisper/app/modules/job/views/others_job_section.dart';
-import 'package:wisper/app/modules/post/model/feed_post_model.dart';
 import 'package:wisper/app/modules/post/views/my_post_section.dart';
 import 'package:wisper/app/modules/post/views/others_post_section.dart';
 import 'package:wisper/app/modules/profile/controller/buisness/buisness_controller.dart';
@@ -45,6 +46,12 @@ class _OthersBusinessScreenState extends State<OthersBusinessScreen> {
     RemoveConnectionController(),
   );
 
+  UpdateConnectionController updateConnectionController =
+      UpdateConnectionController();
+  final AllConnectionController connectionController = Get.put(
+    AllConnectionController(),
+  );
+
   final BusinessController businessController = Get.put(BusinessController());
 
   int selectedIndex = 0;
@@ -65,6 +72,38 @@ class _OthersBusinessScreenState extends State<OthersBusinessScreen> {
           await performCreateChat(context, memberId, memberName, memberImage),
       msg: 'Please wait...',
     );
+  }
+
+  void changeStatus(String userId, String status) {
+    showLoadingOverLay(
+      asyncFunction: () async => await performSubmit(context, userId, status),
+      msg: 'Please wait...',
+    );
+  }
+
+  Future<void> performSubmit(
+    BuildContext context,
+    String userId,
+    String status,
+  ) async {
+    bool isSuccess = false;
+
+    // Edit mode
+    isSuccess = await updateConnectionController.updateConnection(
+      userId: userId,
+      status: status,
+    );
+
+    if (isSuccess) {
+      controller.getOthersProfile(widget.userId);
+      showSnackBarMessage(context, 'Request sent successfully', false);
+    } else {
+      showSnackBarMessage(
+        context,
+        updateConnectionController.errorMessage,
+        true,
+      );
+    }
   }
 
   void removeConnection() {
@@ -173,6 +212,7 @@ class _OthersBusinessScreenState extends State<OthersBusinessScreen> {
               ? DateFormatter(createdAt)
               : DateFormatter(DateTime.now());
 
+          final String? connectionId = controller.profileData?.connection?.id;
           return Column(
             children: [
               SizedBox(height: 30.h),
@@ -196,54 +236,77 @@ class _OthersBusinessScreenState extends State<OthersBusinessScreen> {
                       iconColor: Colors.white,
                     ),
                     SizedBox(width: 10.w),
-                    CircleIconWidget(
-                      imagePath: Assets.images.unselectedChat.keyName,
-                      onTap: () {
-                        // Uncomment when ready
-                        createChat(
-                          business?.id ?? '',
-                          business?.name ?? '',
-                          business?.image ?? '',
-                        );
-                      },
-                      radius: 15,
-                      color: LightThemeColors.blueColor,
-                      iconColor: Colors.white,
-                    ),
-                    SizedBox(width: 10.w),
-                    SizedBox(
-                      height: 31.h,
-                      width: 116.w,
-                      child: CustomElevatedButton(
-                        color:
-                            controller.profileData?.connection?.status == null
-                            ? LightThemeColors.blueColor
-                            : LightThemeColors.themeGreyColor,
-                        textSize: 12,
-                        title:
-                            controller.profileData!.connection?.status ==
-                                'ACCEPTED'
-                            ? 'Added'
-                            : controller.profileData!.connection?.status ==
-                                  'PENDING'
-                            ? 'Pending'
-                            : controller.profileData!.connection?.status ==
-                                  'REJECTED'
-                            ? 'Rejected'
-                            : controller.profileData!.connection?.status ==
-                                  'BLOCKED'
-                            ? 'Blocked'
-                            : 'Add',
-                        onPress:
-                            controller.profileData!.connection?.status ==
-                                'ACCEPTED'
-                            ? _showRemoveConnection
-                            : controller.profileData!.connection?.status == null
-                            ? addRequest
-                            : null,
-                        borderRadius: 50,
+                    if (controller.profileData?.auth?.id ==
+                        StorageUtil.getData(StorageUtil.userId))
+                      const SizedBox()
+                    else if (controller.profileData?.connection?.status ==
+                            'PENDING' &&
+                        controller.profileData?.connection?.requesterId !=
+                            StorageUtil.getData(StorageUtil.userId))
+                      Row(
+                        children: [
+                          SizedBox(
+                            height: 31.h,
+                            width: 90.w,
+                            child: CustomElevatedButton(
+                              color: Colors.green,
+                              textSize: 12,
+                              title: 'Accept',
+                              onPress: () {
+                                changeStatus(connectionId ?? '', 'ACCEPTED');
+                              },
+                            ),
+                          ),
+                          widthBox10,
+                          SizedBox(
+                            height: 31.h,
+                            width: 90.w,
+                            child: CustomElevatedButton(
+                              color: Colors.red,
+                              textSize: 12,
+                              title: 'Reject',
+                              onPress: () {
+                                changeStatus(connectionId ?? '', 'REJECTED');
+                              },
+                            ),
+                          ),
+                        ],
+                      )
+                    else
+                      SizedBox(
+                        height: 31.h,
+                        width: 116.w,
+                        child: CustomElevatedButton(
+                          color:
+                              controller.profileData!.connection?.status == null
+                              ? LightThemeColors.blueColor
+                              : LightThemeColors.themeGreyColor,
+                          textSize: 12,
+                          title:
+                              controller.profileData!.connection?.status ==
+                                  'ACCEPTED'
+                              ? 'Added'
+                              : controller.profileData!.connection?.status ==
+                                    'PENDING'
+                              ? 'Pending'
+                              : controller.profileData!.connection?.status ==
+                                    'REJECTED'
+                              ? 'Rejected'
+                              : controller.profileData!.connection?.status ==
+                                    'BLOCKED'
+                              ? 'Blocked'
+                              : 'Add',
+                          onPress:
+                              controller.profileData!.connection?.status ==
+                                  'ACCEPTED'
+                              ? _showRemoveConnection
+                              : controller.profileData!.connection?.status ==
+                                    null
+                              ? addRequest
+                              : null,
+                          borderRadius: 50,
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),

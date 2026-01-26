@@ -10,6 +10,7 @@ import 'package:wisper/app/core/widgets/common/custom_button.dart';
 import 'package:wisper/app/core/widgets/shimmer/member_list_shimmer.dart';
 import 'package:wisper/app/modules/chat/controller/all_connection_controller.dart';
 import 'package:wisper/app/modules/chat/controller/update_connection_controller.dart';
+import 'package:wisper/app/modules/profile/views/business/others_business_screen.dart';
 import 'package:wisper/app/modules/profile/views/person/others_person_screen.dart';
 
 class ConnectionScreen extends StatefulWidget {
@@ -113,7 +114,16 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
                     final data =
                         allConnectionController.allConnectionData![index];
                     var status = data.status;
+                    var name = data.partner?.person != null
+                        ? data.partner!.person!.name
+                        : data.partner!.business!.name;
+                    var avatar = data.partner?.person != null
+                        ? data.partner!.person!.image
+                        : data.partner!.business!.image;
 
+                    var title = data.partner?.person != null
+                        ? data.partner!.person!.title
+                        : data.partner!.business!.industry;
                     return status != 'PENDING'
                         ? Container()
                         : SizedBox(
@@ -162,20 +172,22 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
                               leading: GestureDetector(
                                 onTap: () {
                                   Get.to(
-                                    () => OthersPersonScreen(
-                                      userId: data.partner?.id ?? '',
-                                    ),
+                                    () => data.partner?.person != null
+                                        ? OthersPersonScreen(
+                                            userId: data.partner?.id ?? '',
+                                          ) 
+                                        : OthersBusinessScreen(
+                                            userId: data.partner?.id ?? '',
+                                          ),
                                   );
                                 },
                                 child: CircleAvatar(
-                                  backgroundImage: NetworkImage(
-                                    data.partner?.person?.image ?? '',
-                                  ),
+                                  backgroundImage: NetworkImage(avatar ?? ''),
                                   radius: 20.r,
                                 ),
                               ),
                               title: Text(
-                                data.partner?.person?.name ?? '',
+                                name ?? '',
                                 style: TextStyle(
                                   fontSize: 14.sp,
                                   fontWeight: FontWeight.w600,
@@ -183,7 +195,7 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
                                 ),
                               ),
                               subtitle: Text(
-                                data.partner?.person?.title ?? '',
+                                title ?? '',
 
                                 style: const TextStyle(
                                   color: Colors.white,

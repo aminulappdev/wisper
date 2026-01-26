@@ -164,7 +164,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
   }
 
   String? encodeQueryParameters(Map<String, String> params) {
-    return params.entries
+    return params.entries 
         .map(
           (e) =>
               '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}',

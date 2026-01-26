@@ -8,7 +8,7 @@ import 'package:wisper/app/modules/profile/model/profile_model.dart';
 import 'package:wisper/app/urls.dart';
 
 class ProfileController extends GetxController {
-  final RxBool _inProgress = false.obs;
+  final RxBool _inProgress = false.obs; 
   bool get inProgress => _inProgress.value;
 
   final RxString _errorMessage = ''.obs;

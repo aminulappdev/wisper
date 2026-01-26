@@ -20,7 +20,7 @@ import 'package:wisper/app/modules/profile/controller/buisness/buisness_controll
 import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
-class SignInScreen extends StatefulWidget {
+class SignInScreen extends StatefulWidget { 
   const SignInScreen({super.key});
 
   @override

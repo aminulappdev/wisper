@@ -8,9 +8,9 @@ import 'package:wisper/app/modules/job/model/feed_job_model.dart';
 import 'package:wisper/app/urls.dart';
 
 class MyFeedJobController extends GetxController {
-  final NetworkCaller networkCaller = Get.find<NetworkCaller>();
+  final NetworkCaller networkCaller = Get.find<NetworkCaller>(); 
 
-  final RxBool _inProgress = false.obs;
+  final RxBool _inProgress = false.obs; 
   bool get inProgress => _inProgress.value;
 
   final RxString _errorMessage = ''.obs;

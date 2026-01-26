@@ -2,6 +2,8 @@
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:wisper/app/core/others/custom_size.dart';
 import 'package:wisper/app/core/widgets/common/circle_icon.dart';
 
@@ -19,8 +21,10 @@ class AuthHeader extends StatelessWidget {
       children: [
         CircleIconWidget(
           iconRadius: 18,
-          imagePath: Assets.images.arrowBack.keyName,
-          onTap: () {},
+          imagePath: Assets.images.arrowBack.keyName, 
+          onTap: () {
+            Get.back();
+          },
         ),
         heightBox12,
         Text(

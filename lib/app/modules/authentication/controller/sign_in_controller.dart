@@ -36,7 +36,7 @@ class SignInController extends GetxController {
         print(decodedToken);
         var role = decodedToken['role'];
         StorageUtil.saveData(StorageUtil.userRole, role);
-
+ 
         StorageUtil.saveData(
           StorageUtil.userAccessToken,
           response.responseData['data']['accessToken'],

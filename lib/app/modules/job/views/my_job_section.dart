@@ -38,7 +38,7 @@ class _MyJobSectionState extends State<MyJobSection> {
 
   void deleteJob(String jobId) {
     showLoadingOverLay(
-      asyncFunction: () async => await performDeleteJob(context, jobId),
+      asyncFunction: () async => await performDeleteJob(context, jobId), 
       msg: 'Please wait...',
     );
   }
@@ -49,7 +49,7 @@ class _MyJobSectionState extends State<MyJobSection> {
     if (isSuccess) {
       final MyFeedJobController myFeedJobController =
           Get.find<MyFeedJobController>();
-      final AllFeedJobController allFeedJobController =
+      final AllFeedJobController allFeedJobController = 
           Get.find<AllFeedJobController>();
 
       allFeedJobController.resetPagination();

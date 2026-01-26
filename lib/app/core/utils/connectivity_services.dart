@@ -101,7 +101,7 @@ class ConnectivityService extends GetxService {
               ),
             ),
             const Text(
-              "Internet connection is not found",
+              "Internet connection is not found", 
               style: TextStyle(
                 color: Colors.grey,
                 fontSize: 14,

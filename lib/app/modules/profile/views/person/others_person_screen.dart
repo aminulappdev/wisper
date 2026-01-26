@@ -161,7 +161,7 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
       showSnackBarMessage(context, addRequestController.errorMessage, true);
     }
   }
-
+  
   void changeStatus(String userId, String status) {
     showLoadingOverLay(
       asyncFunction: () async => await performSubmit(context, userId, status),
@@ -223,9 +223,8 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
   }
 
   @override
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold( 
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20.w),
         child: Column(
@@ -239,7 +238,6 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
               }
 
               final person = controller.othersProfileData?.auth?.person;
-              // এখান থেকে সরাসরি connection ID নেয়া হচ্ছে – এটাই সবচেয়ে নির্ভরযোগ্য
               final String? connectionId =
                   controller.othersProfileData?.connection?.id;
 
@@ -326,7 +324,7 @@ class _OthersPersonScreenState extends State<OthersPersonScreen> {
                           title:
                               controller
                                       .othersProfileData!
-                                      .connection
+                                      .connection 
                                       ?.status ==
                                   'ACCEPTED'
                               ? 'Added'

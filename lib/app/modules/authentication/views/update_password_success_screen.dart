@@ -60,7 +60,7 @@ class _PasswordUpdateSuccessScreenState
                 height: 56,
                 title: 'Explore Your Feed',
                 onPress: () {
-                  Get.to(const MainButtonNavbarScreen());
+                  Get.to(() => SignInScreen());
                 },
               ),
               heightBox20,
