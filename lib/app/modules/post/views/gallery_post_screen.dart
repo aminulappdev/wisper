@@ -139,7 +139,7 @@ class _GalleryPostScreenState extends State<GalleryPostScreen> {
       isLoading.value = businessController.inProgress;
     }
   }
-
+ 
   @override
   void initState() {
     super.initState();

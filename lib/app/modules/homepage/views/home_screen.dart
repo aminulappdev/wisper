@@ -6,7 +6,6 @@ import 'package:wisper/app/core/widgets/common/circle_icon.dart';
 import 'package:wisper/app/core/widgets/common/line_widget.dart';
 import 'package:wisper/app/modules/job/views/job_section.dart';
 import 'package:wisper/app/modules/post/views/post_section.dart';
-import 'package:wisper/app/modules/homepage/views/role_section.dart';
 import 'package:wisper/app/modules/homepage/views/search_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
@@ -70,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     children: [
                       Text(
-                        'Posts',
+                        'Chats',
                         style: TextStyle(
                           fontFamily: "Segoe UI",
                           fontSize: 16.sp,
@@ -101,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     children: [
                       Text(
-                        'Jobs',
+                        'Posts',
                         style: TextStyle(
                           fontFamily: "Segoe UI",
                           fontSize: 16.sp,
@@ -132,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     children: [
                       Text(
-                        'Roles',
+                        'Jobs',
                         style: TextStyle(
                           fontFamily: "Segoe UI",
                           fontSize: 16.sp,
@@ -159,8 +158,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
             heightBox14,
             selectedIndex == 0 ? PostSection() : Container(),
-            selectedIndex == 1 ? JobSection() : Container(),
-            selectedIndex == 2 ? RoleSection() : Container(),
+            selectedIndex == 1 ? PostSection() : Container(),
+            selectedIndex == 2 ? JobSection() : Container(),
           ],
         ),
       ),

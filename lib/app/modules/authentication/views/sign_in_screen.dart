@@ -168,7 +168,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
+                    Text( 
                       "Sign Up With",
                       style: TextStyle(
                         color: const Color(0xff8C8C8C),

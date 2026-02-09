@@ -3,7 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:wisper/app/core/others/custom_size.dart'; 
+import 'package:latlong2/latlong.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
+import 'package:wisper/app/core/services/location/location_picker_field.dart';
+import 'package:wisper/app/core/services/location/location_services.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
 import 'package:wisper/app/core/utils/snack_bar.dart';
 import 'package:wisper/app/core/utils/validator_service.dart';
@@ -17,7 +20,7 @@ import 'package:wisper/app/modules/profile/controller/person/profile_controller.
 class EditPersonProfileScreen extends StatefulWidget {
   const EditPersonProfileScreen({super.key});
 
-  @override 
+  @override
   State<EditPersonProfileScreen> createState() =>
       _EditPersonProfileScreenState();
 }
@@ -35,6 +38,19 @@ class _EditPersonProfileScreenState extends State<EditPersonProfileScreen> {
 
   // এই কন্ট্রোলারটা আমরা Job Title এর জন্য ব্যবহার করবো
   final _titleCtrl = TextEditingController();
+
+  final Rx<LatLng?> selectedLatLng = Rx<LatLng?>(null);
+  final RxString selectedAddress = ''.obs;
+
+  void setLocation(LatLng latLng, String address) {
+    selectedLatLng.value = latLng;
+    selectedAddress.value = address;
+  }
+
+  void clearLocation() {
+    selectedLatLng.value = null;
+    selectedAddress.value = '';
+  }
 
   final List<String> _jobTitles = [
     'Flutter Developer',
@@ -95,7 +111,7 @@ class _EditPersonProfileScreenState extends State<EditPersonProfileScreen> {
       name: _nameCtrl.text.trim(),
       phone: _phoneCtrl.text.trim(),
       title: _selectedTitle!,
-      address: _addressCtrl.text.trim(),
+      address: selectedAddress.value,
     );
 
     if (isSuccess) {
@@ -151,16 +167,39 @@ class _EditPersonProfileScreenState extends State<EditPersonProfileScreen> {
                 validator: ValidatorService.validateSimpleField,
               ),
 
-              heightBox20,
-              const Label(label: 'Address'),
-              heightBox10,
-              CustomTextField(
-                controller: _addressCtrl,
-                hintText: 'Enter address',
-                keyboardType: TextInputType.text,
-                validator: ValidatorService.validateSimpleField,
+              _addressCtrl.text.isNotEmpty ? Container() : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  heightBox20,
+                  const Label(label: 'Address'),
+                  heightBox10,
+                  Obx(
+                    () => LocationField(
+                      address: selectedAddress.value,
+                      onPick: () async {
+                        final pos =
+                            selectedLatLng.value ?? LatLng(23.8103, 90.4125);
+                        final res = await Get.to(
+                          () => LocationPickerScreen(initialPosition: pos),
+                        );
+                        if (res is Map) {
+                          setState(() {
+                            setLocation(res['latLng'], res['address']);
+                          });
+                        }
+                      },
+                      onClear: clearLocation,
+                    ),
+                  ),
+                ],
               ),
 
+              // CustomTextField(
+              //   controller: _addressCtrl,
+              //   hintText: 'Enter address',
+              //   keyboardType: TextInputType.text,
+              //   validator: ValidatorService.validateSimpleField,
+              // ),
               heightBox20,
               const Label(label: 'Job Title'),
               heightBox10,

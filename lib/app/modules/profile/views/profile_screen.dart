@@ -18,6 +18,8 @@ import 'package:wisper/app/modules/chat/widgets/location_info.dart';
 import 'package:wisper/app/modules/chat/widgets/select_option_widget.dart';
 import 'package:wisper/app/modules/homepage/views/my_resume_section.dart';
 import 'package:wisper/app/modules/job/views/my_job_section.dart';
+import 'package:wisper/app/modules/post/controller/feed_post_controller.dart';
+import 'package:wisper/app/modules/post/controller/my_post_controller.dart';
 import 'package:wisper/app/modules/post/views/my_post_section.dart';
 import 'package:wisper/app/modules/profile/controller/buisness/buisness_controller.dart';
 import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
@@ -114,8 +116,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (success) {
       if (userRole == 'PERSON') {
+        final AllFeedPostController feedController = Get.put(
+          AllFeedPostController(),
+        );
+        final MyFeedPostController myFeedPostController = Get.put(
+          MyFeedPostController(),
+        );
+
+        myFeedPostController.resetPagination();
+        feedController.resetPagination();
+        await myFeedPostController.getAllPost();
+        await feedController.getAllPost();
         await personController.getMyProfile();
       } else {
+
+        
         await businessController.getMyProfile();
       }
 
