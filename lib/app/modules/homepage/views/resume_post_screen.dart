@@ -116,7 +116,7 @@ class _ResumePostScreenState extends State<ResumePostScreen> {
     } else {
       businessController.getMyProfile().then((_) {
         if (mounted) _updateUserInfo();
-      });
+      }); 
     }
   }
 

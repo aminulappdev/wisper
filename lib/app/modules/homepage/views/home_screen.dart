@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:wisper/app/core/others/custom_size.dart';
 import 'package:wisper/app/core/widgets/common/circle_icon.dart';
 import 'package:wisper/app/core/widgets/common/line_widget.dart';
+import 'package:wisper/app/modules/homepage/views/chat_section.dart';
 import 'package:wisper/app/modules/job/views/job_section.dart';
 import 'package:wisper/app/modules/post/views/post_section.dart';
 import 'package:wisper/app/modules/homepage/views/search_screen.dart';
@@ -69,10 +70,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     children: [
                       Text(
-                        'Chats',
+                        'General Chat',
                         style: TextStyle(
                           fontFamily: "Segoe UI",
-                          fontSize: 16.sp,
+                          fontSize: 15.sp,
                           fontWeight: FontWeight.w600,
                           color: selectedIndex == 0
                               ? Colors.white
@@ -82,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       heightBox4,
                       Container(
                         height: 2.h,
-                        width: 40.w,
+                        width: 90.w,
                         color: selectedIndex == 0
                             ? Colors.blue
                             : Colors.transparent,
@@ -157,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
             StraightLiner(height: 0.4, color: Color(0xff454545)),
 
             heightBox14,
-            selectedIndex == 0 ? PostSection() : Container(),
+            selectedIndex == 0 ? ChatSection() : Container(),
             selectedIndex == 1 ? PostSection() : Container(),
             selectedIndex == 2 ? JobSection() : Container(),
           ],

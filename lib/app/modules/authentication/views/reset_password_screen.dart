@@ -80,7 +80,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   heightBox10,
                   CustomTextField(
                     controller: passwordController,
-                    suffixIcon: Icons.remove_red_eye_outlined,
+                    suffixIcon: Icons.visibility_off,
                     hintText: '********',
                     obscureText: true,
                     keyboardType: TextInputType.text,
@@ -93,7 +93,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   heightBox10,
                   CustomTextField(
                     controller: confirmPasswordController,
-                    suffixIcon: Icons.remove_red_eye_outlined,
+                    suffixIcon: Icons.visibility_off,
                     hintText: '********',
                     obscureText: true,
                     keyboardType: TextInputType.text,

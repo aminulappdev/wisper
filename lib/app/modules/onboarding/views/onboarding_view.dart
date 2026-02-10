@@ -49,7 +49,6 @@ class _OnboardingViewState extends State<OnboardingView> {
     }
   }
 
-
   int _currentPage = 0;
 
   @override
@@ -167,24 +166,26 @@ class _OnboardingViewState extends State<OnboardingView> {
             Padding(
               padding: EdgeInsets.all(15.0.h),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  CustomElevatedButton(
-                    width: MediaQuery.of(context).size.width * 0.3,
-                    title: 'Login',
-                    onPress: () {
-                      Get.to(() => SignInScreen());
-                    },
-                    color: Colors.transparent,
-                    textColor: Colors.white,
-                    borderColor: Colors.white,
+                  Expanded(
+                    child: CustomElevatedButton(
+                      title: 'Login',
+                      onPress: () {
+                        Get.to(() => SignInScreen());
+                      },
+                      color: Colors.transparent,
+                      textColor: Colors.white,
+                      borderColor: Colors.white,
+                    ),
                   ),
-                  CustomElevatedButton(
-                    width: MediaQuery.of(context).size.width * 0.3,
-                    title: 'Sign Up',
-                    onPress: () {
-                      Get.to(() => AuthScreen());
-                    },
+                  widthBox15,
+                  Expanded(
+                    child: CustomElevatedButton(
+                      title: 'Sign Up',
+                      onPress: () {
+                        Get.to(() => AuthScreen());
+                      },
+                    ),
                   ),
                 ],
               ),

@@ -14,7 +14,7 @@ class PostCard extends StatelessWidget {
   final String? ownerId;
   final bool? isPerson;  
   final String? ownerName;
-  final String? ownerImage;
+  final String? ownerImage; 
   final String? ownerProfession;
   final List<String>? postImage;        // লিস্ট
   final String? postDescription;

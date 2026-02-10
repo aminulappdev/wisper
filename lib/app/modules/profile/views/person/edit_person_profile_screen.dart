@@ -167,32 +167,36 @@ class _EditPersonProfileScreenState extends State<EditPersonProfileScreen> {
                 validator: ValidatorService.validateSimpleField,
               ),
 
-              _addressCtrl.text.isNotEmpty ? Container() : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  heightBox20,
-                  const Label(label: 'Address'),
-                  heightBox10,
-                  Obx(
-                    () => LocationField(
-                      address: selectedAddress.value,
-                      onPick: () async {
-                        final pos =
-                            selectedLatLng.value ?? LatLng(23.8103, 90.4125);
-                        final res = await Get.to(
-                          () => LocationPickerScreen(initialPosition: pos),
-                        );
-                        if (res is Map) {
-                          setState(() {
-                            setLocation(res['latLng'], res['address']);
-                          });
-                        }
-                      },
-                      onClear: clearLocation,
+              _addressCtrl.text.isNotEmpty
+                  ? Container()
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        heightBox20,
+                        const Label(label: 'Address'),
+                        heightBox10,
+                        Obx(
+                          () => LocationField(
+                            address: selectedAddress.value,
+                            onPick: () async {
+                              final pos =
+                                  selectedLatLng.value ??
+                                  LatLng(23.8103, 90.4125);
+                              final res = await Get.to(
+                                () =>
+                                    LocationPickerScreen(initialPosition: pos),
+                              );
+                              if (res is Map) {
+                                setState(() {
+                                  setLocation(res['latLng'], res['address']);
+                                });
+                              }
+                            },
+                            onClear: clearLocation,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
 
               // CustomTextField(
               //   controller: _addressCtrl,

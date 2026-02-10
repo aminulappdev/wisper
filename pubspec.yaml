@@ -79,6 +79,7 @@ dependencies:
   location: ^8.0.0
   geolocator: ^14.0.2
   geocoding: ^3.0.0
+  cached_network_image: ^3.4.1
 
   
 

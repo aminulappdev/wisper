@@ -107,10 +107,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
   InputDecoration _defaultDecoration() {
     return InputDecoration(
       suffixIcon: widget.suffixIcon != null
-          ? (widget.obscureText
+          ? (widget.obscureText 
                 ? IconButton(
                     icon: Icon(
-                      _obscureText ? widget.suffixIcon : Icons.visibility_off,
+                      _obscureText ? widget.suffixIcon : Icons.remove_red_eye_outlined,
                     ),
                     onPressed: _toggleVisibility,
                   )

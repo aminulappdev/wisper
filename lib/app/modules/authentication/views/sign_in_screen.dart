@@ -139,7 +139,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 heightBox10,
                 CustomTextField(
                   controller: passwordController,
-                  suffixIcon: Icons.remove_red_eye_outlined,
+                  suffixIcon: Icons.visibility_off,
                   hintText: '********',
                   obscureText: true, // Enable password hiding
                   keyboardType: TextInputType.text, // Fixed for password

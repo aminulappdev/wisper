@@ -24,7 +24,7 @@ class PasswordSection extends StatelessWidget {
         heightBox10,
         CustomTextField(
           controller: passwordController,
-          suffixIcon: Icons.remove_red_eye_outlined,
+          suffixIcon: Icons.visibility_off,
           hintText: '********',
           obscureText: true,
           keyboardType: TextInputType.text,
@@ -39,7 +39,7 @@ class PasswordSection extends StatelessWidget {
         CustomTextField(
           autovalidateMode: AutovalidateMode.onUserInteraction,
           controller: confirmPasswordController,
-          suffixIcon: Icons.remove_red_eye_outlined,
+          suffixIcon: Icons.visibility_off,
           hintText: '********',
           obscureText: true,
           keyboardType: TextInputType.text,
