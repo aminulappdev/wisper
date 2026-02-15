@@ -22,10 +22,10 @@ class Urls {
   static const String personEditProfileUrl = '$_baseUrl/persons/profile';
   static const String businessEditProfileUrl = '$_baseUrl/businesses/profile';
   static const String personEditProfilePhotoUrl =
-      '$_baseUrl/persons/profile-image';
-  static const String businessEditProfilePhotoUrl =
+      '$_baseUrl/persons/profile-image'; 
+  static const String businessEditProfilePhotoUrl = 
       '$_baseUrl/businesses/profile-image';
-
+  
   // =========================================== Authentication ====================================== //
   static const String signUpUrlPerson = '$_baseUrl/auths/person/signup';
   static const String signUpUrlBussiness = '$_baseUrl/auths/business/signup';
@@ -80,6 +80,7 @@ class Urls {
   static const String resumePostUrl = '$_baseUrl/resumes';
   static const String feedJobUrl = '$_baseUrl/jobs';
   static const String roleUrl = '$_baseUrl/persons/roles';
+  static const String walletUrl = '$_baseUrl/payments';
  
   static String editPostId(String id) {
     return '$_baseUrl/posts/$id';

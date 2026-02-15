@@ -13,8 +13,8 @@ class TransactionSection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Transactions',
+            Text( 
+              'Transaction history',
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20.sp),
             ),
 

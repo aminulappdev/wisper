@@ -9,7 +9,7 @@ class WalletOption extends StatelessWidget {
   const WalletOption({
     super.key,
     required this.title,
-    this.onTap,
+    this.onTap, 
     required this.bgColor,
     required this.borderColor,
   });
@@ -20,7 +20,7 @@ class WalletOption extends StatelessWidget {
       onTap: onTap,
       child: Container(
         height: 48,
-        width: 106,
+        width: 150.w,
         decoration: BoxDecoration(
           color: bgColor,
           borderRadius: BorderRadius.circular(10.r),
