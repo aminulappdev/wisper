@@ -3,6 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/others/custom_size.dart';
+import 'package:wisper/app/core/others/get_storage.dart';
+import 'package:wisper/app/modules/post/model/comment_model.dart';
+import 'package:wisper/app/modules/profile/controller/buisness/buisness_controller.dart';
+import 'package:wisper/app/modules/profile/controller/person/profile_controller.dart';
 import 'package:wisper/app/modules/settings/controller/walllet_controller.dart';
 import 'package:wisper/app/modules/settings/views/transaction_section.dart';
 import 'package:wisper/gen/assets.gen.dart';
@@ -16,10 +20,14 @@ class WalletScreen extends StatefulWidget {
 
 class _WalletScreenState extends State<WalletScreen> {
   final WallletController wallletController = Get.put(WallletController());
+  final ProfileController profileController = Get.find<ProfileController>();
+  final BusinessController businessController = Get.find<BusinessController>();
 
   @override
   void initState() {
     wallletController.getWallet();
+    profileController.getMyProfile();
+    businessController.getMyProfile();
     super.initState();
   }
 
@@ -46,41 +54,65 @@ class _WalletScreenState extends State<WalletScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            mainAxisSize: MainAxisSize.min,
+                      Obx(() {
+                        if (profileController.inProgress) {
+                          return const CircularProgressIndicator();
+                        } else {
+                          var isPerson =
+                              StorageUtil.getData(StorageUtil.userRole) ==
+                                  'PERSON'
+                              ? true
+                              : false;
+
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                'Total Balance',
-                                style: TextStyle(
-                                  fontSize: 20.sp,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.white,
-                                ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Total Balance',
+                                    style: TextStyle(
+                                      fontSize: 20.sp,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  Text(
+                                    'N/A',
+                                    style: TextStyle(
+                                      fontSize: 26.sp,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Text(
-                                '\$15.00',
-                                style: TextStyle(
-                                  fontSize: 40.sp,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.white,
+                              CircleAvatar(
+                                radius: 21.r,
+                                backgroundImage: NetworkImage(
+                                  isPerson
+                                      ? profileController
+                                                .profileData!
+                                                .auth!
+                                                .person
+                                                ?.image ??
+                                            ''
+                                      : businessController
+                                                .buisnessData
+                                                ?.auth!
+                                                .business
+                                                ?.image ??
+                                            '',
                                 ),
                               ),
                             ],
-                          ),
-                          CircleAvatar(
-                            radius: 21.r,
-                            backgroundImage: AssetImage(
-                              Assets.images.image.keyName,
-                            ),
-                          ),
-                        ],
-                      ),
+                          );
+                        }
+                      }),
                     ],
                   ),
                 ),
@@ -136,7 +168,9 @@ class _WalletScreenState extends State<WalletScreen> {
               //   ],
               // ),
               heightBox10,
-              TransactionSection(),
+              TransactionSection(
+                allTransectionModel: wallletController.allTransectionData,
+              ),
             ],
           );
         }
