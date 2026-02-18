@@ -7,7 +7,8 @@ import 'package:wisper/app/modules/job/widgets/job_card.dart';
 
 class JobSection extends StatefulWidget {
   final String? searchQuery;
-  const JobSection({super.key, this.searchQuery});
+  final String? jobType;
+  const JobSection({super.key, this.searchQuery, this.jobType});
 
   @override 
   State<JobSection> createState() => _JobSectionState(); 

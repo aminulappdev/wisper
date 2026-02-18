@@ -15,7 +15,7 @@ class ChatSection extends StatefulWidget {
   State<ChatSection> createState() => _ChatSectionState();
 }
 
-class _ChatSectionState extends State<ChatSection> {
+ class _ChatSectionState extends State<ChatSection> {
   final AllChatsController controller = Get.put(AllChatsController());
   final SocketService socketService = Get.find<SocketService>();
 

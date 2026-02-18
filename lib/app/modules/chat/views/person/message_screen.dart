@@ -469,7 +469,7 @@ class AnimatedMessageBubble extends StatefulWidget {
   const AnimatedMessageBubble({
     super.key,
     required this.message,
-    required this.isMe,
+    required this.isMe, 
     required this.fileUrl,
     required this.fileType,
     required this.senderName,

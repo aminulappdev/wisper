@@ -43,7 +43,7 @@ class FeedJobItemModel {
     required this.title,
     required this.description,
     required this.salary,
-    required this.compensationType,
+    required this.compensationType, 
     required this.experienceLevel,
     required this.qualification,
     required this.responsibilities,

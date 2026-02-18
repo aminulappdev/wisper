@@ -22,78 +22,86 @@ class AllFeedJobController extends GetxController {
   int page = 0;
   int? lastPage;
 
-  Future<bool> getJobs({String? searchQuery}) async {
-    print(
-      'User ID avobe getAllJob: ${StorageUtil.getData(StorageUtil.userAccessToken)}',
-    );
-    if (_inProgress.value) {
-      print('Fetch already in progress, skipping');
-      return false;
-    }
-
-    if (lastPage != null && page >= lastPage!) {
-      print('Reached last page: $lastPage');
-      _inProgress.value = false;
-      update();
-      return false; // Stop if we've reached the last page
-    }
-
-    _inProgress.value = true;
-    update();
-
-    try {
-      // Increment page after checking lastPage
-      page++;
-      print('Fetching assets for page: $page');
-
-      Map<String, dynamic> queryParams = {
-        'limit': _limit,
-        'page': page,
-        'searchTerm': searchQuery ?? '',
-      };
-
-      print('Fetching assets with params: $queryParams');
-
-      final NetworkResponse response = await networkCaller.getRequest(
-        Urls.feedJobUrl,
-        queryParams: queryParams,
-        accessToken: StorageUtil.getData(StorageUtil.userAccessToken),
-      );
-
-      print('Raw response: ${response.responseData}');
-
-      if (response.isSuccess && response.responseData != null) {
-        _errorMessage.value = '';
-        FeedJobModel jobModel = FeedJobModel.fromJson(response.responseData);
-        _allJobList.addAll(jobModel.data?.jobs ?? []);
-
-        if (jobModel.data?.meta?.total != null &&
-            jobModel.data?.meta?.limit != null) {
-          lastPage = (jobModel.data!.meta!.total! / jobModel.data!.meta!.limit!)
-              .ceil();
-          print('Last page calculated: $lastPage');
-        }
-
-        _inProgress.value = false;
-        update();
-        return true;
-      } else {
-        _errorMessage.value = response.errorMessage;
-        if (_errorMessage.value.contains('expired')) {
-          Get.to(() => SignInScreen());
-        }
-        _inProgress.value = false;
-        update();
-        return false;
-      }
-    } catch (e) {
-      _errorMessage.value = 'Failed to fetch asset data: ${e.toString()}';
-      print('Error fetching asset data: $e');
-      _inProgress.value = false;
-      update();
-      return false;
-    }
+  Future<bool> getJobs({
+  String? searchQuery,
+  String? locationType,
+}) async {
+  if (_inProgress.value) {
+    print('Fetch already in progress → skipping');
+    return false;
   }
+
+  if (lastPage != null && page >= lastPage!) {
+    print('Already at last page: $lastPage');
+    return false;
+  }
+
+  _inProgress.value = true;
+  _errorMessage.value = '';
+  update();
+
+  try {
+    page++; // increment only when actually fetching
+    print('Fetching jobs | page: $page');
+
+    final Map<String, dynamic> queryParams = {
+      'limit': _limit,
+      'page': page,
+    };
+
+    // Only add parameters when they have meaningful values
+    if (searchQuery != null && searchQuery.trim().isNotEmpty) {
+      queryParams['searchTerm'] = searchQuery.trim();
+    }
+
+    if (locationType != null && locationType.isNotEmpty) {
+      queryParams['location'] = locationType;
+    }
+
+    print('Query params: $queryParams');
+    // Optional: print full URL for debugging
+    // final fullUrl = Uri.parse(Urls.feedJobUrl).replace(queryParameters: queryParams);
+    // print('Full URL: $fullUrl');
+
+    final response = await networkCaller.getRequest(
+      Urls.feedJobUrl,
+      queryParams: queryParams,
+      accessToken: StorageUtil.getData(StorageUtil.userAccessToken),
+    );
+
+    print('Status: ${response.statusCode} | Success: ${response.isSuccess}');
+
+    if (response.isSuccess && response.responseData != null) {
+      final jobModel = FeedJobModel.fromJson(response.responseData);
+
+      _allJobList.addAll(jobModel.data?.jobs ?? []);
+
+      if (jobModel.data?.meta?.total != null && jobModel.data?.meta?.limit != null) {
+        lastPage = (jobModel.data!.meta!.total! / jobModel.data!.meta!.limit!).ceil();
+        print('Total jobs: ${jobModel.data?.meta?.total} → last page: $lastPage');
+      }
+
+      _inProgress.value = false;
+      update();
+      return true;
+    } else {
+      _errorMessage.value = response.errorMessage ?? 'Failed to load jobs';
+      if (_errorMessage.value.toLowerCase().contains('expired')) {
+        Get.to(() => const SignInScreen());
+      }
+      _inProgress.value = false;
+      update();
+      return false;
+    }
+  } catch (e, stack) {
+    print('getJobs error: $e');
+    print('Stack: $stack');
+    _errorMessage.value = 'Something went wrong: $e';
+    _inProgress.value = false;
+    update();
+    return false;
+  }
+}
 
   void resetPagination() {
     page = 0; // Reset to 0 so first call uses page 1
