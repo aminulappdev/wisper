@@ -6,7 +6,7 @@ class ToggleButton extends StatefulWidget {
     super.key,
     required this.isToggled,
     required this.onToggle,
-  });
+  }); 
 
   final bool isToggled;
   final ValueChanged<bool> onToggle;

@@ -19,8 +19,8 @@ class WalletOption extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 48,
-        width: 150.w,
+        height: 30,
+        width: 100.w,
         decoration: BoxDecoration(
           color: bgColor,
           borderRadius: BorderRadius.circular(10.r),

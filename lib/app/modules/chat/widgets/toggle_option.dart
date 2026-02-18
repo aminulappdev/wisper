@@ -7,7 +7,7 @@ class ToggleOption extends StatelessWidget {
   final String title;
   final String subtitle;
   final bool isToggled;        // নতুন প্রপ
-  final void Function(bool) onToggle;
+  final void Function(bool) onToggle; 
 
   const ToggleOption({
     super.key,
