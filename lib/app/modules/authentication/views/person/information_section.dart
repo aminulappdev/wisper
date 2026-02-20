@@ -124,7 +124,7 @@ class _InformationSectionState extends State<InformationSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Label(label: 'First Name'),
+        const Label(label: 'First Name'), 
         heightBox10,
         CustomTextField(
           controller: widget.firstNameController,

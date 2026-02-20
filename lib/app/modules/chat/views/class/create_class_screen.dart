@@ -133,15 +133,20 @@ class _CreateClassScreenState extends State<CreateClassScreen> {
                                 final connection = allConnectionController
                                     .allConnectionData!
                                     .firstWhere(
-                                      (c) => (c.partner?.id ?? '').toString() == selectedId,
-                                     
+                                      (c) =>
+                                          (c.partner?.id ?? '').toString() ==
+                                          selectedId,
                                     );
 
                                 return Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 4,
+                                  ),
                                   child: MemberWidget(
                                     imagePath: Assets.images.image.keyName,
-                                    name: connection?.partner?.person?.name ?? 'Unknown',
+                                    name:
+                                        connection?.partner?.person?.name ??
+                                        'Unknown',
                                     onTap: () {
                                       setState(() {
                                         selectedMemberIds.removeAt(index);
@@ -170,15 +175,15 @@ class _CreateClassScreenState extends State<CreateClassScreen> {
                   final query = searchQuery.value;
                   final filteredList = query.isEmpty
                       ? allConnectionController.allConnectionData!
-                      : allConnectionController.allConnectionData!.where((data) {
+                      : allConnectionController.allConnectionData!.where((
+                          data,
+                        ) {
                           final name = data.partner?.person?.name ?? '';
                           return name.toLowerCase().contains(query);
                         }).toList();
 
                   if (filteredList.isEmpty) {
-                    return const Center(
-                      child: Text('No matching contacts'),
-                    );
+                    return const Center(child: Text('No matching contacts'));
                   }
 
                   return ListView.builder(
@@ -204,7 +209,9 @@ class _CreateClassScreenState extends State<CreateClassScreen> {
                               });
                             },
                           ),
-                          imagePath: Assets.images.image.keyName,
+                          imagePath: data.partner?.person != null
+                              ? data.partner?.person?.image ?? ''
+                              : data.partner?.business?.image ?? '',
                           title: data.partner?.person?.name ?? '',
                           subtitle: data.partner?.person?.title ?? '',
                           onTap: () {
@@ -234,9 +241,7 @@ class _CreateClassScreenState extends State<CreateClassScreen> {
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
-        return CreateClassButtomSheet(
-          selectedMemberIds: selectedMemberIds,
-        );
+        return CreateClassButtomSheet(selectedMemberIds: selectedMemberIds);
       },
     );
   }

@@ -1,6 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:geolocator/geolocator.dart';     // ← new
+import 'package:geocoding/geocoding.dart';       // ← new
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/others/custom_size.dart';
 import 'package:wisper/app/core/utils/show_over_loading.dart';
@@ -56,17 +60,93 @@ class _JobInterestScreenState extends State<JobInterestScreen> {
     'Fintech',
   ];
 
+  Future<String> _getCurrentCityCountry() async {
+    try {
+      // 1. Check if location service is enabled
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        if (mounted) {
+          showSnackBarMessage(context, 'Please enable location services', true);
+        }
+        return '';
+      }
+
+      // 2. Check & request permission
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          if (mounted) {
+            showSnackBarMessage(context, 'Location permission denied', true);
+          }
+          return '';
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        if (mounted) {
+          showSnackBarMessage(
+            context,
+            'Location permission permanently denied. Please enable from settings.',
+            true,
+          );
+        }
+        return '';
+      }
+
+      // 3. Get current position
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.medium, // balanced speed + accuracy
+      ).timeout(const Duration(seconds: 10));
+
+      // 4. Reverse geocoding → city & country
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks.first;
+        String city = place.locality?.trim().isNotEmpty == true
+            ? place.locality!
+            : (place.subAdministrativeArea ?? 'Unknown city');
+
+        String country = place.country ?? 'Unknown country';
+
+        return '$city, $country';
+      }
+
+      return '';
+    } catch (e) {
+      debugPrint('Location error: $e');
+      if (mounted) {
+        showSnackBarMessage(context, 'Could not get current location', true);
+      }
+      return '';
+    }
+  }
+
   void _finishSignUp() {
     showLoadingOverLay(
-      asyncFunction: () async => await widget.title == null
-          ? signUpWithRecruiter(context)
-          : signUpWithPerson(context),
+      asyncFunction: () async {
+        // Get real-time location before signup
+        final String currentAddress = await _getCurrentCityCountry();
+
+        if (widget.title == null) {
+          // Recruiter / Business
+          await signUpWithRecruiter(context, currentAddress);
+        } else {
+          // Person
+          await signUpWithPerson(context, currentAddress);
+        }
+      },
       msg: 'Please wait...',
     );
   }
 
-  Future<void> signUpWithPerson(BuildContext context) async {
+  Future<void> signUpWithPerson(BuildContext context, String address) async {
     final bool isSuccess = await signUpController.signUp(
+      address: address, // ← now real location
       firstName: widget.firstName,
       lastName: widget.lastName,
       email: widget.email,
@@ -74,7 +154,7 @@ class _JobInterestScreenState extends State<JobInterestScreen> {
       password: widget.password,
       confirmPassword: widget.password,
       title: widget.title,
-      industry: selectedInterest ?? '', // single string
+      industry: selectedInterest ?? '',
     );
 
     if (isSuccess) {
@@ -85,8 +165,9 @@ class _JobInterestScreenState extends State<JobInterestScreen> {
     }
   }
 
-  Future<void> signUpWithRecruiter(BuildContext context) async {
+  Future<void> signUpWithRecruiter(BuildContext context, String address) async {
     final bool isSuccess = await signUpController.signUp(
+      address: address, // ← now real location
       firstName: widget.firstName,
       lastName: widget.lastName,
       bussinessName: widget.bussinessName,
@@ -105,9 +186,9 @@ class _JobInterestScreenState extends State<JobInterestScreen> {
       showSnackBarMessage(context, signUpController.errorMessage, true);
     }
   }
-  
+
   @override
-  dispose() {
+  void dispose() {
     selectedInterest = null;
     super.dispose();
   }
@@ -141,7 +222,7 @@ class _JobInterestScreenState extends State<JobInterestScreen> {
                 ),
               ),
               Text(
-                'Which position are you interested in?', // changed question slightly for single
+                'Which position are you interested in?',
                 style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w800),
               ),
               heightBox12,
@@ -158,9 +239,9 @@ class _JobInterestScreenState extends State<JobInterestScreen> {
                     onTap: () {
                       setState(() {
                         if (selectedInterest == jobInterests[index]) {
-                          selectedInterest = null; // deselect if tapped again
+                          selectedInterest = null; // deselect
                         } else {
-                          selectedInterest = jobInterests[index]; // select this one only
+                          selectedInterest = jobInterests[index]; // select
                         }
                       });
                     },
@@ -171,7 +252,7 @@ class _JobInterestScreenState extends State<JobInterestScreen> {
                         style: TextStyle(
                           fontSize: 14.sp,
                           color: selectedInterest == jobInterests[index]
-                              ? Colors.blue // or LightThemeColors.blueColor
+                              ? LightThemeColors.blueColor
                               : Colors.white,
                         ),
                       ),

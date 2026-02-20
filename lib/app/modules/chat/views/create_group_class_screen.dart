@@ -20,8 +20,9 @@ class CreateGroupClassScreen extends StatefulWidget {
 }
 
 class _CreateGroupClassScreenState extends State<CreateGroupClassScreen> {
-  final AllConnectionController allConnectionController =
-      Get.put(AllConnectionController());
+  final AllConnectionController allConnectionController = Get.put(
+    AllConnectionController(),
+  );
 
   // Search related
   final TextEditingController _searchController = TextEditingController();
@@ -102,7 +103,10 @@ class _CreateGroupClassScreenState extends State<CreateGroupClassScreen> {
                 hintText: 'Search',
                 prefixIcon: Icons.search_outlined,
                 pprefixIconColor: const Color(0xff8C8C8C),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
               ),
             ),
             heightBox10,
@@ -114,7 +118,8 @@ class _CreateGroupClassScreenState extends State<CreateGroupClassScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                final originalList = allConnectionController.allConnectionData ?? [];
+                final originalList =
+                    allConnectionController.allConnectionData ?? [];
                 final query = searchQuery.value;
 
                 // Filter contacts based on name
@@ -142,10 +147,15 @@ class _CreateGroupClassScreenState extends State<CreateGroupClassScreen> {
                     final name = connection.partner?.person?.name ?? 'Unknown';
                     final title = connection.partner?.person?.title ?? '';
 
+                    final imagePath = connection.partner?.person != null
+                        ? connection.partner?.person?.image
+                        : connection.partner!.business?.image;
+                    '';
+
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 6.0),
                       child: ContactWidget(
-                        imagePath: Assets.images.image.keyName,
+                        imagePath: imagePath ?? '',
                         title: name,
                         subtitle: title,
                         onTap: () {

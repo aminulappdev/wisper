@@ -12,16 +12,17 @@ class SignUpController extends GetxController {
   String get errorMessage => _errorMessage.value;
 
   /// 🔁 Sign Up Function
-  Future<bool> signUp({ 
+  Future<bool> signUp({
     String? title,
     String? bussinessName,
     String? industry,
     String? firstName,
-    String? lastName, 
+    String? lastName,
     String? email,
     String? phone,
     String? password,
     String? confirmPassword,
+    String? address,
     File? image,
   }) async {
     if (_inProgress.value) {
@@ -31,7 +32,7 @@ class SignUpController extends GetxController {
 
     _inProgress.value = true;
     update();
-
+    print('Address::::::::::: $address');
     print('Image: $image');
     if (image != null) {
       print('Image path: ${image.path}');
@@ -53,6 +54,7 @@ class SignUpController extends GetxController {
           "email": email,
           "name": name,
           "phone": phone, // optional
+          "address": address,
         },
       };
 
@@ -62,6 +64,7 @@ class SignUpController extends GetxController {
           "email": email,
           "name": bussinessName,
           "industry": industry,
+          "address": address,
         },
       };
 

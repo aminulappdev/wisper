@@ -5,6 +5,7 @@ import 'package:wisper/app/core/others/custom_size.dart';
 import 'package:wisper/app/core/widgets/common/circle_icon.dart';
 import 'package:wisper/app/core/widgets/common/line_widget.dart';
 import 'package:wisper/app/modules/homepage/views/chat_section.dart';
+import 'package:wisper/app/modules/homepage/views/community_section.dart';
 import 'package:wisper/app/modules/homepage/views/role_section.dart';
 import 'package:wisper/app/modules/job/views/job_section.dart';
 import 'package:wisper/app/modules/post/views/post_section.dart';
@@ -59,133 +60,168 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
 
             heightBox12,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = 0;
-                    });
-                  },
-                  child: Column(
-                    children: [
-                      Text(
-                        'General Chat',
-                        style: TextStyle(
-                          fontFamily: "Segoe UI",
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.w600,
+            SizedBox(
+              height: 30.h,
+              width: double.infinity,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedIndex = 0;
+                      });
+                    },
+                    child: Column(
+                      children: [
+                        Text(
+                          'General Chat',
+                          style: TextStyle(
+                            fontFamily: "Segoe UI",
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w600,
+                            color: selectedIndex == 0
+                                ? Colors.white
+                                : Color(0xff93A4B0),
+                          ),
+                        ),
+                        heightBox4,
+                        Container(
+                          height: 2.h,
+                          width: 90.w,
                           color: selectedIndex == 0
-                              ? Colors.white
-                              : Color(0xff93A4B0),
+                              ? Colors.blue
+                              : Colors.transparent,
                         ),
-                      ),
-                      heightBox4,
-                      Container(
-                        height: 2.h,
-                        width: 90.w,
-                        color: selectedIndex == 0
-                            ? Colors.blue
-                            : Colors.transparent,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                widthBox20,
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = 1;
-                    });
-                  },
-                  child: Column(
-                    children: [
-                      Text(
-                        'Posts',
-                        style: TextStyle(
-                          fontFamily: "Segoe UI",
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
+                  widthBox20,
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedIndex = 1;
+                      });
+                    },
+                    child: Column(
+                      children: [
+                        Text(
+                          'Posts',
+                          style: TextStyle(
+                            fontFamily: "Segoe UI",
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600,
+                            color: selectedIndex == 1
+                                ? Colors.white
+                                : Color(0xff93A4B0),
+                          ),
+                        ),
+                        heightBox4,
+                        Container(
+                          height: 2.h,
+                          width: 40.w,
                           color: selectedIndex == 1
-                              ? Colors.white
-                              : Color(0xff93A4B0),
+                              ? Colors.blue
+                              : Colors.transparent,
                         ),
-                      ),
-                      heightBox4,
-                      Container(
-                        height: 2.h,
-                        width: 40.w,
-                        color: selectedIndex == 1
-                            ? Colors.blue
-                            : Colors.transparent,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                widthBox20,
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = 2;
-                    });
-                  },
-                  child: Column(
-                    children: [
-                      Text(
-                        'Jobs',
-                        style: TextStyle(
-                          fontFamily: "Segoe UI",
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
+                  widthBox20,
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedIndex = 2;
+                      });
+                    },
+                    child: Column(
+                      children: [
+                        Text(
+                          'Jobs',
+                          style: TextStyle(
+                            fontFamily: "Segoe UI",
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600,
+                            color: selectedIndex == 2
+                                ? Colors.white
+                                : Color(0xff93A4B0),
+                          ),
+                        ),
+                        heightBox4,
+                        Container(
+                          height: 2.h,
+                          width: 40.w,
                           color: selectedIndex == 2
-                              ? Colors.white
-                              : Color(0xff93A4B0),
+                              ? Colors.blue
+                              : Colors.transparent,
                         ),
-                      ),
-                      heightBox4,
-                      Container(
-                        height: 2.h,
-                        width: 40.w,
-                        color: selectedIndex == 2
-                            ? Colors.blue
-                            : Colors.transparent,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                widthBox20,
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = 3;
-                    });
-                  },
-                  child: Column(
-                    children: [
-                      Text(
-                        'Role',
-                        style: TextStyle(
-                          fontFamily: "Segoe UI",
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
+                  widthBox20,
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedIndex = 3;
+                      });
+                    },
+                    child: Column(
+                      children: [
+                        Text(
+                          'Role',
+                          style: TextStyle(
+                            fontFamily: "Segoe UI",
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600,
+                            color: selectedIndex == 3
+                                ? Colors.white
+                                : Color(0xff93A4B0),
+                          ),
+                        ),
+                        heightBox4,
+                        Container(
+                          height: 2.h,
+                          width: 40.w,
                           color: selectedIndex == 3
-                              ? Colors.white
-                              : Color(0xff93A4B0),
+                              ? Colors.blue
+                              : Colors.transparent,
                         ),
-                      ),
-                      heightBox4,
-                      Container(
-                        height: 2.h,
-                        width: 40.w,
-                        color: selectedIndex == 3
-                            ? Colors.blue
-                            : Colors.transparent,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                      ],
+                    ),
+                  ), 
+                   widthBox20,
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedIndex = 4;
+                      });
+                    },
+                    child: Column(
+                      children: [
+                        Text(
+                          'Community',
+                          style: TextStyle(
+                            fontFamily: "Segoe UI",
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600,
+                            color: selectedIndex == 4
+                                ? Colors.white
+                                : Color(0xff93A4B0),
+                          ),
+                        ),
+                        heightBox4,
+                        Container(
+                          height: 2.h,
+                          width: 78.w,
+                          color: selectedIndex == 4
+                              ? Colors.blue
+                              : Colors.transparent,
+                        ),
+                      ],
+                    ),
+                  ), 
+                ],
+              ),
             ),
             StraightLiner(height: 0.4, color: Color(0xff454545)),
 
@@ -194,6 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
             selectedIndex == 1 ? PostSection() : Container(),
             selectedIndex == 2 ? JobSection() : Container(),
             selectedIndex == 3 ? RoleSection() : Container(),
+            selectedIndex == 4 ? CommunitySection() : Container(),
           ],
         ),
       ),

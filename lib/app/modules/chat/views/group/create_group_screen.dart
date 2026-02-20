@@ -133,15 +133,25 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                                 final connection = allConnectionController
                                     .allConnectionData!
                                     .firstWhere(
-                                      (c) => (c.partner?.id ?? '').toString() == selectedId,
-                                     
+                                      (c) =>
+                                          (c.partner?.id ?? '').toString() ==
+                                          selectedId,
                                     );
 
                                 return Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 4,
+                                  ),
                                   child: MemberWidget(
-                                    imagePath: Assets.images.image.keyName,
-                                    name: connection?.partner?.person?.name ?? 'Unknown',
+                                    imagePath:
+                                        connection.partner?.person != null
+                                        ? connection.partner?.person?.image ??
+                                              ''
+                                        : connection.partner?.business?.image ??
+                                              '',
+                                    name:
+                                        connection.partner?.person?.name ??
+                                        'Unknown',
                                     onTap: () {
                                       setState(() {
                                         selectedMemberIds.removeAt(index);
@@ -170,15 +180,15 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                   final query = searchQuery.value;
                   final filteredList = query.isEmpty
                       ? allConnectionController.allConnectionData!
-                      : allConnectionController.allConnectionData!.where((data) {
+                      : allConnectionController.allConnectionData!.where((
+                          data,
+                        ) {
                           final name = data.partner?.person?.name ?? '';
                           return name.toLowerCase().contains(query);
                         }).toList();
 
                   if (filteredList.isEmpty) {
-                    return const Center(
-                      child: Text('No matching contacts'),
-                    );
+                    return const Center(child: Text('No matching contacts'));
                   }
 
                   return ListView.builder(
@@ -234,9 +244,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
-        return CreateGroupButtomSheet(
-          selectedMemberIds: selectedMemberIds,
-        );
+        return CreateGroupButtomSheet(selectedMemberIds: selectedMemberIds);
       },
     );
   }

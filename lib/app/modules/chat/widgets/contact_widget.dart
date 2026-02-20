@@ -25,7 +25,11 @@ class ContactWidget extends StatelessWidget {
       children: [
         Row(
           children: [
-            CircleAvatar(radius: 18, backgroundImage: AssetImage(imagePath)),
+            CircleAvatar(
+              radius: 18,
+              backgroundImage: NetworkImage(imagePath),
+              backgroundColor: Colors.grey,
+            ),
             widthBox10,
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,

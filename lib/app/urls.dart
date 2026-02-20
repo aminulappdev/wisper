@@ -52,6 +52,11 @@ class Urls {
    static String otherProfileById(String id) {
     return '$_baseUrl/persons/$id';
   }
+
+  static String joinGroupById(String id) {
+    return '$_baseUrl/groups/join/$id';
+  }
+ 
  
   static String chatDataById(String id) {
     return '$_baseUrl/chats/files/$id';
@@ -81,6 +86,7 @@ class Urls {
   static const String feedJobUrl = '$_baseUrl/jobs';
   static const String roleUrl = '$_baseUrl/persons/roles';
   static const String walletUrl = '$_baseUrl/payments';
+  static const String allGroupUrl = '$_baseUrl/groups';
  
   static String editPostId(String id) {
     return '$_baseUrl/posts/$id';

@@ -6,6 +6,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:geocoding/geocoding.dart';          // ← new
+import 'package:geolocator/geolocator.dart';        // ← new
 import 'package:share_plus/share_plus.dart';
 import 'package:wisper/app/core/others/get_storage.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
@@ -54,6 +56,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   late final String userRole;
   final RxString currentImagePath = ''.obs;
+  
+  // New: location display (city, country)
+  final RxString currentCityCountry = 'Fetching location...'.obs;
 
   @override
   void initState() {
@@ -62,9 +67,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     userRole = StorageUtil.getData(StorageUtil.userRole) ?? 'PERSON';
     _updateProfileImage();
     _getProfileImage();
-    print(
-      'User id in ProfileScreen: ${StorageUtil.getData(StorageUtil.userId)}',
-    );
+    
+    print('User id in ProfileScreen: ${StorageUtil.getData(StorageUtil.userId)}');
+
+    // Fetch current location once
+    _fetchCurrentCityAndCountry();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       userRole == 'PERSON'
@@ -73,6 +80,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
             )
           : null;
     });
+  }
+
+  Future<void> _fetchCurrentCityAndCountry() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        currentCityCountry.value = 'Location services disabled';
+        return;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          currentCityCountry.value = 'Location permission denied';
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        currentCityCountry.value = 'Location permission permanently denied';
+        return;
+      }
+
+      // Get position
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.medium,
+        timeLimit: const Duration(seconds: 10),
+      );
+
+      // Reverse geocoding → get city & country
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks[0];
+        String city = place.locality ?? place.subAdministrativeArea ?? 'Unknown city';
+        String country = place.country ?? 'Unknown country';
+
+        currentCityCountry.value = '$city, $country';
+      } else {
+        currentCityCountry.value = 'Location not available';
+      }
+    } catch (e) {
+      print('Location error: $e');
+      currentCityCountry.value = 'Could not get location';
+    }
   }
 
   Future<void> _getProfileImage() async {
@@ -105,8 +161,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     currentImagePath.value = imageUrl?.isNotEmpty == true
         ? imageUrl!
         : (userRole == 'PERSON'
-              ? Assets.images.person.keyName
-              : Assets.images.person.keyName);
+            ? Assets.images.person.keyName
+            : Assets.images.person.keyName);
   }
 
   void _onImagePicked(File imageFile) async {
@@ -129,8 +185,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         await feedController.getAllPost();
         await personController.getMyProfile();
       } else {
-
-        
         await businessController.getMyProfile();
       }
 
@@ -194,9 +248,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ? (personData?.title ?? '')
           : (businessData?.industry ?? '');
 
-      final String? displayAddress = userRole == 'PERSON'
-          ? personData?.address
-          : businessData?.address;
+      // final String? displayAddress = userRole == 'PERSON'   ← removed
+      //     ? personData?.address
+      //     : businessData?.address;
 
       final DateTime? createdAt = userRole == 'PERSON'
           ? personController.profileData?.auth?.createdAt
@@ -271,25 +325,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             final bool isPerson =
                                 role.toUpperCase() == 'PERSON';
 
-                            // 🔥 Production / Real base URL — এখানে তোমার আসল ডোমেইন দাও
                             const String baseUrl =
-                                'https://c9f1d48ba47f.ngrok-free.app'; // ← এটা পরিবর্তন করো
-                            // অথবা development এর জন্য: 'https://c9f1d48ba47f.ngrok-free.app'
+                                'https://c9f1d48ba47f.ngrok-free.app';
 
-                            // Universal / App Link style — সবচেয়ে ভালো
                             final Uri shareUri = Uri.https(
-                              baseUrl.replaceAll('https://', ''), // host only
+                              baseUrl.replaceAll('https://', ''),
                               isPerson
                                   ? '/persons/$userId'
                                   : '/businesses/$userId',
                             );
-
-                            // অথবা custom scheme (যদি চাও)
-                            // final Uri shareUri = Uri(
-                            //   scheme: 'wisper',
-                            //   host: 'app',
-                            //   path: '/profile/${isPerson ? 'person' : 'business'}/$userId',
-                            // );
 
                             debugPrint("Sharing profile link: $shareUri");
 
@@ -311,8 +355,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         textSize: 12,
                         title: 'Edit Profile',
                         onPress: () => Get.to(
-                          () =>
-                              StorageUtil.getData(StorageUtil.userRole) ==
+                          () => StorageUtil.getData(StorageUtil.userRole) ==
                                   'PERSON'
                               ? EditPersonProfileScreen()
                               : EditBusinessProfileScreen(),
@@ -326,7 +369,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               SizedBox(height: 10.h),
 
-              // Fixed Recommendation Widget - Safe null handling
+              // Fixed Recommendation Widget
               userRole == 'PERSON'
                   ? SizedBox(
                       height: 30.h,
@@ -349,9 +392,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               SizedBox(height: 10.h),
 
-              LocationInfo(
-                location: displayAddress ?? 'Location not set',
-                date: dateFormatter.getShortDateFormat(),
+              // Now using current location instead of profile address
+              Obx(
+                () => LocationInfo(
+                  location: currentCityCountry.value,
+                  date: dateFormatter.getShortDateFormat(),
+                ),
               ),
 
               SizedBox(height: 20.h),

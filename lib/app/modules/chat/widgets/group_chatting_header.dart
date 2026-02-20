@@ -29,7 +29,7 @@ class GroupChatHeader extends StatefulWidget {
   final String chatId;
 
   const GroupChatHeader({
-    super.key,
+    super.key, 
     required this.groupName,
     required this.groupImage,
     required this.groupId,
