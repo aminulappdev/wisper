@@ -99,7 +99,7 @@ class AllChatsController extends GetxController {
       for (var chatJson in incomingChats) {
         final chat = chatJson as Map<String, dynamic>;
 
-        final String chatId = chat['id'] ?? '';
+        final String chatId = chat['id'] ?? ''; 
         if (chatId.isEmpty) continue;
 
         final String type = chat['type'] ?? 'INDIVIDUAL';
@@ -107,8 +107,8 @@ class AllChatsController extends GetxController {
         // last message
         final String lastMessage =
             chat['messages'] != null && (chat['messages'] as List).isNotEmpty
-            ? (chat['messages'].first['text'] ?? 'No messages yet')
-            : 'No messages yet';
+            ? (chat['messages'].first['text'] ?? '')
+            : 'No messages';
 
         // latest time
         final String latestMessageAt = chat['latestMessageAt'] ?? '';
@@ -149,7 +149,7 @@ class AllChatsController extends GetxController {
         if (index != -1) {
           // Existing chat → শুধু আপডেট করো
           socketService.socketFriendList[index]
-            ..['lastMessage'] = lastMessage
+            ..['lastMessage'] = lastMessage == '' ? '📷 photo' : lastMessage
             ..['latestMessageAt'] = latestMessageAt
             ..['unreadMessageCount'] = unreadCount;
 
@@ -251,8 +251,8 @@ class AllChatsController extends GetxController {
             "type": type,
             "latestMessageAt": chat.latestMessageAt?.toIso8601String() ?? '',
             "lastMessage": chat.messages.isNotEmpty
-                ? chat.messages.first.text ?? 'No messages yet'
-                : 'No messages yet',
+                ? chat.messages.first.text ?? '📁 file'  
+                : 'No message yet', 
             "unreadMessageCount": chat.count?.messages ?? 0,
             "group": chat.group != null
                 ? {"name": chat.group?.name, "image": chat.group?.image}

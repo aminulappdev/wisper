@@ -7,7 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AttachmentPickerHelper {
   final ImagePicker _imagePicker = ImagePicker();
-
+   
   // ───────────────────────────────────────────────────────────
   // ১. Video পিক করা (শুধু গ্যালারি থেকে, single)
   // ───────────────────────────────────────────────────────────
@@ -34,13 +34,13 @@ class AttachmentPickerHelper {
   // ২. Document পিক করা (PDF, multiple allowed)
   // ───────────────────────────────────────────────────────────
   Future<void> pickDocument(
-    BuildContext context,
+    BuildContext context, 
     Function(List<File>) onDocumentsPicked,
   ) async {
     try {
       final FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: ['pdf'],
+        allowedExtensions: ['pdf'], 
         allowMultiple: true,
       );
 
@@ -54,7 +54,7 @@ class AttachmentPickerHelper {
     } catch (e) {
       debugPrint("Error picking document: $e");
     } finally {
-      if (Navigator.canPop(context)) Navigator.pop(context);
+      // if (Navigator.canPop(context)) Navigator.pop(context);
     }
   }
 
@@ -110,19 +110,19 @@ class AttachmentPickerHelper {
                   ),
                   title: Text(
                     'Choose Document',
-                    style: TextStyle(
+                    style: TextStyle( 
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   onTap: () async {
-                    Navigator.pop(dialogContext);
+                    // Navigator.pop(dialogContext);
                     await pickDocument(context, onDocumentSelected);
                   },
                 ),
 
                 const Divider(height: 1),
-
+ 
                 // Cancel
                 ListTile(
                   title: Center(

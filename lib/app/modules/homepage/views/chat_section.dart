@@ -107,7 +107,7 @@ class ChatSection extends StatefulWidget {
               name = item['chatClass']?['name'] ?? 'Class Chat';
               image = item['chatClass']?['image'] ?? image;
             }
-
+ 
             final String lastMessage = item['lastMessage'] ?? 'No messages yet';
             final String timeStr = item['latestMessageAt'] ?? '';
             final DateTime time = DateTime.tryParse(timeStr) ?? DateTime.now();

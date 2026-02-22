@@ -86,7 +86,7 @@ class InfoCard extends StatelessWidget {
                         Navigator.pop(context);
                       },
                     )
-                  : Container(),
+                  : Container(width: 20,),
               Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,

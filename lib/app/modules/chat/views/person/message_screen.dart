@@ -271,7 +271,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  "No messages yet",
+                                  "No messages yet 3", 
                                   style: TextStyle(
                                     fontSize: 16.sp,
                                     color: Colors.grey,

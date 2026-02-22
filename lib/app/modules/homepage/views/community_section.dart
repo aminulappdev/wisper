@@ -75,7 +75,8 @@ class _CommunitySectionState extends State<CommunitySection> {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (controller.allGroupData == null || controller.allGroupData!.isEmpty) {
+        if (controller.allGroupData == null ||
+            controller.allGroupData!.isEmpty) {
           return Center(
             child: Text(
               'No communities yet',

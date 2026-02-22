@@ -279,6 +279,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               // Profile Info Card
               InfoCard(
+               
                 trailingKey: suffixButtonKey,
                 trailingOnTap: () => CustomPopupMenu(
                   targetKey: suffixButtonKey,
@@ -352,7 +353,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       width: 116.w,
                       child: CustomElevatedButton(
                         color: Colors.black,
-                        textSize: 12,
+                        textSize: 12, 
                         title: 'Edit Profile',
                         onPress: () => Get.to(
                           () => StorageUtil.getData(StorageUtil.userRole) ==
