@@ -109,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           'Posts',
                           style: TextStyle(
                             fontFamily: "Segoe UI",
-                            fontSize: 16.sp,
+                            fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
                             color: selectedIndex == 1
                                 ? Colors.white
@@ -140,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           'Jobs',
                           style: TextStyle(
                             fontFamily: "Segoe UI",
-                            fontSize: 16.sp,
+                            fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
                             color: selectedIndex == 2
                                 ? Colors.white
@@ -171,7 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           'Role',
                           style: TextStyle(
                             fontFamily: "Segoe UI",
-                            fontSize: 16.sp,
+                            fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
                             color: selectedIndex == 3
                                 ? Colors.white
@@ -202,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           'Community',
                           style: TextStyle(
                             fontFamily: "Segoe UI",
-                            fontSize: 16.sp,
+                            fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
                             color: selectedIndex == 4
                                 ? Colors.white
