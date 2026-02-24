@@ -1,8 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
+import 'package:wisper/app/core/others/custom_size.dart';
 import 'package:wisper/app/core/widgets/common/circle_icon.dart';
+import 'package:wisper/app/modules/homepage/views/connection_screen.dart';
 import 'package:wisper/gen/assets.gen.dart';
 
 class InfoCard extends StatelessWidget {
@@ -13,11 +17,12 @@ class InfoCard extends StatelessWidget {
   final String memberInfo;
   final Widget child;
   final bool isTrailing;
-  final VoidCallback? trailingOnTap; 
-  final GlobalKey? trailingKey; 
+  final VoidCallback? trailingOnTap;
+  final GlobalKey? trailingKey;
   final VoidCallback? showMember;
   final bool? isBack;
-  
+  final bool? isShowNotification;
+
   const InfoCard({
     super.key,
     required this.imagePath,
@@ -31,18 +36,22 @@ class InfoCard extends StatelessWidget {
     this.showMember,
     this.isEditImage = true,
     this.isBack = false,
+    this.isShowNotification,
   });
 
   // Helper to safely determine the correct ImageProvider and whether it's default
-  ({ImageProvider provider, bool isDefault}) _getImageInfo(String path, String defaultAsset) {
+  ({ImageProvider provider, bool isDefault}) _getImageInfo(
+    String path,
+    String defaultAsset,
+  ) {
     if (path.isEmpty) {
       return (provider: AssetImage(defaultAsset), isDefault: true);
     }
- 
+
     // Local file path
     if (path.startsWith('/') ||
         path.contains('/storage/') ||
-        path.contains('/data/')) { 
+        path.contains('/data/')) {
       final file = File(path);
       if (file.existsSync()) {
         return (provider: FileImage(file), isDefault: false);
@@ -86,7 +95,7 @@ class InfoCard extends StatelessWidget {
                         Navigator.pop(context);
                       },
                     )
-                  : Container(width: 20,),
+                  : Container(width: isShowNotification == true ? 10.w : 10),
               Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -98,7 +107,9 @@ class InfoCard extends StatelessWidget {
                         backgroundColor: Colors.grey.shade800,
                         child: Padding(
                           // যদি ডিফল্ট অ্যাসেট হয়, তাহলে padding যোগ করা হবে
-                          padding: EdgeInsets.all(imageInfo.isDefault ? 12.0.r : 0.0),
+                          padding: EdgeInsets.all(
+                            imageInfo.isDefault ? 12.0.r : 0.0,
+                          ),
                           child: CircleAvatar(
                             radius: 40.r,
                             backgroundImage: imageInfo.provider,
@@ -108,7 +119,7 @@ class InfoCard extends StatelessWidget {
                       ),
                       if (isEditImage == true)
                         Positioned(
-                          bottom: 0, 
+                          bottom: 0,
                           right: 0,
                           child: CircleIconWidget(
                             color: const Color(0xff3C90CB),
@@ -157,14 +168,29 @@ class InfoCard extends StatelessWidget {
                 ],
               ),
               isTrailing == true
-                  ? CircleIconWidget(
-                      key: trailingKey,
-                      radius: 14,
-                      iconRadius: 18,
-                      imagePath: Assets.images.moreHor.keyName,
-                      onTap: trailingOnTap ?? () {},
+                  ? Row(
+                      children: [
+                        isShowNotification == true
+                            ? CircleIconWidget(
+                                radius: 14,
+                                iconRadius: 18,
+                                imagePath: Assets.images.notification.keyName,
+                                onTap: () {
+                                  Get.to(() => const ConnectionScreen());
+                                },
+                              )
+                            : Container(),
+                        widthBox10,
+                        CircleIconWidget(
+                          key: trailingKey,
+                          radius: 14,
+                          iconRadius: 18,
+                          imagePath: Assets.images.moreHor.keyName,
+                          onTap: trailingOnTap ?? () {},
+                        ),
+                      ],
                     )
-                  : Container(),
+                  : Container(width: 20),
             ],
           ),
         ),

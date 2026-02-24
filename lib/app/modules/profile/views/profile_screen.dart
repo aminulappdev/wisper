@@ -279,7 +279,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               // Profile Info Card
               InfoCard(
-               
+                isShowNotification: true,
                 trailingKey: suffixButtonKey,
                 trailingOnTap: () => CustomPopupMenu(
                   targetKey: suffixButtonKey,
@@ -307,9 +307,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     SizedBox(
                       height: 31.h,
-                      width: 116.w,
+                      width: 110.w,
                       child: CustomElevatedButton(
-                        textSize: 12,
+                        textSize: 11,
                         title: 'Share Profile',
                         onPress: () async {
                           try {
@@ -350,10 +350,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     SizedBox(width: 10.w),
                     SizedBox(
                       height: 31.h,
-                      width: 116.w,
+                      width: 110.w,
                       child: CustomElevatedButton(
                         color: Colors.black,
-                        textSize: 12, 
+                        textSize: 11, 
                         title: 'Edit Profile',
                         onPress: () => Get.to(
                           () => StorageUtil.getData(StorageUtil.userRole) ==

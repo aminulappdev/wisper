@@ -121,14 +121,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ],
                           )
                         : Container(),
-                    StraightLiner(height: 0.5),
-                    heightBox10,
-                    SettingsFeatureRow(
-                      title: 'Connections',
-                      onTap: () {
-                        Get.to(() => const ConnectionScreen());
-                      },
-                    ),
+                    // StraightLiner(height: 0.5),
+                    // heightBox10,
+                    // SettingsFeatureRow( 
+                    //   title: 'Connections',
+                    //   onTap: () {
+                    //     Get.to(() => const ConnectionScreen());
+                    //   },
+                    // ),
                   ],
                 ),
               ),

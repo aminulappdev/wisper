@@ -45,7 +45,7 @@ class Recommendation extends StatelessWidget {
                       radius: 10.r,
                       backgroundImage: NetworkImage(
                         giver.person != null
-                            ? giver.person!.image ?? giver.business!.image ?? ''
+                            ? giver.person!.image ?? giver.business?.image ?? ''
                             : '',
                       ),
 
