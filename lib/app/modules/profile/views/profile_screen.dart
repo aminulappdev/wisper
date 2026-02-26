@@ -2,12 +2,13 @@
 
 // ignore_for_file: use_build_context_synchronously, avoid_print
 
+import 'dart:async'; // ← নতুন যোগ করা (StreamSubscription-এর জন্য)
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:geocoding/geocoding.dart';          // ← new
-import 'package:geolocator/geolocator.dart';        // ← new
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:wisper/app/core/others/get_storage.dart';
 import 'package:wisper/app/core/utils/date_formatter.dart';
@@ -42,13 +43,12 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserver {
   int selectedIndex = 0;
 
   final ProfileController personController = Get.put(ProfileController());
   final BusinessController businessController = Get.put(BusinessController());
-  final ProfilePhotoController photoController =
-      Get.find<ProfilePhotoController>();
+  final ProfilePhotoController photoController = Get.find<ProfilePhotoController>();
 
   final AllRecommendationController recommendationController = Get.put(
     AllRecommendationController(),
@@ -56,9 +56,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   late final String userRole;
   final RxString currentImagePath = ''.obs;
-  
-  // New: location display (city, country)
   final RxString currentCityCountry = 'Fetching location...'.obs;
+
+  StreamSubscription<Position>? _positionSubscription; // ← fresh fix-এর জন্য
 
   @override
   void initState() {
@@ -67,11 +67,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     userRole = StorageUtil.getData(StorageUtil.userRole) ?? 'PERSON';
     _updateProfileImage();
     _getProfileImage();
-    
+
     print('User id in ProfileScreen: ${StorageUtil.getData(StorageUtil.userId)}');
 
-    // Fetch current location once
-    _fetchCurrentCityAndCountry();
+    // প্রথমবার + resumed-এ fresh location
+    _fetchFreshLocation();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       userRole == 'PERSON'
@@ -80,9 +80,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
             )
           : null;
     });
+
+    WidgetsBinding.instance.addObserver(this);
   }
 
-  Future<void> _fetchCurrentCityAndCountry() async {
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      print("App resumed → fetching FRESH location");
+      _fetchFreshLocation();
+    }
+  }
+
+  @override
+  void dispose() {
+    _positionSubscription?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  Future<void> _fetchFreshLocation() async {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
@@ -104,13 +122,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return;
       }
 
-      // Get position
-      Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.medium,
-        timeLimit: const Duration(seconds: 10),
+      // Option 1: Quick last known (fast UI update)
+      Position? lastPosition = await Geolocator.getLastKnownPosition();
+      if (lastPosition != null) {
+        print('Quick last known: ${lastPosition.latitude}, ${lastPosition.longitude}');
+        _updateCityFromPosition(lastPosition); // optional: দ্রুত দেখাও
+      }
+
+      // Option 2: Force fresh → stream দিয়ে single update নাও (সবচেয়ে reliable fresh fix)
+      final locationSettings = LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 0, // 0 = যেকোনো change-এ আপডেট
       );
 
-      // Reverse geocoding → get city & country
+      // Stream দিয়ে একবার update নাও → almost সবসময় fresh GPS fix দেয়
+      await _positionSubscription?.cancel(); // পুরোনো cancel করো
+      _positionSubscription = Geolocator.getPositionStream(locationSettings: locationSettings)
+          .listen((Position position) async {
+        print('Fresh stream position: ${position.latitude}, ${position.longitude} at ${DateTime.now()}');
+        await _updateCityFromPosition(position);
+        _positionSubscription?.cancel(); // শুধু একবার নেয়া হয়েছে → stop
+      }, onError: (e) {
+        print('Stream error: $e');
+      });
+
+      // Fallback: যদি stream দেরি করে → direct getCurrentPosition
+      Position position = await Geolocator.getCurrentPosition(
+        locationSettings: locationSettings,
+      );
+      print('Fallback current position: ${position.latitude}, ${position.longitude}');
+      await _updateCityFromPosition(position);
+
+    } catch (e) {
+      print('Location error: $e');
+      currentCityCountry.value = 'Could not get fresh location';
+    }
+  }
+
+  Future<void> _updateCityFromPosition(Position position) async {
+    try {
       List<Placemark> placemarks = await placemarkFromCoordinates(
         position.latitude,
         position.longitude,
@@ -120,33 +170,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Placemark place = placemarks[0];
         String city = place.locality ?? place.subAdministrativeArea ?? 'Unknown city';
         String country = place.country ?? 'Unknown country';
-
         currentCityCountry.value = '$city, $country';
+
+        print('................................................');
+        print('Updated Lat: ${position.latitude}, Long: ${position.longitude}');
+        print('Current city: $city, country: $country');
       } else {
         currentCityCountry.value = 'Location not available';
       }
     } catch (e) {
-      print('Location error: $e');
-      currentCityCountry.value = 'Could not get location';
+      print('Placemark error: $e');
     }
   }
 
+  // বাকি সব ফাংশন একই রাখা (_getProfileImage, _updateProfileImage, _onImagePicked, ইত্যাদি)
   Future<void> _getProfileImage() async {
     print('Called get image');
     await personController.getMyProfile();
     await businessController.getMyProfile();
     if (userRole == 'PERSON') {
-      print(
-        'Person image: ${personController.profileData?.auth?.person?.image}',
-      );
-      currentImagePath.value =
-          personController.profileData?.auth?.person?.image ?? '';
+      print('Person image: ${personController.profileData?.auth?.person?.image}');
+      currentImagePath.value = personController.profileData?.auth?.person?.image ?? '';
     } else if (userRole == 'BUSINESS') {
-      print(
-        'Business image: ${businessController.buisnessData?.auth?.business?.image}',
-      );
-      currentImagePath.value =
-          businessController.buisnessData?.auth?.business?.image ?? '';
+      print('Business image: ${businessController.buisnessData?.auth?.business?.image}');
+      currentImagePath.value = businessController.buisnessData?.auth?.business?.image ?? '';
     }
   }
 
@@ -172,12 +219,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (success) {
       if (userRole == 'PERSON') {
-        final AllFeedPostController feedController = Get.put(
-          AllFeedPostController(),
-        );
-        final MyFeedPostController myFeedPostController = Get.put(
-          MyFeedPostController(),
-        );
+        final AllFeedPostController feedController = Get.put(AllFeedPostController());
+        final MyFeedPostController myFeedPostController = Get.put(MyFeedPostController());
 
         myFeedPostController.resetPagination();
         feedController.resetPagination();
@@ -219,7 +262,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
       }
     } else {
-      // BUSINESS
       if (index == 0) return MyPostSection();
       if (index == 1) return MyJobSection();
     }
@@ -248,10 +290,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ? (personData?.title ?? '')
           : (businessData?.industry ?? '');
 
-      // final String? displayAddress = userRole == 'PERSON'   ← removed
-      //     ? personData?.address
-      //     : businessData?.address;
-
       final DateTime? createdAt = userRole == 'PERSON'
           ? personController.profileData?.auth?.createdAt
           : businessController.buisnessData?.auth?.createdAt;
@@ -277,7 +315,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               SizedBox(height: 40.h),
 
-              // Profile Info Card
+              // InfoCard + বাকি UI একদম একই
               InfoCard(
                 isShowNotification: true,
                 trailingKey: suffixButtonKey,
@@ -313,27 +351,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         title: 'Share Profile',
                         onPress: () async {
                           try {
-                            final String userId =
-                                StorageUtil.getData(StorageUtil.userId) ?? '';
+                            final String userId = StorageUtil.getData(StorageUtil.userId) ?? '';
                             if (userId.isEmpty) {
                               Get.snackbar('Error', 'User ID not found');
                               return;
                             }
 
-                            final String role =
-                                StorageUtil.getData(StorageUtil.userRole) ??
-                                'PERSON';
-                            final bool isPerson =
-                                role.toUpperCase() == 'PERSON';
+                            final String role = StorageUtil.getData(StorageUtil.userRole) ?? 'PERSON';
+                            final bool isPerson = role.toUpperCase() == 'PERSON';
 
-                            const String baseUrl =
-                                'https://c9f1d48ba47f.ngrok-free.app';
+                            const String baseUrl = 'https://c9f1d48ba47f.ngrok-free.app';
 
                             final Uri shareUri = Uri.https(
                               baseUrl.replaceAll('https://', ''),
-                              isPerson
-                                  ? '/persons/$userId'
-                                  : '/businesses/$userId',
+                              isPerson ? '/persons/$userId' : '/businesses/$userId',
                             );
 
                             debugPrint("Sharing profile link: $shareUri");
@@ -353,11 +384,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       width: 110.w,
                       child: CustomElevatedButton(
                         color: Colors.black,
-                        textSize: 11, 
+                        textSize: 11,
                         title: 'Edit Profile',
                         onPress: () => Get.to(
-                          () => StorageUtil.getData(StorageUtil.userRole) ==
-                                  'PERSON'
+                          () => StorageUtil.getData(StorageUtil.userRole) == 'PERSON'
                               ? EditPersonProfileScreen()
                               : EditBusinessProfileScreen(),
                         ),
@@ -370,18 +400,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               SizedBox(height: 10.h),
 
-              // Fixed Recommendation Widget
               userRole == 'PERSON'
                   ? SizedBox(
                       height: 30.h,
                       child: GetBuilder<AllRecommendationController>(
                         builder: (controller) {
-                          final int count =
-                              controller.recommendationData.length;
+                          final int count = controller.recommendationData.length;
                           return Recommendation(
-                            images: controller.recommendationData
-                                .map((e) => e.giver!)
-                                .toList(),
+                            images: controller.recommendationData.map((e) => e.giver!).toList(),
                             isEmpty: count == 0,
                             onTap: _showCreateGroup,
                             count: count,
@@ -393,7 +419,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               SizedBox(height: 10.h),
 
-              // Now using current location instead of profile address
               Obx(
                 () => LocationInfo(
                   location: currentCityCountry.value,
@@ -405,7 +430,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const StraightLiner(height: 0.4, color: Color(0xff454545)),
               SizedBox(height: 10.h),
 
-              // Dynamic Tabs
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: tabs.asMap().entries.map((entry) {
@@ -432,7 +456,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const StraightLiner(height: 0.4, color: Color(0xff454545)),
               SizedBox(height: 10.h),
 
-              // Tab Content
               Expanded(child: _getTabContent(selectedIndex)),
             ],
           ),

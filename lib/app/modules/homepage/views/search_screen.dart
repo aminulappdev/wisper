@@ -98,7 +98,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 child: SizedBox(
                   height: 44.h,
                   width: MediaQuery.of(context).size.width * 0.79,
-                  child: CustomTextField(
+                  child: CustomTextField( 
                     hintText: 'Location type',
                     value: selectedLocationType,
 

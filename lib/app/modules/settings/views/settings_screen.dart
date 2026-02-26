@@ -6,12 +6,10 @@ import 'package:wisper/app/core/config/theme/light_theme_colors.dart';
 import 'package:wisper/app/core/others/custom_size.dart';
 import 'package:wisper/app/core/others/get_storage.dart';
 import 'package:wisper/app/core/widgets/common/circle_icon.dart';
-import 'package:wisper/app/core/widgets/common/custom_popup.dart';
 import 'package:wisper/app/core/widgets/common/details_card.dart';
 import 'package:wisper/app/core/widgets/common/line_widget.dart';
 import 'package:wisper/app/modules/authentication/views/sign_in_screen.dart';
 import 'package:wisper/app/modules/chat/widgets/toggle_option.dart';
-import 'package:wisper/app/modules/homepage/views/connection_screen.dart';
 import 'package:wisper/app/modules/job/views/favorite_job_screen.dart';
 import 'package:wisper/app/modules/post/views/my_post_section.dart';
 import 'package:wisper/app/modules/profile/controller/buisness/buisness_controller.dart';
@@ -113,7 +111,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                               SettingsFeatureRow(
                                 title: 'Favorites',
-                                onTap: () {
+                                onTap: () { 
                                   Get.to(() => const FavoriteJobScreen());
                                 },
                               ),

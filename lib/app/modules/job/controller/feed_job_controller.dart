@@ -15,7 +15,7 @@ class AllFeedJobController extends GetxController {
   final RxString _errorMessage = ''.obs;
   String get errorMessage => _errorMessage.value;
 
-  final RxList<FeedJobItemModel> _allJobList = <FeedJobItemModel>[].obs;
+  final RxList<FeedJobItemModel> _allJobList = <FeedJobItemModel>[].obs; 
   List<FeedJobItemModel> get allJobData => _allJobList;
 
   final int _limit = 2000;
@@ -55,7 +55,7 @@ class AllFeedJobController extends GetxController {
     }
 
     if (locationType != null && locationType.isNotEmpty) {
-      queryParams['location'] = locationType;
+      queryParams['locationType'] = locationType;
     }
 
     print('Query params: $queryParams');

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+
 import 'package:wisper/app/core/others/app_binder.dart';
 import 'package:wisper/app/core/config/theme/my_theme.dart';
 import 'package:wisper/app/core/config/translations/localization_service.dart';
@@ -13,27 +14,44 @@ import 'package:wisper/app/core/services/others/deeplink_services.dart';
 import 'package:wisper/app/core/services/socket/socket_service.dart';
 import 'package:wisper/app/core/utils/connectivity_services.dart';
 import 'package:wisper/app/core/utils/no_inter_screen.dart';
+
 import 'package:wisper/app/modules/dashboard/views/dashboard_screen.dart';
 import 'package:wisper/app/modules/onboarding/views/onboarding_view.dart';
 import 'package:wisper/app/modules/onboarding/views/splash_screen.dart';
 import 'package:wisper/app/modules/profile/views/business/others_business_screen.dart';
 import 'package:wisper/app/modules/profile/views/person/others_person_screen.dart';
+
 import 'package:wisper/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Core initializations
-  final SocketService socketService = Get.put(SocketService());
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await socketService.init();
-  await StorageUtil.init();
-  await _initFCMToken();
+  /// ✅ Firebase প্রথমে
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
-  // New: Initialize ConnectivityService (runs in background, shows dialog when needed)
+  /// ✅ Storage init
+  await StorageUtil.init();
+
+  /// ✅ Services init
+  final SocketService socketService = Get.put(SocketService());
+  await socketService.init();
+
+  /// ✅ Play Services ready হওয়ার জন্য ছোট delay
+  await Future.delayed(const Duration(milliseconds: 300));
+
+  /// ✅ FCM token init (crash-safe)
+  try {
+    await _initFCMToken();
+  } catch (e) {
+    debugPrint("🔥 FCM init prevented crash: $e");
+  }
+
+  /// ✅ Connectivity service
   Get.put(ConnectivityService());
 
-  // DeepLink service
+  /// ✅ DeepLink service
   Get.put(DeepLinkService());
 
   SystemChrome.setPreferredOrientations([
@@ -47,7 +65,7 @@ void main() async {
         splitScreenMode: true,
         useInheritedMediaQuery: true,
         builder: (context, widget) {
-          // Deep links initialize
+          /// Deep links initialize after UI ready
           WidgetsBinding.instance.addPostFrameCallback((_) async {
             await Future.delayed(const Duration(milliseconds: 100));
             Get.find<DeepLinkService>().initDeepLinks();
@@ -61,11 +79,13 @@ void main() async {
             child: GetMaterialApp(
               initialBinding: ControllerBinder(),
               debugShowCheckedModeBanner: false,
+
               theme: MyTheme.getThemeData(isLight: true),
               darkTheme: MyTheme.getThemeData(isLight: false),
               themeMode: StorageUtil.isLightTheme()
                   ? ThemeMode.light
                   : ThemeMode.dark,
+
               builder: (context, widget) {
                 return MediaQuery(
                   data: MediaQuery.of(context).copyWith(
@@ -74,7 +94,6 @@ void main() async {
                   child: widget!,
                 );
               },
-
 
               initialRoute: '/',
               getPages: [
@@ -99,7 +118,6 @@ void main() async {
                     userId: Get.parameters['id'] ?? '',
                   ),
                 ),
-                // নতুন route যোগ করা হলো (No Internet Screen-এর জন্য)
                 GetPage(
                   name: '/no-internet',
                   page: () => const NoInternetScreen(),
@@ -108,6 +126,7 @@ void main() async {
 
               locale: StorageUtil.getLocale(),
               translations: LocalizationService.getInstance(),
+
               defaultTransition: GetPlatform.isAndroid
                   ? Transition.rightToLeft
                   : Transition.cupertino,
@@ -120,37 +139,52 @@ void main() async {
 }
 
 Future<void> _initFCMToken() async {
-  debugPrint("📡 Starting FCM token initialization...");
+  try {
+    debugPrint("📡 Starting FCM token initialization...");
 
-  if (Platform.isIOS) {
-    final permission = await FirebaseMessaging.instance.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-    debugPrint("iOS Notification Permission: ${permission.authorizationStatus}");
+    if (Platform.isIOS) {
+      final permission = await FirebaseMessaging.instance.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
 
-    String? apnsToken;
-    for (int i = 0; i < 3; i++) {
-      apnsToken = await FirebaseMessaging.instance.getAPNSToken();
-      debugPrint("Attempt ${i + 1} - APNs token: $apnsToken");
-      if (apnsToken != null) break;
-      await Future.delayed(const Duration(seconds: 2));
+      debugPrint(
+        "🍎 iOS Notification Permission: ${permission.authorizationStatus}",
+      );
+
+      String? apnsToken;
+
+      for (int i = 0; i < 3; i++) {
+        apnsToken = await FirebaseMessaging.instance.getAPNSToken();
+        debugPrint("Attempt ${i + 1} - APNs token: $apnsToken");
+
+        if (apnsToken != null) break;
+
+        await Future.delayed(const Duration(seconds: 2));
+      }
+
+      if (apnsToken == null) {
+        debugPrint("⚠️ Failed to get APNs token after retries");
+
+        FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+          debugPrint("iOS FCM Token (via refresh): $newToken");
+        });
+
+        return;
+      }
     }
 
-    if (apnsToken == null) {
-      debugPrint("⚠️ Failed to get APNs token after retries");
-      FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
-        debugPrint("iOS FCM Token (via refresh): $newToken");
-      });
-      return;
-    }
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+
+    debugPrint("✅ FCM Token: $fcmToken");
+
+    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+      debugPrint("🔁 FCM Token Refreshed: $newToken");
+    });
+
+  } catch (e, stack) {
+    debugPrint("❌ FCM Token Error: $e");
+    debugPrint("Stacktrace: $stack");
   }
-
-  final fcmToken = await FirebaseMessaging.instance.getToken();
-  debugPrint("FCM Token: $fcmToken");
-
-  FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
-    debugPrint("FCM Token Refreshed: $newToken");
-  });
 }
